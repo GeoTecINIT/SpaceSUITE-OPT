@@ -1,0 +1,50 @@
+<div class="flex gap-4 m-2">
+  <filters
+    [bokConcepts]="bokConcepts"
+    [loading]="loading"
+    [logged]="isLogged()"
+    [multiSelectOptions]="filterOptions"
+    [searchOption]="searchOption"
+    [searchValue]="searchValue"
+    [userFilter]="userFilter"
+    (bokConceptsChange)="setBoKConcepts($event)"
+    (multiSelectOptionsChange)="filterPipeline()"
+    (searchOptionChange)="setSearchOption($event)"
+    (searchValueChange)="setSearchValue($event)"
+    (userFilterChange)="setUserFilter($event)"
+  />
+
+  <p-divider layout="vertical" />
+
+  <ng-container *ngIf="filteredProfiles.length != 0 || loading">
+    <div class="flex flex-column gap-4 w-full">
+      <div class="flex flex-column gap-2">
+        <ng-container *ngIf="!loading; else cardSkeleton">
+          <ng-container
+            *ngFor="let profile of paginatedProfiles; trackBy: trackById"
+          >
+            <profile-card [occupationalProfile]="profile" />
+          </ng-container>
+        </ng-container>
+      </div>
+
+      <p-paginator
+        class="custom-paginator"
+        [first]="first"
+        [rows]="rows"
+        [totalRecords]="filteredProfiles.length"
+        (onPageChange)="onPageChange($event)"
+      />
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="filteredProfiles.length == 0 && !loading">
+    <p class="font-italic mx-auto">No profiles found</p>
+  </ng-container>
+</div>
+
+<ng-template #cardSkeleton>
+  <ng-container *ngFor="let i of skeletonElements">
+    <p-skeleton width="100%" height="10rem" borderRadius="12px" />
+  </ng-container>
+</ng-template>

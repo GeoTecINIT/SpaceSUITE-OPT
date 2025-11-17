@@ -1,0 +1,93 @@
+<p-card class="custom-card">
+  <div class="flex justify-content-between align-items-center gap-6">
+    <div class="flex flex-column">
+      <div class="flex align-items-baseline gap-3">
+        <span class="p-card-title">{{ occupationalProfile.title }}</span>
+
+        <strong class="p-card-subtitle text-sm">
+          {{ occupationalProfile.orgName }}
+        </strong>
+      </div>
+
+      <div class="flex gap-2 text-sm">
+        <strong>{{ occupationalProfile.knowledge.length }} Knowledge</strong>
+        |
+        <strong>{{ occupationalProfile.skills.length }} Skills</strong>
+        |
+        <strong>
+          {{ occupationalProfile.competences.length }} Transversal Skills
+        </strong>
+        |
+        <strong>EQF: {{ occupationalProfile.eqf }}</strong>
+        |
+        <ng-container *ngIf="!occupationalProfile.isPublic">
+          <strong>Private</strong>
+          |
+        </ng-container>
+        <strong>
+          Last updated:
+          {{ occupationalProfile.updatedAt?.toDate().toLocaleDateString() }}
+        </strong>
+      </div>
+
+      <div class="text-truncate mb-2">
+        {{ occupationalProfile.description }}
+      </div>
+
+      <div class="flex flex-wrap gap-2">
+        <ng-container *ngFor="let concept of concepts">
+          <p-tag
+            class="custom-tag cursor-pointer text-xs"
+            [value]="concept"
+            [rounded]="true"
+            [style.background]="selectedConceptsColor.get(concept)"
+            (click)="onClickConcept(concept)"
+            [pTooltip]="selectedConceptsTooltip.get(concept)"
+            tooltipPosition="top"
+            [tooltipStyleClass]="
+              selectedConceptsTooltip.get(concept) == 'Deprecated concept'
+                ? 'danger-tooltip'
+                : ''
+            "
+          />
+        </ng-container>
+      </div>
+    </div>
+
+    <div class="flex gap-2">
+      <p-button
+        class="custom-button"
+        icon="pi pi-share-alt"
+        [rounded]="true"
+        variant="text"
+        pTooltip="Share"
+        tooltipPosition="top"
+      />
+      <p-button
+        class="custom-button"
+        icon="pi pi-clone"
+        [rounded]="true"
+        variant="text"
+        pTooltip="Duplicate"
+        tooltipPosition="top"
+      />
+      <p-button
+        class="custom-button"
+        icon="pi pi-pencil"
+        [rounded]="true"
+        variant="text"
+        pTooltip="Edit"
+        tooltipPosition="top"
+      />
+      <p-button
+        class="custom-button-danger"
+        icon="pi pi-trash"
+        [rounded]="true"
+        variant="text"
+        pTooltip="Delete"
+        tooltipPosition="top"
+        tooltipStyleClass="danger-tooltip"
+      />
+    </div>
+  </div>
+</p-card>

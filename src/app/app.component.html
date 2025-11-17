@@ -1,5 +1,15 @@
 <div class="flex flex-column min-h-screen">
-    <header [toolName]="'BoK Annotation Tool'" [items]="headerItems" [login]="true" (profileClick)="redirectToProfile()" (organizationClick)="redirectToOrganizations()"></header>
+  <header
+    toolName="Occupational Profile Tool"
+    [items]="headerItems"
+    [login]="true"
+    (profileClick)="redirectToProfile()"
+    (organizationClick)="redirectToOrganizations()"
+  ></header>
+
+  <div class="mx-6 p-2">
     <router-outlet></router-outlet>
-    <footer class="mt-auto"></footer>
+  </div>
+
+  <footer class="mt-auto"></footer>
 </div>

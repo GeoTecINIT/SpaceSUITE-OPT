@@ -1,0 +1,73 @@
+<p-toast class="custom-toast" position="bottom-right" />
+
+<div class="flex flex-column">
+  {{ label }}
+
+  <div class="flex align-items-start gap-2 mt-2 flex-wrap">
+    <ng-container *ngFor="let concept of selectedConcepts">
+      <p-chip
+        [label]="concept"
+        [removable]="true"
+        [style.background]="conceptColors.get(concept)"
+        [style.color]="'var(--primary-color)'"
+        [style]="{
+          '--p-chip-remove-icon-color': 'var(--primary-color)',
+          '--p-chip-remove-icon-focus-ring-color': 'var(--primary-color)'
+        }"
+        [pTooltip]="conceptTooltips.get(concept)"
+        tooltipPosition="top"
+        (onRemove)="removeChip(concept)"
+      />
+    </ng-container>
+
+    <p-button
+      [rounded]="true"
+      [disabled]="disabled"
+      icon="pi pi-plus"
+      class="white-space-nowrap custom-button"
+      (click)="showDialog()"
+    />
+  </div>
+</div>
+
+<p-dialog
+  header="Explore Body of Knowledge"
+  [modal]="true"
+  [(visible)]="isVisible"
+  [style]="{ width: '45rem', height: '52rem', color: 'var(--primary-color)' }"
+  (onShow)="loadComponent()"
+>
+  <p-progress-spinner
+    class="flex custom-spinner"
+    ariaLabel="loading"
+    *ngIf="currentConcept == ''"
+  />
+
+  <ng-template #dynamicContainer></ng-template>
+
+  <div
+    *ngIf="currentConcept != ''"
+    class="flex justify-content-between align-items-center"
+  >
+    <div *ngIf="!invalidConcept" class="mx-4">
+      {{ currentConcept }} : {{ currentConceptName }}
+    </div>
+
+    <div
+      *ngIf="invalidConcept"
+      [style.color]="'var(--danger-color)'"
+      class="mx-4 text-sm"
+    >
+      <div>You cannot add top-level concepts.</div>
+
+      <div>Please navigate down and select more specific concepts.</div>
+    </div>
+
+    <p-button
+      [disabled]="invalidConcept"
+      label="Add"
+      class="custom-button"
+      (click)="addConcept()"
+    />
+  </div>
+</p-dialog>
