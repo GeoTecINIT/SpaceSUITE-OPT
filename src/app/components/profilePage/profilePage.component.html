@@ -1,0 +1,285 @@
+<p-toast class="custom-toast" position="bottom-right" />
+
+<p-confirmdialog />
+
+<ng-container *ngIf="profile; else spinner">
+  <div class="flex flex-column gap-2">
+    <h1 class="mb-0">{{ profile.title }}</h1>
+
+    <div class="flex gap-2 text-sm">
+      <span>
+        <strong>Last updated: </strong>
+        {{ profile.updatedAt?.toDate().toLocaleDateString() }}
+      </span>
+      |
+      <span>
+        <strong>Visibility: </strong>
+        {{ profile.isPublic ? "Public" : "Private" }}
+      </span>
+      |
+      <span>
+        <strong>EQF Level: </strong>
+        {{ profile.eqf }}
+      </span>
+      |
+      <span>
+        <strong>Organization: </strong>
+        {{ profile.orgName }}
+      </span>
+      |
+      <span>
+        <strong>Division: </strong>
+        {{ profile.division || "-" }}
+      </span>
+    </div>
+
+    <span class="text-justify">
+      {{ profile.description }}
+    </span>
+
+    <div class="flex flex-column">
+      <p-panel
+        #conceptsPanel
+        class="my-2 custom-panel"
+        [header]="'Knowledge (' + concepts.length + ')'"
+        [toggleable]="true"
+        [collapsed]="overTagLimit(concepts.length)"
+      >
+        <ng-template #headericons>
+          <p-button
+            [icon]="
+              conceptsPanel.collapsed
+                ? 'pi pi-chevron-down'
+                : 'pi pi-chevron-up'
+            "
+            severity="secondary"
+            text
+          />
+        </ng-template>
+
+        <div class="flex w-full gap-1">
+          <div
+            class="flex flex-wrap gap-2"
+            style="flex: 3"
+            [class.flex-column]="overTagLimit(concepts.length)"
+            [class.align-items-start]="overTagLimit(concepts.length)"
+          >
+            <ng-container *ngFor="let concept of concepts">
+              <p-tag
+                class="tag bok-tag cursor-pointer"
+                [value]="'[' + concept + '] ' + conceptsTooltip.get(concept)"
+                [rounded]="true"
+                [style.background]="conceptsColor.get(concept)"
+                (click)="onClickConcept(concept)"
+              />
+            </ng-container>
+          </div>
+
+          <div
+            class="flex flex-column gap-2 justify-content-center"
+            style="flex: 2; min-width: 0"
+          >
+            <ng-container *ngFor="let item of knowledgeDistributionArray">
+              <div class="flex gap-2 w-full align-items-center">
+                <span
+                  class="text-xs whitespace-nowrap"
+                  style="width: 400px; flex-shrink: 0"
+                >
+                  {{ item[0] }} - {{ conceptsTooltip.get(item[0]) }} :
+                  {{ item[1] }}%
+                </span>
+
+                <p-progressbar
+                  class="custom-bar flex-1 min-w-0"
+                  [value]="item[1]"
+                  [showValue]="false"
+                  [color]="conceptsColor.get(item[0])"
+                ></p-progressbar>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </p-panel>
+
+      <ng-container *ngIf="deprecatedConcepts.length > 0">
+        <p-panel
+          #deprecatedConceptsPanel
+          class="my-2 custom-panel"
+          [header]="'Deprecated Knowledge (' + deprecatedConcepts.length + ')'"
+          [toggleable]="true"
+          [collapsed]="overTagLimit(deprecatedConcepts.length)"
+        >
+          <ng-template #headericons>
+            <p-button
+              [icon]="
+                deprecatedConceptsPanel.collapsed
+                  ? 'pi pi-chevron-down'
+                  : 'pi pi-chevron-up'
+              "
+              severity="secondary"
+              text
+            />
+          </ng-template>
+
+          <p class="danger-text text-xs mt-0">
+            *These are obsolete concepts, so they are not present in the current
+            version of the Bok.
+          </p>
+
+          <div class="flex flex-wrap gap-2">
+            <ng-container *ngFor="let deprecatedConcept of deprecatedConcepts">
+              <p-tag
+                class="tag bok-tag cursor-pointer"
+                [value]="deprecatedConcept"
+                [rounded]="true"
+                [style.background]="conceptsColor.get(deprecatedConcept)"
+                (click)="onClickConcept(deprecatedConcept)"
+              />
+            </ng-container>
+          </div>
+        </p-panel>
+      </ng-container>
+
+      <p-panel
+        #skillsPanel
+        class="my-2 custom-panel"
+        [header]="'Skills (' + skills.length + ')'"
+        [toggleable]="true"
+        [collapsed]="overTagLimit(skills.length)"
+      >
+        <ng-template #headericons>
+          <p-button
+            [icon]="
+              skillsPanel.collapsed ? 'pi pi-chevron-down' : 'pi pi-chevron-up'
+            "
+            severity="secondary"
+            text
+          />
+        </ng-template>
+
+        <div
+          [class]="
+            overTagLimit(skills.length)
+              ? 'flex flex-column align-items-start gap-2'
+              : 'flex flex-wrap gap-2'
+          "
+        >
+          <ng-container *ngFor="let skill of skills">
+            <p-tag class="tag skill-tag" [value]="skill" [rounded]="true" />
+          </ng-container>
+        </div>
+      </p-panel>
+
+      <p-panel
+        #transversalSkillsPanel
+        class="my-2 custom-panel"
+        [header]="'Transversal Skills (' + transversalSkills.length + ')'"
+        [toggleable]="true"
+        [collapsed]="overTagLimit(transversalSkills.length)"
+      >
+        <ng-template #headericons>
+          <p-button
+            [icon]="
+              transversalSkillsPanel.collapsed
+                ? 'pi pi-chevron-down'
+                : 'pi pi-chevron-up'
+            "
+            severity="secondary"
+            text
+          />
+        </ng-template>
+
+        <div
+          [class]="
+            overTagLimit(transversalSkills.length)
+              ? 'flex flex-column align-items-start gap-2'
+              : 'flex flex-wrap gap-2'
+          "
+        >
+          <ng-container *ngFor="let transversalSkill of transversalSkills">
+            <p-tag
+              [class]="
+                transversalSkill.uri
+                  ? 'tag transversal-skill-tag cursor-pointer'
+                  : 'tag skill-tag'
+              "
+              [value]="transversalSkill.preferredLabel"
+              [rounded]="true"
+              (click)="
+                transversalSkill.uri && onClickSkill(transversalSkill.uri)
+              "
+            />
+          </ng-container>
+        </div>
+      </p-panel>
+
+      <div>
+        <strong>Application domain(s):</strong>
+
+        <ul>
+          <li *ngFor="let domain of applicationDomains">
+            {{ domain }}
+          </li>
+        </ul>
+      </div>
+
+      <ng-container *ngIf="checkUser()">
+        <p-button
+          class="md:hidden flex justify-content-center custom-button my-2"
+          label="Edit Material"
+          icon="pi pi-pencil"
+          (onClick)="editProfile()"
+        />
+
+        <p-button
+          class="flex md:hidden justify-content-center delete-button my-2"
+          label="Delete Material"
+          icon="pi pi-trash"
+          (onClick)="deleteModal($event)"
+        />
+      </ng-container>
+
+      <p-button
+        class="flex md:hidden justify-content-center custom-secondary-button my-2"
+        label="Return to Homepage"
+        severity="secondary"
+        icon="pi pi-arrow-left"
+        (onClick)="goToMainPage()"
+      />
+    </div>
+
+    <div class="hidden md:flex justify-content-between mb-2 mt-auto">
+      <p-button
+        class="custom-secondary-button"
+        label="Return to Homepage"
+        severity="secondary"
+        icon="pi pi-arrow-left"
+        (onClick)="goToMainPage()"
+      />
+
+      <ng-container *ngIf="checkUser()">
+        <div class="flex flex-wrap gap-2">
+          <p-button
+            class="custom-button"
+            label="Edit Profile"
+            icon="pi pi-pencil"
+            (onClick)="editProfile()"
+          />
+
+          <p-button
+            class="delete-button"
+            label="Delete Profile"
+            icon="pi pi-trash"
+            (onClick)="deleteModal($event)"
+          />
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</ng-container>
+
+<ng-template #spinner>
+  <div class="flex justify-content-center align-items-center h-screen">
+    <p-progress-spinner strokeWidth="3" ariaLabel="loading" />
+  </div>
+</ng-template>

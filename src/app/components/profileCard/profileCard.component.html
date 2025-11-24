@@ -2,7 +2,14 @@
   <div class="flex justify-content-between align-items-center gap-6">
     <div class="flex flex-column">
       <div class="flex align-items-baseline gap-3">
-        <span class="p-card-title">{{ occupationalProfile.title }}</span>
+        <a
+          class="p-card-title card-title"
+          href="profile/{{ occupationalProfile._id }}"
+          target="_self"
+          (click)="onClickTitle($event)"
+        >
+          {{ occupationalProfile.title }}
+        </a>
 
         <strong class="p-card-subtitle text-sm">
           {{ occupationalProfile.orgName }}
@@ -12,10 +19,20 @@
       <div class="flex gap-2 text-sm">
         <strong>{{ occupationalProfile.knowledge.length }} Knowledge</strong>
         |
-        <strong>{{ occupationalProfile.skills.length }} Skills</strong>
+        <strong>
+          {{
+            occupationalProfile.skills.length +
+              occupationalProfile.customSkills.length
+          }}
+          Skills
+        </strong>
         |
         <strong>
-          {{ occupationalProfile.competences.length }} Transversal Skills
+          {{
+            occupationalProfile.competences.length +
+              occupationalProfile.customCompetences.length
+          }}
+          Transversal Skills
         </strong>
         |
         <strong>EQF: {{ occupationalProfile.eqf }}</strong>
@@ -63,6 +80,7 @@
         pTooltip="Share"
         tooltipPosition="top"
       />
+
       <p-button
         class="custom-button"
         icon="pi pi-clone"
@@ -71,6 +89,7 @@
         pTooltip="Duplicate"
         tooltipPosition="top"
       />
+
       <p-button
         class="custom-button"
         icon="pi pi-pencil"
@@ -79,6 +98,7 @@
         pTooltip="Edit"
         tooltipPosition="top"
       />
+
       <p-button
         class="custom-button-danger"
         icon="pi pi-trash"

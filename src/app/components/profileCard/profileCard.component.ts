@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { BokInformationService } from '@eo4geo/ngx-bok-visualization';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -24,7 +25,8 @@ export class ProfileCardComponent implements OnInit {
 
   constructor(
     private bokInfo: BokInformationService,
-    private utilsService: UtilsService
+    private utilsService: UtilsService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -53,6 +55,11 @@ export class ProfileCardComponent implements OnInit {
   }
 
   onClickConcept(code: string): void {
-    window.open('https://bok.eo4geo.eu/' + code);
+    window.open('https://geospacebok.eu/' + code);
+  }
+
+  onClickTitle(event: MouseEvent): void {
+    event.preventDefault();
+    this.router.navigate(['profile/' + this.occupationalProfile._id]);
   }
 }

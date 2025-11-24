@@ -73,8 +73,4 @@ export class CardFilterService {
       })
     );
   }
-
-  updateFilterOptions(filters: FilterOption[]) {
-    this.filterOptionsSubject.next(filters);
-  }
 }

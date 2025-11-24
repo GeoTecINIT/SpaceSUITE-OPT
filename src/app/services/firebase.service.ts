@@ -1,18 +1,22 @@
 import { inject, Injectable } from '@angular/core';
-import { Auth } from '@angular/fire/auth';
+import { Auth, authState, User } from '@angular/fire/auth';
 import {
   collection,
   collectionData,
   CollectionReference,
+  deleteDoc,
+  doc,
   Firestore,
 } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
+import { concatMap, from, Observable, of } from 'rxjs';
 import { OccupationalProfile } from '../models/occupationalProfile';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FirebaseService {
+  userId: string = '';
+
   private profileCollection: CollectionReference<OccupationalProfile>;
 
   constructor(
@@ -23,6 +27,8 @@ export class FirebaseService {
       this.db,
       'OcuProfiles'
     ) as CollectionReference<OccupationalProfile>;
+
+    authState(this.auth).subscribe((user) => (this.userId = user?.uid ?? ''));
   }
 
   getOccupationalProfiles(): Observable<OccupationalProfile[]> {
@@ -31,7 +37,16 @@ export class FirebaseService {
     }) as Observable<OccupationalProfile[]>;
   }
 
-  getUserData() {
+  getUserData(): User | null {
     return this.auth.currentUser;
+  }
+
+  deleteOccupationalProfile(profile: OccupationalProfile): Observable<void> {
+    const docRef = doc(this.profileCollection, profile._id);
+    return from(deleteDoc(docRef)).pipe(
+      concatMap(() => {
+        return of();
+      })
+    );
   }
 }

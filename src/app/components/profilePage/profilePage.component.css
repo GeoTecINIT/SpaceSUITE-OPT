@@ -1,0 +1,154 @@
+.custom-toast {
+  --p-toast-info-background: color-mix(
+    in srgb,
+    var(--secondary-color) 10%,
+    rgba(255, 255, 255, 0.9) 90%
+  );
+  --p-toast-info-border-color: var(--secondary-color);
+  --p-toast-info-color: var(--secondary-color);
+  --p-toast-info-detail-color: var(--primary-color);
+
+  --p-toast-error-background: color-mix(
+    in srgb,
+    var(--danger-color) 10%,
+    rgba(255, 255, 255, 0.9) 90%
+  );
+  --p-toast-error-border-color: var(--danger-color);
+  --p-toast-error-color: var(--danger-color);
+  --p-toast-error-detail-color: var(--primary-color);
+}
+
+.custom-panel {
+  --p-panel-header-color: var(--primary-color);
+}
+
+.tag {
+  font-size: 0.8rem;
+}
+
+.bok-tag,
+.transversal-skill-tag {
+  --p-tag-primary-color: var(--primary-color);
+}
+
+.bok-tag:hover,
+.transversal-skill-tag:hover {
+  --p-tag-primary-color: white;
+}
+
+.skill-tag {
+  --p-tag-primary-background: var(--primary-color);
+  --p-tag-primary-color: white;
+}
+
+.transversal-skill-tag {
+  --p-tag-primary-background: color-mix(
+    in srgb,
+    var(--secondary-color) 50%,
+    rgba(255, 255, 255, 0) 50%
+  );
+}
+
+.custom-bar {
+  --p-progressbar-height: 0.5rem;
+}
+
+.danger-text {
+  color: var(--danger-color);
+}
+
+.custom-button {
+  --p-button-primary-color: white;
+  --p-button-primary-background: var(--secondary-color);
+  --p-button-primary-border-color: var(--secondary-color);
+  --p-button-primary-hover-background: var(--hover-color);
+  --p-button-primary-hover-border-color: var(--hover-color);
+  --p-button-primary-focus-ring-color: var(--secondary-color);
+  --p-button-primary-active-background: color-mix(
+    in srgb,
+    var(--hover-color) 80%,
+    black 20%
+  );
+  --p-button-primary-active-border-color: color-mix(
+    in srgb,
+    var(--hover-color) 90%,
+    black 10%
+  );
+}
+
+.delete-button {
+  --p-button-primary-background: var(--danger-color);
+  --p-button-primary-border-color: var(--danger-color);
+  --p-button-primary-focus-ring-color: var(--danger-color);
+  --p-button-primary-hover-background: color-mix(
+    in srgb,
+    var(--danger-color) 90%,
+    black 10%
+  );
+  --p-button-primary-hover-border-color: color-mix(
+    in srgb,
+    var(--danger-color) 90%,
+    black 10%
+  );
+  --p-button-primary-active-background: color-mix(
+    in srgb,
+    var(--danger-color) 70%,
+    black 30%
+  );
+  --p-button-primary-active-border-color: color-mix(
+    in srgb,
+    var(--danger-color) 80%,
+    black 20%
+  );
+}
+
+.custom-secondary-button {
+  --p-button-secondary-color: color-mix(
+    in srgb,
+    var(--primary-color) 80%,
+    white 20%
+  );
+  --p-button-secondary-hover-color: color-mix(
+    in srgb,
+    var(--primary-color) 90%,
+    white 10%
+  );
+  --p-button-secondary-active-color: var(--primary-color);
+}
+
+.popover-element:hover {
+  color: var(--hover-color);
+}
+
+::ng-deep .p-confirmdialog {
+  color: var(--primary-color) !important;
+}
+
+::ng-deep .p-confirmdialog .p-confirmdialog-icon {
+  color: var(--primary-color) !important;
+}
+
+::ng-deep .p-confirmdialog .p-button {
+  --p-button-primary-background: var(--danger-color);
+  --p-button-primary-border-color: var(--danger-color);
+  --p-button-primary-hover-background: color-mix(
+    in srgb,
+    var(--danger-color) 90%,
+    black 10%
+  );
+  --p-button-primary-hover-border-color: color-mix(
+    in srgb,
+    var(--danger-color) 90%,
+    black 10%
+  );
+  --p-button-primary-active-background: color-mix(
+    in srgb,
+    var(--danger-color) 70%,
+    black 30%
+  );
+  --p-button-primary-active-border-color: color-mix(
+    in srgb,
+    var(--danger-color) 80%,
+    black 20%
+  );
+}

@@ -6,7 +6,7 @@ import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { getStorage, provideStorage } from '@angular/fire/storage';
 import { provideProtractorTestingSupport } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { provideRouter, Routes, withRouterConfig } from '@angular/router';
+import { provideRouter, Routes } from '@angular/router';
 import {
   AuthGuard,
   NotFoundPageComponent,
@@ -16,33 +16,30 @@ import {
 import Aura from '@primeng/themes/aura';
 import { providePrimeNG } from 'primeng/config';
 import { ProfileExplorerComponent } from './app/components/profileExplorer/profileExplorer.component';
+import { ProfilePageComponent } from './app/components/profilePage/profilePage.component';
 import { environment } from './environments/environment';
 
 const routes: Routes = [
   { path: '', component: ProfileExplorerComponent },
   {
-    path: 'profile',
+    path: 'userProfile',
     component: UserPageComponent,
-    canActivate: [AuthGuard],
-    runGuardsAndResolvers: 'always',
+    canMatch: [AuthGuard],
   },
   {
     path: 'organizations',
     component: OrganizationPageComponent,
-    canActivate: [AuthGuard],
-    runGuardsAndResolvers: 'always',
+    canMatch: [AuthGuard],
   },
+  { path: 'profile', redirectTo: '', pathMatch: 'full' },
+  { path: 'profile/:dynamicValue', component: ProfilePageComponent },
+  { path: 'not_found', component: NotFoundPageComponent },
   { path: '**', component: NotFoundPageComponent },
 ];
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(
-      routes,
-      withRouterConfig({
-        onSameUrlNavigation: 'reload',
-      })
-    ),
+    provideRouter(routes),
     provideHttpClient(),
     provideFirebaseApp(() => initializeApp(environment.FIREBASE)),
     provideAuth(() => getAuth()),

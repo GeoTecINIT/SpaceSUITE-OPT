@@ -12,40 +12,48 @@ export class OccupationalProfileService {
   > = new BehaviorSubject<Map<string, OccupationalProfile> | undefined>(
     undefined
   );
-  private profiles$ = this.profilesMap
-    .asObservable()
-    .pipe(filter((map): map is Map<string, OccupationalProfile> => !!map));
+  private profiles$: Observable<Map<string, OccupationalProfile>> =
+    this.profilesMap.pipe(
+      filter((m): m is Map<string, OccupationalProfile> => m !== undefined)
+    );
 
   constructor(private firebaseService: FirebaseService) {
     this.firebaseService
       .getOccupationalProfiles()
       .pipe(
         tap((profiles) => {
-          const map = new Map(
-            this.formatOccupationalProfiles(profiles).map((p) => [p._id, p])
-          );
+          const formattedProfiles = this.formatOccupationalProfiles(profiles);
+          const map = new Map(formattedProfiles.map((p) => [p._id, p]));
           this.profilesMap.next(map);
         })
       )
       .subscribe();
   }
 
-  public getOccupationalProfiles(): Observable<OccupationalProfile[]> {
-    return this.profiles$.pipe(
-      map((profileMap) => Array.from(profileMap.values()))
-    );
+  getOccupationalProfiles(): Observable<OccupationalProfile[]> {
+    return this.profiles$.pipe(map((map) => Array.from(map.values())));
   }
 
-  public getProfilesOrganizations(): Observable<string[]> {
+  getOccupationalProfile(
+    id: string
+  ): Observable<OccupationalProfile | undefined> {
+    return this.profiles$.pipe(map((map) => map.get(id)));
+  }
+
+  getProfilesOrganizations(): Observable<string[]> {
     return this.profiles$.pipe(
-      map((profileMap) => [
+      map((map) => [
         ...new Set(
-          Array.from(profileMap.values())
+          Array.from(map.values())
             .filter((p) => !!p.orgName)
             .map((p) => p.orgName!)
         ),
       ])
     );
+  }
+
+  deleteOccupationalProfile(profile: OccupationalProfile): Observable<void> {
+    return this.firebaseService.deleteOccupationalProfile(profile);
   }
 
   private formatOccupationalProfiles(

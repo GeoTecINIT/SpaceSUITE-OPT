@@ -5,6 +5,16 @@
   --p-card-subtitle-color: var(--secondary-color);
 }
 
+.card-title {
+  color: var(--primary-color);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.card-title:hover {
+  color: var(--hover-color);
+}
+
 .text-truncate {
   display: -webkit-box;
   line-clamp: 2;
