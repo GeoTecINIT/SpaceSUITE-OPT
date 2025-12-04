@@ -6,12 +6,12 @@
     [multiSelectOptions]="filterOptions"
     [searchOption]="searchOption"
     [searchValue]="searchValue"
-    [userFilter]="userFilter"
+    [visibilityFilter]="visibilityFilter"
     (bokConceptsChange)="setBoKConcepts($event)"
     (multiSelectOptionsChange)="filterPipeline()"
     (searchOptionChange)="setSearchOption($event)"
     (searchValueChange)="setSearchValue($event)"
-    (userFilterChange)="setUserFilter($event)"
+    (visibilityFilterChange)="setVisibilityFilter($event)"
   />
 
   <p-divider layout="vertical" />

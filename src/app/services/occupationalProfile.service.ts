@@ -1,5 +1,16 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, filter, map, Observable, tap } from 'rxjs';
+import { BokInformationService } from '@eo4geo/ngx-bok-visualization';
+import {
+  BehaviorSubject,
+  concatMap,
+  filter,
+  forkJoin,
+  map,
+  Observable,
+  of,
+  take,
+  tap,
+} from 'rxjs';
 import { OccupationalProfile } from '../models/occupationalProfile';
 import { FirebaseService } from './firebase.service';
 
@@ -17,7 +28,10 @@ export class OccupationalProfileService {
       filter((m): m is Map<string, OccupationalProfile> => m !== undefined)
     );
 
-  constructor(private firebaseService: FirebaseService) {
+  constructor(
+    private firebaseService: FirebaseService,
+    private bokInfoService: BokInformationService
+  ) {
     this.firebaseService
       .getOccupationalProfiles()
       .pipe(
@@ -49,6 +63,69 @@ export class OccupationalProfileService {
             .map((p) => p.orgName!)
         ),
       ])
+    );
+  }
+
+  validateOccupationalProfile(
+    profile: OccupationalProfile
+  ): Map<string, string | undefined> {
+    const errors: Map<string, string | undefined> = new Map();
+
+    const setError = (field: string, condition: boolean, message: string) => {
+      errors.set(field, condition ? message : undefined);
+    };
+
+    setError('title', !profile.title.trim(), 'Title is required.');
+    setError(
+      'description',
+      !profile.description.trim(),
+      'Description is required.'
+    );
+    setError('eqf', !profile.eqf.trim(), 'EQF level is required.');
+    setError(
+      'organization',
+      !profile.orgId?.trim(),
+      'Organization is required.'
+    );
+    setError(
+      'knowledge',
+      profile.knowledge.length === 0,
+      'At least one concept is required.'
+    );
+    setError(
+      'skills',
+      profile.skills.length === 0 && profile.customSkills.length === 0,
+      'At least one skill is required.'
+    );
+
+    return errors;
+  }
+
+  submitOccupationalProfile(
+    profile: OccupationalProfile,
+    update: boolean = false
+  ): Observable<string> {
+    const newProfile = new OccupationalProfile(profile);
+    newProfile.eqf = newProfile.eqf.replace('EQF', '').trim();
+
+    const conceptObservables =
+      newProfile.knowledge.length > 0
+        ? forkJoin(
+            newProfile.knowledge.map((concept) =>
+              this.bokInfoService.getConceptName(concept).pipe(
+                take(1),
+                map((conceptName) => `[${concept}] ${conceptName}`)
+              )
+            )
+          )
+        : of([]);
+    return conceptObservables.pipe(
+      concatMap((formattedConcepts) => {
+        newProfile.knowledge = formattedConcepts;
+        if (update)
+          return this.firebaseService.updateOccupationalProfile(newProfile);
+        return this.firebaseService.setOccupationalProfile(newProfile);
+      })
     );
   }
 

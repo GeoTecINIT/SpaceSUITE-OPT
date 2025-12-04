@@ -7,6 +7,7 @@ import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 import { OccupationalProfile } from '../../models/occupationalProfile';
+import { FirebaseService } from '../../services/firebase.service';
 import { UtilsService } from '../../services/utils.service';
 
 @Component({
@@ -23,13 +24,20 @@ export class ProfileCardComponent implements OnInit {
   selectedConceptsColor: Map<string, string> = new Map();
   selectedConceptsTooltip: Map<string, string> = new Map();
 
+  private organizations: string[] = [];
+
   constructor(
     private bokInfo: BokInformationService,
     private utilsService: UtilsService,
-    private router: Router
+    private router: Router,
+    private firebaseService: FirebaseService
   ) {}
 
   ngOnInit() {
+    this.firebaseService.getUserOrganizationList().subscribe((orgs) => {
+      orgs.forEach((org) => this.organizations.push(org._id));
+    });
+
     this.occupationalProfile.knowledge.forEach((concept) => {
       this.concepts.push(concept);
 
@@ -61,5 +69,13 @@ export class ProfileCardComponent implements OnInit {
   onClickTitle(event: MouseEvent): void {
     event.preventDefault();
     this.router.navigate(['profile/' + this.occupationalProfile._id]);
+  }
+
+  checkUser() {
+    return this.organizations.includes(this.occupationalProfile.orgId);
+  }
+
+  editProfile() {
+    this.router.navigate(['profile/edit/' + this.occupationalProfile._id]);
   }
 }

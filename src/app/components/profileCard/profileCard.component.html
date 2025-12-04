@@ -13,6 +13,9 @@
 
         <strong class="p-card-subtitle text-sm">
           {{ occupationalProfile.orgName }}
+          <ng-container *ngIf="occupationalProfile.division != ''">
+            - {{ occupationalProfile.division }}
+          </ng-container>
         </strong>
       </div>
 
@@ -95,8 +98,14 @@
         icon="pi pi-pencil"
         [rounded]="true"
         variant="text"
-        pTooltip="Edit"
+        [pTooltip]="
+          checkUser()
+            ? 'Edit'
+            : 'You can only edit profiles from your organization.'
+        "
         tooltipPosition="top"
+        [disabled]="!checkUser()"
+        (onClick)="editProfile()"
       />
 
       <p-button
@@ -104,9 +113,14 @@
         icon="pi pi-trash"
         [rounded]="true"
         variant="text"
-        pTooltip="Delete"
+        [pTooltip]="
+          checkUser()
+            ? 'Delete'
+            : 'You can only delete profiles from your organization.'
+        "
         tooltipPosition="top"
         tooltipStyleClass="danger-tooltip"
+        [disabled]="!checkUser()"
       />
     </div>
   </div>

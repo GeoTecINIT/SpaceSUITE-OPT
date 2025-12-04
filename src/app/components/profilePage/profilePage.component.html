@@ -33,9 +33,21 @@
       </span>
     </div>
 
-    <span class="text-justify">
-      {{ profile.description }}
-    </span>
+    <div class="flex gap-4">
+      <div class="w-9 text-justify">
+        {{ profile.description }}
+      </div>
+
+      <div class="w-3">
+        <strong>Application domain(s):</strong>
+
+        <ul class="m-0">
+          <li *ngFor="let domain of applicationDomains">
+            {{ domain }}
+          </li>
+        </ul>
+      </div>
+    </div>
 
     <div class="flex flex-column">
       <p-panel
@@ -143,9 +155,9 @@
       <p-panel
         #skillsPanel
         class="my-2 custom-panel"
-        [header]="'Skills (' + skills.length + ')'"
+        [header]="'Skills (' + allSkills.length + ')'"
         [toggleable]="true"
-        [collapsed]="overTagLimit(skills.length)"
+        [collapsed]="overTagLimit(allSkills.length)"
       >
         <ng-template #headericons>
           <p-button
@@ -159,12 +171,12 @@
 
         <div
           [class]="
-            overTagLimit(skills.length)
+            overTagLimit(allSkills.length)
               ? 'flex flex-column align-items-start gap-2'
               : 'flex flex-wrap gap-2'
           "
         >
-          <ng-container *ngFor="let skill of skills">
+          <ng-container *ngFor="let skill of allSkills">
             <p-tag class="tag skill-tag" [value]="skill" [rounded]="true" />
           </ng-container>
         </div>
@@ -213,30 +225,20 @@
         </div>
       </p-panel>
 
-      <div>
-        <strong>Application domain(s):</strong>
-
-        <ul>
-          <li *ngFor="let domain of applicationDomains">
-            {{ domain }}
-          </li>
-        </ul>
-      </div>
-
       <ng-container *ngIf="checkUser()">
         <p-button
           class="md:hidden flex justify-content-center custom-button my-2"
-          label="Edit Material"
+          label="Edit Profile"
           icon="pi pi-pencil"
           (onClick)="editProfile()"
         />
 
-        <p-button
+        <!-- <p-button
           class="flex md:hidden justify-content-center delete-button my-2"
-          label="Delete Material"
+          label="Delete Profile"
           icon="pi pi-trash"
           (onClick)="deleteModal($event)"
-        />
+        /> -->
       </ng-container>
 
       <p-button
@@ -266,12 +268,12 @@
             (onClick)="editProfile()"
           />
 
-          <p-button
+          <!-- <p-button
             class="delete-button"
             label="Delete Profile"
             icon="pi pi-trash"
             (onClick)="deleteModal($event)"
-          />
+          /> -->
         </div>
       </ng-container>
     </div>

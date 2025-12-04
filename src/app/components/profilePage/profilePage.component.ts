@@ -54,7 +54,7 @@ export class ProfilePageComponent implements OnInit {
 
   deprecatedConcepts: string[] = [];
   concepts: string[] = [];
-  skills: string[] = [];
+  allSkills: string[] = [];
   transversalSkills: Competence[] = [];
   applicationDomains: string[] = [];
 
@@ -137,7 +137,7 @@ export class ProfilePageComponent implements OnInit {
     this.profile = newProfile;
     this.concepts = [];
     this.deprecatedConcepts = [];
-    this.skills = [];
+    this.allSkills = [];
     this.transversalSkills = [];
     this.applicationDomains = [];
     this.conceptsColor.clear();
@@ -173,13 +173,11 @@ export class ProfilePageComponent implements OnInit {
     });
 
     this.profile.skills.forEach((skill) => {
-      if (skill !== '') this.skills.push(skill);
+      if (skill !== '') this.allSkills.push(skill);
     });
 
     this.profile.customSkills.forEach((customSkill) => {
-      if (customSkill !== '' && !this.skills.includes(customSkill)) {
-        this.skills.push(customSkill);
-      }
+      if (customSkill !== '') this.allSkills.push(customSkill);
     });
 
     this.profile.competences.forEach((competence) => {
@@ -295,7 +293,6 @@ export class ProfilePageComponent implements OnInit {
           return acc;
         }, {});
 
-        // IMPORTANT: Replace the Map instead of mutating it
         this.knowledgeDistribution = new Map(
           Object.entries(counts).map(([area, count]) => [
             area,

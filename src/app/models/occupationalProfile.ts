@@ -6,7 +6,7 @@ export class OccupationalProfile {
   customSkills: string[];
   description: string;
   division: string;
-  eqf: number;
+  eqf: string;
   fields: Field[];
   isPublic: boolean;
   knowledge: string[];
@@ -26,9 +26,9 @@ export class OccupationalProfile {
     this.customSkills = data.customSkills ?? [];
     this.description = data.description ?? '';
     this.division = data.division ?? '';
-    this.eqf = data.eqf ?? 0;
+    this.eqf = data.eqf ?? '';
     this.fields = data.fields ?? [];
-    this.isPublic = data.isPublic ?? false;
+    this.isPublic = data.isPublic ?? true;
     this.knowledge = data.knowledge ?? [];
     this.lastModified = data.lastModified ?? '';
     this.orgId = data.orgId ?? '';
@@ -39,7 +39,14 @@ export class OccupationalProfile {
     this.userId = data.userId ?? '';
   }
 
-  toFirebase() {
+  static fromFirestore(data: any): OccupationalProfile {
+    return new OccupationalProfile({
+      ...data,
+      eqf: data.eqf != null ? String(data.eqf) : '',
+    });
+  }
+
+  toPlain(): Record<string, any> {
     return {
       _id: this._id,
       competences: this.competences,
@@ -48,7 +55,7 @@ export class OccupationalProfile {
       customSkills: this.customSkills,
       description: this.description,
       division: this.division,
-      eqf: this.eqf,
+      eqf: this.eqf ? Number(this.eqf) : null,
       fields: this.fields,
       isPublic: this.isPublic,
       knowledge: this.knowledge,

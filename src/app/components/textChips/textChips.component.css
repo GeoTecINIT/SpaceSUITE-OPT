@@ -1,0 +1,94 @@
+.custom-input {
+  --p-inputtext-focus-border-color: var(--hover-color);
+  --p-inputtext-hover-border-color: var(--hover-color);
+  --p-inputtext-invalid-placeholder-color: var(--danger-color);
+  --p-inputtext-invalid-border-color: var(--danger-color);
+}
+
+.custom-floatlabel {
+  --p-floatlabel-focus-color: var(--hover-color);
+}
+
+.textarea-iconfield {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+}
+
+.textarea-iconfield .p-inputicon {
+  position: absolute;
+  top: 17px;
+  left: 11px;
+  z-index: 1;
+}
+
+.custom-textarea {
+  padding-left: 2.5rem;
+}
+
+.custom-textarea:hover,
+.custom-textarea:focus {
+  border-color: var(--hover-color) !important;
+}
+
+.custom-button {
+  --p-button-primary-color: white;
+  --p-button-primary-background: var(--secondary-color);
+  --p-button-primary-border-color: var(--secondary-color);
+  --p-button-primary-hover-background: var(--hover-color);
+  --p-button-primary-hover-border-color: var(--hover-color);
+  --p-button-primary-focus-ring-color: var(--secondary-color);
+  --p-button-primary-active-background: color-mix(
+    in srgb,
+    var(--hover-color) 80%,
+    black 20%
+  );
+  --p-button-primary-active-border-color: color-mix(
+    in srgb,
+    var(--hover-color) 90%,
+    black 10%
+  );
+}
+
+.custom-border {
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+    rgba(18, 18, 23, 0.05) 0px 1px 2px 0px;
+  transition: border-color 0.2s;
+}
+
+.custom-border-error {
+  border-color: var(--danger-color);
+}
+
+.custom-border:hover {
+  border-color: var(--hover-color);
+}
+
+.custom-chip {
+  --p-chip-color: var(--primary-color);
+  --p-chip-remove-icon-color: var(--primary-color);
+  --p-chip-remove-icon-focus-ring-color: var(--primary-color);
+}
+
+.chip-animation {
+  animation: bounce-scale 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  will-change: transform;
+  backface-visibility: hidden;
+  --p-chip-color: var(--danger-color) !important;
+  --p-chip-remove-icon-color: var(--danger-color) !important;
+  --p-chip-remove-icon-focus-ring-color: var(--danger-color) !important;
+}
+
+@keyframes bounce-scale {
+  10% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  95% {
+    transform: scale(1);
+  }
+}

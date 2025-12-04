@@ -1,0 +1,45 @@
+<div
+  #component
+  class="p-2 custom-border"
+  [class.custom-border-error]="error"
+  (clickOutside)="focusOut($event)"
+>
+  <p-floatlabel variant="on" class="custom-floatlabel">
+    <p-iconfield>
+      <input
+        pInputText
+        id="{{ fieldName }}"
+        autocomplete="off"
+        class="w-full custom-input"
+        [(ngModel)]="currentText"
+        [class.ng-invalid]="error"
+        [class.ng-dirty]="error"
+        (keyup.enter)="clickButton()"
+        maxlength="200"
+      />
+      <p-inputicon
+        [class]="icon"
+        [style]="error ? 'color: var(--danger-color)' : ''"
+      ></p-inputicon>
+    </p-iconfield>
+    <label for="{{ fieldName }}">{{ fieldName }}</label>
+  </p-floatlabel>
+  <div class="flex mt-3 flex-wrap gap-2">
+    <ng-content *ngFor="let chip of allChips">
+      <p-chip
+        [label]="chip"
+        [removable]="true"
+        (onRemove)="deleteElement(chip)"
+        class="custom-chip"
+        [ngClass]="chipAnimations[chip] ? 'chip-animation' : ''"
+      />
+    </ng-content>
+    <p-button
+      icon="pi pi-plus"
+      rounded
+      class="custom-button"
+      (onClick)="clickButton()"
+      [disabled]="currentText == ''"
+    ></p-button>
+  </div>
+</div>

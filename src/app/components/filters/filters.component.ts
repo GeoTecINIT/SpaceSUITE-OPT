@@ -48,14 +48,14 @@ export class FiltersComponent implements OnChanges {
   @Input() multiSelectOptions: FilterOption[] = [];
   @Input() searchOption: string = 'Title';
   @Input() searchValue: string = '';
-  @Input() userFilter: boolean = false;
+  @Input() visibilityFilter: string = 'all';
 
   @Output() bokConceptsChange: EventEmitter<string[]> = new EventEmitter();
   @Output() multiSelectOptionsChange: EventEmitter<FilterOption[]> =
     new EventEmitter();
   @Output() searchOptionChange: EventEmitter<string> = new EventEmitter();
   @Output() searchValueChange: EventEmitter<string> = new EventEmitter();
-  @Output() userFilterChange: EventEmitter<boolean> = new EventEmitter();
+  @Output() visibilityFilterChange: EventEmitter<string> = new EventEmitter();
 
   searchOptions: MenuItem[] = [
     { label: 'Title' },
@@ -64,9 +64,14 @@ export class FiltersComponent implements OnChanges {
     { label: 'Transversal Skills' },
   ];
 
-  userFilterOptions: MenuItem[] = [
-    { label: 'My Profiles', value: true, icon: 'pi pi-user' },
-    { label: 'All Profiles', value: false, icon: 'pi pi-globe' },
+  visibilityFilterOptions: MenuItem[] = [
+    { label: 'My Profiles', value: 'mine', icon: 'pi pi-user' },
+    {
+      label: "My Organization's Profiles",
+      value: 'organization',
+      icon: 'pi pi-users',
+    },
+    { label: 'All Profiles', value: 'all', icon: 'pi pi-globe' },
   ];
 
   constructor() {}
@@ -77,7 +82,7 @@ export class FiltersComponent implements OnChanges {
       !changes['logged'].isFirstChange() &&
       changes['logged'].currentValue == false
     ) {
-      this.userFilterChange.emit(false);
+      this.visibilityFilterChange.emit('all');
     }
   }
 
@@ -103,8 +108,8 @@ export class FiltersComponent implements OnChanges {
     this.multiSelectOptionsChange.emit(this.multiSelectOptions);
   }
 
-  updateUserFilter(): void {
-    this.userFilterChange.emit(this.userFilter);
+  updateVisibilityFilter(): void {
+    this.visibilityFilterChange.emit(this.visibilityFilter);
   }
 
   getMultiselectOptions(

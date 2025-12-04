@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { PaginatorState } from 'primeng/paginator';
-import { BehaviorSubject, map, Observable, switchMap, take, tap } from 'rxjs';
+import { concatMap, map, Observable, ReplaySubject, take } from 'rxjs';
 import { FilterOption } from '../models/filterOption';
 import { OccupationalProfile } from '../models/occupationalProfile';
 import { OccupationalProfileService } from './occupationalProfile.service';
@@ -14,40 +14,37 @@ export class CardFilterService {
   paginatorState: PaginatorState = {};
   searchOption: string = 'Title';
   searchValue: string = '';
-  userFilter: boolean = false;
+  visibilityFilter: string = 'all';
 
-  private filterOptionsSubject = new BehaviorSubject<FilterOption[]>([]);
+  private filterOptionsSubject: ReplaySubject<FilterOption[]> =
+    new ReplaySubject<FilterOption[]>(1);
 
   constructor(
-    private http: HttpClient,
-    private profileService: OccupationalProfileService
+    private readonly http: HttpClient,
+    private readonly profileService: OccupationalProfileService
   ) {
     this.http
       .get<FilterOption[]>('/assets/filters.json')
       .pipe(
         take(1),
-        switchMap((filters) =>
-          this.profileService.getProfilesOrganizations().pipe(
-            tap((orgs) => {
-              const orgsFilter = filters.find(
-                (f) => f.label === 'Organizations'
-              );
-
-              if (orgsFilter) orgsFilter.values = orgs;
-
-              this.filterOptionsSubject.next(filters);
-            })
-          )
-        )
+        concatMap((filters: FilterOption[]) => {
+          return this.profileService
+            .getProfilesOrganizations()
+            .pipe(map((organizations) => ({ filters, organizations })));
+        })
       )
-      .subscribe();
+      .subscribe(({ filters, organizations }) => {
+        const updatedFilters = [...filters];
+        updatedFilters[updatedFilters.length - 1].values = organizations;
+        this.filterOptionsSubject.next(updatedFilters);
+      });
   }
 
   checkProfile(profile: OccupationalProfile, filter: FilterOption): boolean {
     switch (filter.label) {
       case 'EQF Level':
         return filter.selection.some(
-          (selection) => profile.eqf.toString() === selection.slice(-1)
+          (selection) => profile.eqf === selection.slice(-1)
         );
 
       case 'Organizations':
@@ -70,6 +67,22 @@ export class CardFilterService {
           values: f.values ?? [],
           selection: f.selection ?? [],
         }));
+      })
+    );
+  }
+
+  getOptionByLabel(label: string): Observable<FilterOption> {
+    return this.filterOptionsSubject.pipe(
+      map((filterOptions) => {
+        const option = filterOptions.filter((option) => option.label == label);
+
+        if (option.length > 0) return option[0];
+
+        return {
+          label: label,
+          values: [],
+          selection: [],
+        };
       })
     );
   }

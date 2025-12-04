@@ -1,0 +1,251 @@
+.custom-toast {
+  --p-toast-info-background: color-mix(
+    in srgb,
+    var(--secondary-color) 10%,
+    rgba(255, 255, 255, 0.9) 90%
+  );
+  --p-toast-info-border-color: var(--secondary-color);
+  --p-toast-info-color: var(--secondary-color);
+  --p-toast-info-detail-color: var(--primary-color);
+
+  --p-toast-error-background: color-mix(
+    in srgb,
+    var(--danger-color) 10%,
+    rgba(255, 255, 255, 0.9) 90%
+  );
+  --p-toast-error-border-color: var(--danger-color);
+  --p-toast-error-color: var(--danger-color);
+  --p-toast-error-detail-color: var(--primary-color);
+
+  --p-toast-warn-background: color-mix(
+    in srgb,
+    var(--warning-color) 10%,
+    rgba(255, 255, 255, 0.9) 90%
+  );
+  --p-toast-warn-border-color: var(--warning-color);
+  --p-toast-warn-color: var(--warning-color);
+  --p-toast-warn-detail-color: var(--primary-color);
+}
+
+.custom-floatlabel {
+  --p-floatlabel-focus-color: var(--hover-color);
+}
+
+.custom-button-2 {
+  --p-button-text-primary-color: var(--secondary-color);
+  --p-button-text-primary-hover-background: color-mix(
+    in srgb,
+    var(--secondary-color) 10%,
+    rgba(255, 255, 255, 0) 90%
+  );
+  --p-button-text-primary-active-background: color-mix(
+    in srgb,
+    var(--secondary-color) 20%,
+    rgba(255, 255, 255, 0) 80%
+  );
+}
+
+.custom-input {
+  --p-inputtext-focus-border-color: var(--hover-color);
+  --p-inputtext-hover-border-color: var(--hover-color);
+  --p-inputtext-invalid-placeholder-color: var(--danger-color);
+  --p-inputtext-invalid-border-color: var(--danger-color);
+}
+
+.custom-textarea {
+  --p-textarea-invalid-placeholder-color: var(--danger-color);
+  --p-textarea-invalid-border-color: var(--danger-color);
+}
+
+.custom-textarea:hover,
+.custom-textarea:focus {
+  border-color: var(--hover-color) !important;
+}
+
+.textarea-length {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.75rem;
+  font-size: 0.75rem;
+  color: #64748b;
+  pointer-events: none;
+}
+
+.danger {
+  color: var(--danger-color);
+}
+
+.custom-button {
+  --p-button-primary-color: white;
+  --p-button-primary-background: var(--secondary-color);
+  --p-button-primary-border-color: var(--secondary-color);
+  --p-button-primary-hover-background: var(--hover-color);
+  --p-button-primary-hover-border-color: var(--hover-color);
+  --p-button-primary-focus-ring-color: var(--secondary-color);
+  --p-button-primary-active-background: color-mix(
+    in srgb,
+    var(--hover-color) 80%,
+    black 20%
+  );
+  --p-button-primary-active-border-color: color-mix(
+    in srgb,
+    var(--hover-color) 90%,
+    black 10%
+  );
+}
+
+.custom-secondary-button {
+  --p-button-secondary-color: color-mix(
+    in srgb,
+    var(--primary-color) 80%,
+    white 20%
+  );
+  --p-button-secondary-hover-color: color-mix(
+    in srgb,
+    var(--primary-color) 90%,
+    white 10%
+  );
+  --p-button-secondary-active-color: var(--primary-color);
+}
+
+.custom-fileupload {
+  --p-fileupload-color: var(--primary-color);
+  --p-fileupload-header-color: var(--primary-color);
+  --p-button-text-danger-color: var(--danger-color);
+  --p-fileupload-border-color: #cbd5e1;
+  --p-fileupload-content-padding: 0;
+}
+
+.custom-fileupload:hover {
+  --p-fileupload-border-color: var(--hover-color);
+}
+
+::ng-deep .p-fileupload-advanced {
+  transition: border-color 0.2s;
+}
+
+.custom-stepper {
+  --p-stepper-step-number-active-color: var(--hover-color);
+  --p-stepper-step-title-active-color: var(--hover-color);
+  --p-stepper-separator-active-background: var(--hover-color);
+  width: 50vw;
+}
+
+@media (max-width: 992px) {
+  .custom-stepper {
+    width: 100%;
+  }
+}
+
+.custom-datepicker {
+  --p-datepicker-select-month-color: var(--primary-color);
+  --p-datepicker-select-year-color: var(--primary-color);
+  --p-datepicker-week-day-color: var(--primary-color);
+  --p-datepicker-date-color: var(--primary-color);
+
+  --p-button-text-primary-color: var(--secondary-color);
+  --p-button-text-primary-active-background: color-mix(
+    in srgb,
+    var(--secondary-color) 20%,
+    rgba(0, 0, 0, 0) 80%
+  );
+  --p-button-text-primary-hover-background: color-mix(
+    in srgb,
+    var(--secondary-color) 10%,
+    rgba(0, 0, 0, 0) 90%
+  );
+  --p-datepicker-date-selected-background: var(--secondary-color);
+}
+
+.custom-datepicker-icon-error {
+  --p-datepicker-input-icon-color: var(--danger-color);
+}
+
+.custom-border {
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+    rgba(18, 18, 23, 0.05) 0px 1px 2px 0px;
+  transition: border-color 0.2s;
+}
+
+.custom-border-danger {
+  border: 1px solid var(--danger-color);
+  border-radius: 6px;
+  box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+    rgba(18, 18, 23, 0.05) 0px 1px 2px 0px;
+  transition: border-color 0.2s;
+}
+
+.custom-border:hover {
+  border-color: var(--hover-color);
+}
+
+.custom-select {
+  --p-select-hover-border-color: var(--hover-color);
+  --p-select-focus-border-color: var(--hover-color);
+}
+
+.invalid-select {
+  --p-select-border-color: var(--danger-color);
+  --p-select-dropdown-color: var(--danger-color);
+}
+
+.invalid-floatlabel {
+  --p-floatlabel-color: var(--danger-color);
+  --p-floatlabel-active-color: var(--danger-color);
+}
+
+::ng-deep .p-toast-close-button .p-button-label {
+  font-size: 0;
+}
+
+::ng-deep .p-tooltip {
+  --p-tooltip-background: var(--primary-color);
+  --p-tooltip-color: white;
+}
+
+::ng-deep .p-confirmdialog {
+  color: var(--primary-color) !important;
+}
+
+::ng-deep .p-confirmdialog .p-confirmdialog-icon {
+  color: var(--primary-color) !important;
+}
+
+::ng-deep .p-confirmdialog .p-button {
+  --p-button-primary-background: var(--danger-color);
+  --p-button-primary-border-color: var(--danger-color);
+  --p-button-primary-hover-background: color-mix(
+    in srgb,
+    var(--danger-color) 90%,
+    black 10%
+  );
+  --p-button-primary-hover-border-color: color-mix(
+    in srgb,
+    var(--danger-color) 90%,
+    black 10%
+  );
+  --p-button-primary-active-background: color-mix(
+    in srgb,
+    var(--danger-color) 70%,
+    black 30%
+  );
+  --p-button-primary-active-border-color: color-mix(
+    in srgb,
+    var(--danger-color) 80%,
+    black 20%
+  );
+}
+
+::ng-deep .p-selectbutton {
+  flex: auto;
+}
+
+::ng-deep p-togglebutton {
+  flex: auto;
+}
+
+::ng-deep .p-togglebutton {
+  flex: auto;
+}

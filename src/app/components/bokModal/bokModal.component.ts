@@ -44,8 +44,11 @@ export class BokModalComponent implements OnInit {
   @Input() disabled: boolean = false;
   @Input() label: string = 'BoK Concepts';
   @Input() selectedConcepts: string[] = [];
+  @Input() selectedSkills: string[] = [];
 
   @Output() selectedConceptsChange: EventEmitter<string[]> = new EventEmitter();
+  @Output() selectedSkillsChange: EventEmitter<string[]> = new EventEmitter();
+  @Output() deletedConcept: EventEmitter<string[]> = new EventEmitter();
 
   @ViewChild('dynamicContainer', { read: ViewContainerRef })
   container!: ViewContainerRef;
@@ -81,6 +84,8 @@ export class BokModalComponent implements OnInit {
     this.conceptTooltips.delete(label);
 
     this.selectedConceptsChange.emit(this.selectedConcepts);
+
+    this.deletedConcept.emit(this.getSkills(label));
   }
 
   showDialog(): void {
@@ -144,6 +149,7 @@ export class BokModalComponent implements OnInit {
       this.selectedConceptsChange.emit(this.selectedConcepts);
 
       this.addMessage('Concept "' + concept + '" annotated!', 'info', 'Info');
+      this.addSkills(this.currentConcept);
     } else {
       this.addMessage(
         'Concept "' + concept + '" is already annotated!',
@@ -151,6 +157,30 @@ export class BokModalComponent implements OnInit {
         'Error'
       );
     }
+  }
+
+  private getSkills(concept: string): string[] {
+    let list: string[] = [];
+
+    this.bokInfo.getConceptSkills(concept).subscribe((skills) => {
+      skills.forEach((skill) => {
+        list.push('[' + concept + '] ' + skill);
+      });
+    });
+
+    return list;
+  }
+
+  private addSkills(concept: string): void {
+    const skills = this.getSkills(concept);
+
+    skills?.forEach((skill) => {
+      if (!this.selectedSkills.includes(skill)) {
+        this.selectedSkills.push(skill);
+      }
+    });
+
+    this.selectedSkillsChange.emit(this.selectedSkills);
   }
 
   private addMessage(message: string, severity: string, summary: string): void {

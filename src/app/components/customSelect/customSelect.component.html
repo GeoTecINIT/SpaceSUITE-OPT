@@ -1,0 +1,65 @@
+<p-floatlabel
+  variant="on"
+  class="custom-floatlabel"
+  [class.invalid-floatlabel]="error"
+>
+  <p-select
+    #pselect
+    [options]="selectOptions"
+    [ngModel]="selection"
+    inputId="{{ fieldName }}"
+    [optionValue]="'value'"
+    [optionLabel]="'id'"
+    class="custom-select"
+    (ngModelChange)="selectionChange.emit($event)"
+    [filterPlaceholder]="
+      allowCustom
+        ? 'Choose a ' + fieldName + ' or specify a custom value'
+        : 'Choose a ' + fieldName
+    "
+    [class.invalid-select]="error"
+    [filter]="filter"
+    resetFilterOnHide="true"
+    (onFilter)="currentText = pselect.filterValue || ''"
+    (onShow)="onDropdownOpen()"
+    [checkmark]="true"
+  >
+    <ng-template #footer>
+      <div
+        class="flex"
+        *ngIf="
+          allowCustom &&
+          pselect.filterValue != '' &&
+          pselect.filterValue != undefined &&
+          !pselect.isEmpty()
+        "
+      >
+        <p-button
+          icon="pi pi-plus"
+          label="Add Custom {{ fieldName }}"
+          size="small"
+          class="custom-button p-3"
+          (onClick)="clickButton()"
+        ></p-button>
+      </div>
+    </ng-template>
+    <ng-template #emptyfilter>
+      <p-button
+        icon="pi pi-plus"
+        label="Add Custom {{ fieldName }}"
+        size="small"
+        class="custom-button"
+        (onClick)="clickButton()"
+        *ngIf="
+          allowCustom &&
+          pselect.filterValue != '' &&
+          pselect.filterValue != undefined
+        "
+      ></p-button>
+    </ng-template>
+    <ng-template #filtericon>
+      <i class="pi pi-bookmark"></i>
+    </ng-template>
+  </p-select>
+  <label for="{{ fieldName }}">{{ fieldName }} *</label>
+</p-floatlabel>

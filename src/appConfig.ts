@@ -9,12 +9,15 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { provideRouter, Routes } from '@angular/router';
 import {
   AuthGuard,
+  exitWithoutSavingGuard,
   NotFoundPageComponent,
   OrganizationPageComponent,
   UserPageComponent,
 } from '@eo4geo/ngx-bok-utils';
 import Aura from '@primeng/themes/aura';
 import { providePrimeNG } from 'primeng/config';
+import { EditProfilePageComponent } from './app/components/editProfilePage/editProfilePage.component';
+import { ProfileFormComponent } from './app/components/profileForm/profileForm.component';
 import { ProfileExplorerComponent } from './app/components/profileExplorer/profileExplorer.component';
 import { ProfilePageComponent } from './app/components/profilePage/profilePage.component';
 import { environment } from './environments/environment';
@@ -32,6 +35,18 @@ const routes: Routes = [
     canMatch: [AuthGuard],
   },
   { path: 'profile', redirectTo: '', pathMatch: 'full' },
+  {
+    path: 'profile/new',
+    component: ProfileFormComponent,
+    canMatch: [AuthGuard],
+    canDeactivate: [exitWithoutSavingGuard],
+  },
+  {
+    path: 'profile/edit/:dynamicValue',
+    component: EditProfilePageComponent,
+    canMatch: [AuthGuard],
+    canDeactivate: [exitWithoutSavingGuard],
+  },
   { path: 'profile/:dynamicValue', component: ProfilePageComponent },
   { path: 'not_found', component: NotFoundPageComponent },
   { path: '**', component: NotFoundPageComponent },

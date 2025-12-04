@@ -1,0 +1,58 @@
+<div
+  [ngClass]="chips.length > 0 ? 'p-2 custom-border' : ''"
+  [class.custom-border-error]="error"
+>
+  <p-floatlabel
+    variant="on"
+    class="custom-floatlabel"
+    [class.invalid-floatlabel]="error"
+  >
+    <p-treeselect
+      #treeSelect
+      [options]="treeselectOptions"
+      [ngModel]="treeSelection"
+      inputId="{{ fieldName }}"
+      class="w-full custom-treeselect"
+      (ngModelChange)="treeselectChange($event)"
+      (onClear)="treeSelect.hide()"
+      [class.invalid-treeselect]="error"
+      [filter]="true"
+      resetFilterOnHide="true"
+      [virtualScroll]="true"
+      [virtualScrollItemSize]="40"
+      filterPlaceholder="Choose a {{ fieldName }}"
+      [showClear]="true"
+      [metaKeySelection]="true"
+      selectionMode="checkbox"
+      filter
+      showClear
+      fluid
+      [propagateSelectionDown]="false"
+      appendTo="body"
+      panelStyleClass="custom-treeselect"
+      [propagateSelectionUp]="false"
+      [virtualScrollOptions]="{ scrollHeight: '252px' }"
+      [loading]="treeselectOptions.length == 0"
+    >
+      <ng-template #filtericon>
+        <i class="pi pi-bookmark"></i>
+      </ng-template>
+      <ng-template #value> {{ chips.length }} items selected </ng-template>
+    </p-treeselect>
+    <label for="{{ fieldName }}">{{ fieldName }}</label>
+  </p-floatlabel>
+  <div
+    class="mt-3 flex-wrap gap-2 align-items-center"
+    [style.display]="chips.length == 0 ? 'none' : 'flex'"
+  >
+    <ng-content *ngFor="let chip of chips">
+      <p-chip
+        [label]="chip"
+        [removable]="true"
+        (onRemove)="deleteElement(chip)"
+        class="custom-chip"
+        [ngClass]="chipAnimations[chip] ? 'chip-animation' : ''"
+      />
+    </ng-content>
+  </div>
+</div>

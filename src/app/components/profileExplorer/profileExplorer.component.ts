@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { DividerModule } from 'primeng/divider';
 import { PaginatorModule, PaginatorState } from 'primeng/paginator';
 import { SkeletonModule } from 'primeng/skeleton';
-import { filter } from 'rxjs';
+import { combineLatest, filter } from 'rxjs';
 import { FilterOption } from '../../models/filterOption';
 import { OccupationalProfile } from '../../models/occupationalProfile';
 import { CardFilterService } from '../../services/cardFilter.service';
@@ -38,42 +38,44 @@ export class ProfileExplorerComponent implements OnInit {
   filterOptions: FilterOption[] = [];
   searchOption: string = 'Title';
   searchValue: string = '';
-  userFilter: boolean = false;
+  visibilityFilter: string = 'all';
   filteredProfiles: OccupationalProfile[] = [];
 
   private profiles: OccupationalProfile[] = [];
+  private organizations: string[] = [];
 
   constructor(
     private occupationalProfileService: OccupationalProfileService,
     private filterService: CardFilterService,
-    private firebase: FirebaseService
+    private firebaseService: FirebaseService
   ) {
     this.skeletonElements = Array(this.rows);
   }
 
   ngOnInit() {
-    this.filterService.getFilterOptions().subscribe((filters) => {
-      this.filterOptions = filters;
-    });
-
-    this.occupationalProfileService
+    const profiles$ = this.occupationalProfileService
       .getOccupationalProfiles()
-      .pipe(filter((profiles) => profiles !== undefined))
-      .subscribe((newProfiles: OccupationalProfile[]) => {
-        this.profiles = newProfiles;
+      .pipe(filter((p) => !!p));
+    combineLatest([
+      this.firebaseService.getUserOrganizationList(),
+      this.filterService.getFilterOptions(),
+      profiles$,
+    ]).subscribe(([orgs, filters, profiles]) => {
+      this.organizations = orgs.map((o) => o._id);
+      this.filterOptions = filters;
+      this.profiles = profiles;
 
-        this.searchOption = this.filterService.searchOption;
-        this.searchValue = this.filterService.searchValue;
-        this.userFilter = this.filterService.userFilter;
+      this.searchOption = this.filterService.searchOption;
+      this.searchValue = this.filterService.searchValue;
+      this.visibilityFilter = this.filterService.visibilityFilter;
 
-        this.filterPipeline();
-
-        this.loading = false;
-      });
+      this.filterPipeline();
+      this.loading = false;
+    });
   }
 
   isLogged(): boolean {
-    return this.firebase.getUserData() != null;
+    return this.firebaseService.getUserData() != null;
   }
 
   trackById(index: number, item: any): string | number {
@@ -109,9 +111,9 @@ export class ProfileExplorerComponent implements OnInit {
     this.filterPipeline();
   }
 
-  setUserFilter(filter: boolean): void {
-    this.userFilter = filter;
-    this.filterService.userFilter = filter;
+  setVisibilityFilter(filter: string): void {
+    this.visibilityFilter = filter;
+    this.filterService.visibilityFilter = filter;
 
     this.filterPipeline();
   }
@@ -196,14 +198,21 @@ export class ProfileExplorerComponent implements OnInit {
   private filterProfiles(
     profiles: OccupationalProfile[]
   ): OccupationalProfile[] {
-    const userId = this.firebase.getUserData()?.uid;
+    const userId = this.firebaseService.getUserData()?.uid;
 
     let filteredProfiles = profiles.filter((profile) => {
-      if (this.userFilter && userId) return profile.userId === userId;
+      switch (this.visibilityFilter) {
+        case 'mine':
+          return userId ? profile.userId === userId : false;
 
-      if (userId) return profile.isPublic || profile.userId === userId;
+        case 'organization':
+          return this.organizations.includes(profile.orgId);
 
-      return profile.isPublic;
+        case 'all':
+        default:
+          if (userId) return profile.isPublic || profile.userId === userId;
+          return profile.isPublic;
+      }
     });
 
     filteredProfiles = filteredProfiles.filter((profile) =>

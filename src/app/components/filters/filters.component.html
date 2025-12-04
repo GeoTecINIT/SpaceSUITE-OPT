@@ -9,16 +9,17 @@
     <div class="flex">
       <p-selectbutton
         class="custom-togglebutton"
-        [(ngModel)]="userFilter"
-        [options]="userFilterOptions"
+        [(ngModel)]="visibilityFilter"
+        [options]="visibilityFilterOptions"
         [allowEmpty]="false"
         optionLabel="label"
         optionValue="value"
-        (ngModelChange)="updateUserFilter()"
+        (ngModelChange)="updateVisibilityFilter()"
         [disabled]="loading"
+        size="small"
       >
         <ng-template #item let-item>
-          <div class="row">
+          <div class="flex flex-column">
             <i [class]="item.icon"></i>
 
             {{ item.label }}

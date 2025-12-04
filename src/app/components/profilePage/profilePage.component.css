@@ -20,6 +20,7 @@
 
 .custom-panel {
   --p-panel-header-color: var(--primary-color);
+  --p-panel-color: var(--primary-color);
 }
 
 .tag {
