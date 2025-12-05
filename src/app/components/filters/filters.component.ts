@@ -80,7 +80,7 @@ export class FiltersComponent implements OnChanges {
     if (
       changes['logged'] &&
       !changes['logged'].isFirstChange() &&
-      changes['logged'].currentValue == false
+      changes['logged'].currentValue === false
     ) {
       this.visibilityFilterChange.emit('all');
     }

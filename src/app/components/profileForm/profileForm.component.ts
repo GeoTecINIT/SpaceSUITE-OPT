@@ -135,7 +135,7 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
       .getUserState()
       .subscribe((state) => {
         if (state?.logged) {
-          this.profile.userId = state.uid;
+          if (this.inputProfile === undefined) this.profile.userId = state.uid;
         } else {
           this.exitWithoutSavingService.bypassGuard.next(true);
           this.router.navigate(['profile']);
@@ -158,31 +158,31 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
       this.fields = fields;
     });
 
-    if (this.inputProfile) {
-      this.profile = this.inputProfile;
-      this.firebaseService
-        .getOrganizationDivisions(this.profile.orgId!)
-        .pipe(take(1))
-        .subscribe((divisions) => (this.divisionSelector.values = divisions));
-      this.fieldNames = this.getFieldNames(this.profile.fields);
-      this.escoService
-        .getTransversalSkillsFromJson()
-        .pipe(take(1))
-        .subscribe((data) => {
-          this.transversalSkills = data;
+    this.escoService
+      .getTransversalSkillsFromJson()
+      .pipe(take(1))
+      .subscribe((data) => {
+        this.transversalSkills = data;
+        this.skills = this.extractCompetencesFromTree(data);
 
-          this.skills = this.extractCompetencesFromTree(this.transversalSkills);
+        if (this.inputProfile) {
+          this.profile = JSON.parse(JSON.stringify(this.inputProfile));
+
+          this.firebaseService
+            .getOrganizationDivisions(this.profile.orgId!)
+            .pipe(take(1))
+            .subscribe(
+              (divisions) => (this.divisionSelector.values = divisions)
+            );
+          this.fieldNames = this.getFieldNames(this.profile.fields);
 
           const validSkills = this.flattenTree(data);
-
           const legacyCompetences: string[] = [];
-
           this.profile.competences.forEach((c) => {
             if (!validSkills.includes(c.preferredLabel)) {
               legacyCompetences.push(c.preferredLabel);
             }
           });
-
           this.profile.competences = this.profile.competences.filter((c) =>
             validSkills.includes(c.preferredLabel)
           );
@@ -200,10 +200,11 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
           this.profile.customCompetences.forEach((competence) => {
             this.customCompetences.push(competence);
           });
-        });
 
-      this.showCustomCompetences = this.profile.customCompetences.length !== 0;
-    }
+          this.showCustomCompetences =
+            this.profile.customCompetences.length !== 0;
+        }
+      });
 
     this.exitWithoutSavingService.showModalSubject.subscribe((value) => {
       if (value) this.confirmExitWithoutSaving();
@@ -289,7 +290,10 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
       this.exitWithoutSavingService.bypassGuard.next(true);
 
       this.occupationalProfileService
-        .submitOccupationalProfile(this.profile, this.inputProfile != undefined)
+        .submitOccupationalProfile(
+          this.profile,
+          this.inputProfile !== undefined
+        )
         .pipe(
           take(1),
           catchError((error) => {
@@ -309,7 +313,7 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
               this.router.navigate(['profile/' + this.profile._id], {
                 queryParams: {
                   submitted: true,
-                  mode: this.inputProfile != undefined ? 'update' : 'create',
+                  mode: this.inputProfile !== undefined ? 'update' : 'create',
                 },
               });
             }
@@ -330,8 +334,12 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  returnToHomepage(): void {
-    this.router.navigate([`profile/${this.inputProfile?._id ?? ''}`]);
+  returnToHomepage() {
+    if (this.inputProfile !== undefined) {
+      this.router.navigate(['profile/' + this.inputProfile._id]);
+    } else {
+      this.router.navigate(['profile']);
+    }
   }
 
   getFieldNames(fields: Field[]): string[] {

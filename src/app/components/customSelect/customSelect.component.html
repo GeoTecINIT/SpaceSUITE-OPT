@@ -29,8 +29,8 @@
         class="flex"
         *ngIf="
           allowCustom &&
-          pselect.filterValue != '' &&
-          pselect.filterValue != undefined &&
+          pselect.filterValue !== '' &&
+          pselect.filterValue !== undefined &&
           !pselect.isEmpty()
         "
       >
@@ -52,8 +52,8 @@
         (onClick)="clickButton()"
         *ngIf="
           allowCustom &&
-          pselect.filterValue != '' &&
-          pselect.filterValue != undefined
+          pselect.filterValue !== '' &&
+          pselect.filterValue !== undefined
         "
       ></p-button>
     </ng-template>

@@ -54,11 +54,11 @@ export class CustomSelectComponent {
       .getOptionByLabel(this.optionsName)
       .subscribe((filterOption) => {
         this.selectOptions = filterOption.values
-          .filter((value) => value != 'Other')
+          .filter((value) => value !== 'Other')
           .map((x) => ({ id: x, value: x }));
         if (
           this.selection &&
-          this.selection != '' &&
+          this.selection !== '' &&
           !this.selectOptions
             .map((value) => value.value)
             .includes(this.selection)
@@ -91,7 +91,7 @@ export class CustomSelectComponent {
   clickButton() {
     if (!this.allowCustom) return;
     const inputValue: string = this.currentText.trim();
-    if (inputValue != '') {
+    if (inputValue !== '') {
       if (
         !this.selectOptions.map((value) => value.value).includes(inputValue)
       ) {

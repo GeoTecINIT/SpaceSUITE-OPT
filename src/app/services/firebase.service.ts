@@ -92,6 +92,7 @@ export class FirebaseService {
 
   setOccupationalProfile(profile: OccupationalProfile): Observable<string> {
     const newDocRef = doc(this.profileCollection);
+    profile.createdAt = serverTimestamp();
     profile.updatedAt = serverTimestamp();
     profile.lastModified = new Date().toDateString();
     profile._id = newDocRef.id;

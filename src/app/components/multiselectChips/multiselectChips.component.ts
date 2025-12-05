@@ -68,7 +68,7 @@ export class MultiselectChipsComponent {
         .subscribe(
           (filterOption) =>
             (this.multiselectOptions = filterOption.values
-              .filter((value) => value != 'Other')
+              .filter((value) => value !== 'Other')
               .map((v) => ({ label: v, value: v })))
         );
     } else if (this.optionsSource === 'fields') {
@@ -100,7 +100,7 @@ export class MultiselectChipsComponent {
 
   getBackgroundColor(chip: string) {
     const chipCode = this.utilsService.knowledgeAreaToCode.get(chip);
-    if (chipCode != undefined) {
+    if (chipCode !== undefined) {
       this.bokInfo.getConceptColor(chipCode).subscribe((color) => {
         const softColor = color
           ? this.utilsService.convertHexToRgba(color, 0.5)
@@ -130,9 +130,9 @@ export class MultiselectChipsComponent {
   clickButton() {
     if (!this.allowCustom) return;
     const inputValue: string = this.currentText.trim();
-    if (inputValue != '' && !this.chips.includes(inputValue)) {
+    if (inputValue !== '' && !this.chips.includes(inputValue)) {
       this.chipsChange.emit(this.chips.concat(inputValue));
-    } else if (inputValue != '') {
+    } else if (inputValue !== '') {
       this.chipAnimations[inputValue] = true;
       setTimeout(() => {
         this.chipAnimations[inputValue] = false;
@@ -144,9 +144,9 @@ export class MultiselectChipsComponent {
 
   deleteElement(element: string) {
     this.multiSelection = this.multiSelection.filter(
-      (value) => value != element
+      (value) => value !== element
     );
-    this.chipsChange.emit(this.chips.filter((value) => value != element));
+    this.chipsChange.emit(this.chips.filter((value) => value !== element));
   }
 
   multiselectChange(values: string[]) {

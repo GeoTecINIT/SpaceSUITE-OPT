@@ -13,7 +13,7 @@
 
         <strong class="p-card-subtitle text-sm">
           {{ occupationalProfile.orgName }}
-          <ng-container *ngIf="occupationalProfile.division != ''">
+          <ng-container *ngIf="occupationalProfile.division !== ''">
             - {{ occupationalProfile.division }}
           </ng-container>
         </strong>
@@ -65,7 +65,7 @@
             [pTooltip]="selectedConceptsTooltip.get(concept)"
             tooltipPosition="top"
             [tooltipStyleClass]="
-              selectedConceptsTooltip.get(concept) == 'Deprecated concept'
+              selectedConceptsTooltip.get(concept) === 'Deprecated concept'
                 ? 'danger-tooltip'
                 : ''
             "

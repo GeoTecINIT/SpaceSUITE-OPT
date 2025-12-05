@@ -43,23 +43,37 @@ export class BokModalComponent implements OnInit {
   @Input() allowKnowledgeAreas: boolean = true;
   @Input() disabled: boolean = false;
   @Input() label: string = 'BoK Concepts';
-  @Input() selectedConcepts: string[] = [];
+
+  private _selectedConcepts: string[] = [];
+  @Input() set selectedConcepts(value: string[]) {
+    this._selectedConcepts = value ?? [];
+    this._selectedConcepts.forEach((concept) => {
+      if (!this.conceptColors.has(concept)) {
+        this.setConceptAttributes(concept);
+      }
+    });
+  }
+  get selectedConcepts() {
+    return this._selectedConcepts;
+  }
+
   @Input() selectedSkills: string[] = [];
 
-  @Output() selectedConceptsChange: EventEmitter<string[]> = new EventEmitter();
-  @Output() selectedSkillsChange: EventEmitter<string[]> = new EventEmitter();
-  @Output() deletedConcept: EventEmitter<string[]> = new EventEmitter();
+  @Output() selectedConceptsChange = new EventEmitter<string[]>();
+  @Output() selectedSkillsChange = new EventEmitter<string[]>();
+  @Output() deletedConcept = new EventEmitter<string[]>();
 
   @ViewChild('dynamicContainer', { read: ViewContainerRef })
   container!: ViewContainerRef;
 
   currentConcept = '';
   currentConceptName = '';
-  invalidConcept: boolean = false;
-  conceptColors: Map<string, string> = new Map();
-  conceptTooltips: Map<string, string> = new Map();
-  isVisible = false;
+  invalidConcept = false;
 
+  conceptColors = new Map<string, string>();
+  conceptTooltips = new Map<string, string>();
+
+  isVisible = false;
   private componentRef: ComponentRef<BokComponent> | null = null;
 
   constructor(
@@ -69,23 +83,20 @@ export class BokModalComponent implements OnInit {
     private messageService: MessageService
   ) {}
 
-  ngOnInit() {
-    this.selectedConcepts.forEach((concept) => {
-      this.setConceptAttributes(concept);
-    });
-  }
+  ngOnInit() {}
 
   removeChip(label: string): void {
-    this.selectedConcepts = this.selectedConcepts.filter(
-      (concept) => concept != label
+    this._selectedConcepts = this._selectedConcepts.filter(
+      (concept) => concept !== label
     );
 
     this.conceptColors.delete(label);
     this.conceptTooltips.delete(label);
 
-    this.selectedConceptsChange.emit(this.selectedConcepts);
+    this.selectedConceptsChange.emit(this._selectedConcepts);
 
     this.deletedConcept.emit(this.getSkills(label));
+    this.cdr.detectChanges();
   }
 
   showDialog(): void {
@@ -101,6 +112,7 @@ export class BokModalComponent implements OnInit {
     this.componentRef.setInput('showDescription', false);
     this.componentRef.setInput('showVersions', false);
     this.componentRef.setInput('showSearchEngine', true);
+
     this.componentRef.instance.codSelectedChange.subscribe(
       (newCode: string) => {
         this.currentConcept = newCode;
@@ -108,19 +120,19 @@ export class BokModalComponent implements OnInit {
         if (
           !this.allowKnowledgeAreas &&
           (this.utilsService.codeToKnowledgeArea.has(this.currentConcept) ||
-            this.currentConcept == 'GIST')
+            this.currentConcept === 'GIST')
         ) {
           this.invalidConcept = true;
           this.cdr.detectChanges();
-
           return;
         }
 
         this.invalidConcept = false;
-        this.bokInfo
-          .getConceptName(newCode)
-          .subscribe((name) => (this.currentConceptName = name));
-        this.cdr.detectChanges();
+
+        this.bokInfo.getConceptName(newCode).subscribe((name) => {
+          this.currentConceptName = name;
+          this.cdr.detectChanges();
+        });
       }
     );
   }
@@ -135,24 +147,26 @@ export class BokModalComponent implements OnInit {
         ? this.utilsService.convertHexToRgba(color, 0.5)
         : '';
       this.conceptColors.set(concept, softColor);
+      this.cdr.detectChanges();
     });
 
-    this.bokInfo
-      .getConceptName(concept)
-      .subscribe((name) => this.conceptTooltips.set(concept, name));
+    this.bokInfo.getConceptName(concept).subscribe((name) => {
+      this.conceptTooltips.set(concept, name);
+      this.cdr.detectChanges();
+    });
   }
 
   private addConceptWithName(concept: string): void {
-    if (!this.selectedConcepts.includes(concept)) {
-      this.selectedConcepts.push(concept);
+    if (!this._selectedConcepts.includes(concept)) {
+      this._selectedConcepts = [...this._selectedConcepts, concept];
       this.setConceptAttributes(concept);
-      this.selectedConceptsChange.emit(this.selectedConcepts);
+      this.selectedConceptsChange.emit(this._selectedConcepts);
 
-      this.addMessage('Concept "' + concept + '" annotated!', 'info', 'Info');
-      this.addSkills(this.currentConcept);
+      this.addMessage(`Concept "${concept}" annotated!`, 'info', 'Info');
+      this.addSkills(concept);
     } else {
       this.addMessage(
-        'Concept "' + concept + '" is already annotated!',
+        `Concept "${concept}" is already annotated!`,
         'error',
         'Error'
       );
@@ -160,12 +174,11 @@ export class BokModalComponent implements OnInit {
   }
 
   private getSkills(concept: string): string[] {
-    let list: string[] = [];
+    const list: string[] = [];
 
     this.bokInfo.getConceptSkills(concept).subscribe((skills) => {
-      skills.forEach((skill) => {
-        list.push('[' + concept + '] ' + skill);
-      });
+      skills.forEach((skill) => list.push(`[${concept}] ${skill}`));
+      this.cdr.detectChanges();
     });
 
     return list;
@@ -174,7 +187,7 @@ export class BokModalComponent implements OnInit {
   private addSkills(concept: string): void {
     const skills = this.getSkills(concept);
 
-    skills?.forEach((skill) => {
+    skills.forEach((skill) => {
       if (!this.selectedSkills.includes(skill)) {
         this.selectedSkills.push(skill);
       }

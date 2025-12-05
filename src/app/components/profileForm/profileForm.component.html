@@ -2,7 +2,7 @@
 
 <p-confirmdialog />
 
-<h2 class="flex justify-content-center mb-0">Edit Profile</h2>
+<h2 class="flex justify-content-center mb-0">{{ pageName }}</h2>
 
 <div class="flex flex-column gap-3">
   <div class="flex flex-column">
@@ -13,8 +13,8 @@
           pInputText
           id="title"
           autocomplete="off"
-          [class.ng-invalid]="errorMap.get('title') != undefined"
-          [class.ng-dirty]="errorMap.get('title') != undefined"
+          [class.ng-invalid]="errorMap.get('title') !== undefined"
+          [class.ng-dirty]="errorMap.get('title') !== undefined"
           [(ngModel)]="profile.title"
           pTooltip="Name of the profile."
           tooltipPosition="top"
@@ -25,7 +25,7 @@
 
         <p-inputicon
           [class]="
-            errorMap.get('title') != undefined
+            errorMap.get('title') !== undefined
               ? 'danger pi pi-pencil'
               : 'pi pi-pencil'
           "
@@ -63,7 +63,7 @@
         [(selection)]="profile.eqf"
         [allowCustom]="false"
         icon="'pi pi-bookmark'"
-        [error]="errorMap.get('eqf') != undefined"
+        [error]="errorMap.get('eqf') !== undefined"
         optionsName="EQF Level"
         pTooltip="The level of what the profile knows, understands and is able to do. Ranges from 1 (basic) to 8 (advanced)."
         tooltipPosition="top"
@@ -82,13 +82,13 @@
       <p-floatlabel
         variant="on"
         class="custom-floatlabel"
-        [class.invalid-floatlabel]="errorMap.get('organization') != undefined"
+        [class.invalid-floatlabel]="errorMap.get('organization') !== undefined"
       >
         <p-select
           inputId="org"
           [options]="organizationSelector.values"
           [ngModel]="
-            profile.orgId == undefined
+            profile.orgId === undefined
               ? undefined
               : { value: profile.orgId, label: profile.orgName }
           "
@@ -96,7 +96,7 @@
           class="custom-select w-15rem"
           optionLabel="label"
           [checkmark]="true"
-          [class.invalid-select]="errorMap.get('organization') != undefined"
+          [class.invalid-select]="errorMap.get('organization') !== undefined"
           pTooltip="The organization under which the profile is to be registered."
           tooltipPosition="top"
           showDelay="200"
@@ -119,7 +119,7 @@
           [options]="divisionSelector.values"
           [(ngModel)]="profile.division"
           class="custom-select w-10rem"
-          [disabled]="divisionSelector.values.length == 0"
+          [disabled]="divisionSelector.values.length === 0"
           [checkmark]="true"
           inputId="division"
           pTooltip="The organization division under which the profile is to be registered."
@@ -142,8 +142,8 @@
             id="description"
             pTextarea
             [(ngModel)]="profile.description"
-            [class.ng-invalid]="errorMap.get('description') != undefined"
-            [class.ng-dirty]="errorMap.get('description') != undefined"
+            [class.ng-invalid]="errorMap.get('description') !== undefined"
+            [class.ng-dirty]="errorMap.get('description') !== undefined"
             rows="7"
             pTooltip="Summary or overview of the profile."
             tooltipPosition="top"
@@ -154,7 +154,7 @@
 
           <span
             [class]="
-              errorMap.get('description') != undefined
+              errorMap.get('description') !== undefined
                 ? 'danger textarea-length'
                 : 'textarea-length'
             "
@@ -188,44 +188,38 @@
     </div>
   </div>
 
-  <p-iftalabel
-    pTooltip="The body of facts, principles, theories and practices related to a field of work or study. Associated skills will be automatically added."
-    tooltipPosition="top"
-    showDelay="200"
-    hideDelay="200"
-  >
+  <div>
     <div
-      [class]="
-        errorMap.get('knowledge')
-          ? 'custom-border-danger p-3'
-          : 'custom-border p-3'
+      class="custom-border p-2"
+      style="color: #64748b"
+      [style.border-color]="
+        errorMap.get('knowledge') != undefined ? 'var(--danger-color)' : ''
       "
+      pTooltip="The body of facts, principles, theories and practices related to a field of work or study. Associated skills will be automatically added."
+      tooltipPosition="top"
+      showDelay="200"
+      hideDelay="200"
     >
       <bokModal
         id="knowledge"
         [allowKnowledgeAreas]="true"
-        label=""
+        label="Knowledge *"
         [selectedConcepts]="profile.knowledge"
         [selectedSkills]="profile.skills"
         (selectedConceptsChange)="conceptsChange($event)"
         (selectedSkillsChange)="skillsChange($event)"
         (deletedConcept)="deletedConceptSkills($event)"
+        [style.color]="
+          errorMap.get('knowledge') != undefined ? 'var(--danger-color)' : ''
+        "
       ></bokModal>
-
-      <label
-        for="knowledge"
-        [class]="errorMap.get('knowledge') ? 'danger' : ''"
-      >
-        Knowledge *
-      </label>
-
-      <ng-container *ngIf="errorMap.get('knowledge')">
-        <div class="danger text-xs font-italic">
-          {{ errorMap.get("knowledge") }}
-        </div>
-      </ng-container>
     </div>
-  </p-iftalabel>
+    <ng-container *ngIf="errorMap.get('knowledge')">
+      <div class="danger text-xs font-italic mt-1">
+        {{ errorMap.get("knowledge") }}
+      </div>
+    </ng-container>
+  </div>
 
   <div>
     <text-chips
@@ -233,7 +227,7 @@
       [icon]="'pi pi-book'"
       [(chips)]="profile.skills"
       [(customChips)]="profile.customSkills"
-      [error]="errorMap.get('skills') != undefined"
+      [error]="errorMap.get('skills') !== undefined"
       pTooltip="Ability of the profile to apply knowledge and use know-how to complete tasks and solve problems. Skills are added by their Body of Knowledge concepts or custom ones can be manually added."
       tooltipPosition="top"
       showDelay="200"

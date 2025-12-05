@@ -1,13 +1,22 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  NgZone,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DividerModule } from 'primeng/divider';
 import { PaginatorModule, PaginatorState } from 'primeng/paginator';
 import { SkeletonModule } from 'primeng/skeleton';
 import { ToastModule } from 'primeng/toast';
-import { combineLatest, filter } from 'rxjs';
+import { combineLatest, filter, Subscription, take } from 'rxjs';
 import { FilterOption } from '../../models/filterOption';
 import { OccupationalProfile } from '../../models/occupationalProfile';
 import { CardFilterService } from '../../services/cardFilter.service';
@@ -30,10 +39,13 @@ import { ProfileCardComponent } from '../profileCard/profileCard.component';
     ProfileCardComponent,
     ToastModule,
     ConfirmDialogModule,
+    ButtonModule,
   ],
   providers: [ConfirmationService, MessageService],
 })
-export class ProfileExplorerComponent implements OnInit, AfterViewInit {
+export class ProfileExplorerComponent
+  implements OnInit, AfterViewInit, OnDestroy
+{
   loading: boolean = true;
   skeletonElements: number[] = [];
 
@@ -48,15 +60,23 @@ export class ProfileExplorerComponent implements OnInit, AfterViewInit {
   visibilityFilter: string = 'all';
   filteredProfiles: OccupationalProfile[] = [];
 
+  @ViewChild('container') containerRef!: ElementRef;
+  showButton = true;
+  buttonBottom = 32;
+
   private profiles: OccupationalProfile[] = [];
   private organizations: string[] = [];
+
+  private occupationalProfilesSubscription!: Subscription;
 
   constructor(
     private occupationalProfileService: OccupationalProfileService,
     private filterService: CardFilterService,
     private firebaseService: FirebaseService,
     private route: ActivatedRoute,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private router: Router,
+    private ngZone: NgZone
   ) {
     this.skeletonElements = Array(this.rows);
   }
@@ -65,7 +85,7 @@ export class ProfileExplorerComponent implements OnInit, AfterViewInit {
     const profiles$ = this.occupationalProfileService
       .getOccupationalProfiles()
       .pipe(filter((p) => !!p));
-    combineLatest([
+    this.occupationalProfilesSubscription = combineLatest([
       this.firebaseService.getUserOrganizationList(),
       this.filterService.getFilterOptions(),
       profiles$,
@@ -101,10 +121,19 @@ export class ProfileExplorerComponent implements OnInit, AfterViewInit {
         }
       }
     });
+
+    window.addEventListener('scroll', this.updateButtonPosition);
+    window.addEventListener('resize', this.updateButtonPosition);
+  }
+
+  ngOnDestroy() {
+    window.removeEventListener('scroll', this.updateButtonPosition);
+    window.removeEventListener('resize', this.updateButtonPosition);
+    this.occupationalProfilesSubscription.unsubscribe();
   }
 
   isLogged(): boolean {
-    return this.firebaseService.getUserData() != null;
+    return this.firebaseService.getUserData() !== null;
   }
 
   trackById(index: number, item: any): string | number {
@@ -155,7 +184,24 @@ export class ProfileExplorerComponent implements OnInit, AfterViewInit {
     this.filteredProfiles = this.filterByBoKConcept(filtered);
 
     this.updatePaginatedProfiles();
+    this.ngZone.onStable.pipe(take(1)).subscribe(() => {
+      this.updateButtonPosition();
+    });
   }
+
+  createOccupationalProfile() {
+    this.router.navigate(['profile/new']);
+  }
+
+  private updateButtonPosition = () => {
+    const element = this.containerRef.nativeElement;
+    const rect = element.getBoundingClientRect();
+    const bottomOverlap = window.innerHeight - rect.bottom;
+    const newButtonBottom = Math.max(bottomOverlap, 32);
+    if (this.buttonBottom !== newButtonBottom) {
+      this.buttonBottom = newButtonBottom;
+    }
+  };
 
   private updatePaginatedProfiles(): void {
     this.paginatedProfiles = this.filteredProfiles.slice(
@@ -239,7 +285,12 @@ export class ProfileExplorerComponent implements OnInit, AfterViewInit {
 
         case 'all':
         default:
-          if (userId) return profile.isPublic || profile.userId === userId;
+          if (userId)
+            return (
+              profile.isPublic ||
+              profile.userId === userId ||
+              this.organizations.includes(profile.orgId)
+            );
           return profile.isPublic;
       }
     });

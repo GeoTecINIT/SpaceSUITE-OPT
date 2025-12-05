@@ -44,8 +44,8 @@
           class="flex"
           *ngIf="
             allowCustom &&
-            pmulti.filterValue != '' &&
-            pmulti.filterValue != undefined &&
+            pmulti.filterValue !== '' &&
+            pmulti.filterValue !== undefined &&
             !pmulti.isEmpty()
           "
         >
@@ -67,8 +67,8 @@
           (onClick)="clickButton()"
           *ngIf="
             allowCustom &&
-            pmulti.filterValue != '' &&
-            pmulti.filterValue != undefined
+            pmulti.filterValue !== '' &&
+            pmulti.filterValue !== undefined
           "
         ></p-button>
       </ng-template>
@@ -83,7 +83,7 @@
   </p-floatlabel>
   <div
     class="mt-3 flex-wrap gap-2 align-items-center"
-    [style.display]="chips.length == 0 ? 'none' : 'flex'"
+    [style.display]="chips.length === 0 ? 'none' : 'flex'"
   >
     <ng-content *ngFor="let chip of chips">
       <p-chip

@@ -33,15 +33,22 @@ export class EditProfilePageComponent implements OnInit {
           return this.occupationalProfileService.getOccupationalProfile(
             profileName
           );
+        }),
+        concatMap((profile?: OccupationalProfile) => {
+          if (profile) this.loadProfile(profile);
+          return this.firebaseService.getUserOrganizationList();
         })
       )
-      .subscribe((newProfile?: OccupationalProfile) => {
+      .subscribe((orgsList: { _id: string; name: string }[]) => {
+        const userData = this.firebaseService.getUserData();
+        const userOrgIds = orgsList.map((org) => org._id);
         if (
-          newProfile &&
-          newProfile.userId == this.firebaseService.getUserData()?.uid
+          !this.profile ||
+          !(
+            (this.profile.orgId && userOrgIds.includes(this.profile.orgId)) ||
+            (userData && this.profile.userId === userData.uid)
+          )
         ) {
-          this.loadProfile(newProfile);
-        } else {
           this.exitWithoutSavingService.bypassGuard.next(true);
           this.router.navigate(['/not_found']);
         }

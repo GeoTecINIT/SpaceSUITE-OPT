@@ -32,7 +32,7 @@
       panelStyleClass="custom-treeselect"
       [propagateSelectionUp]="false"
       [virtualScrollOptions]="{ scrollHeight: '252px' }"
-      [loading]="treeselectOptions.length == 0"
+      [loading]="treeselectOptions.length === 0"
     >
       <ng-template #filtericon>
         <i class="pi pi-bookmark"></i>
@@ -43,7 +43,7 @@
   </p-floatlabel>
   <div
     class="mt-3 flex-wrap gap-2 align-items-center"
-    [style.display]="chips.length == 0 ? 'none' : 'flex'"
+    [style.display]="chips.length === 0 ? 'none' : 'flex'"
   >
     <ng-content *ngFor="let chip of chips">
       <p-chip

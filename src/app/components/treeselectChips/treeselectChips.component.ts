@@ -76,9 +76,9 @@ export class TreeselectChipsComponent {
 
   deleteElement(element: string) {
     this.treeSelection = this.treeSelection.filter(
-      (value) => value.label != element
+      (value) => value.label !== element
     );
-    this.chipsChange.emit(this.chips.filter((value) => value != element));
+    this.chipsChange.emit(this.chips.filter((value) => value !== element));
   }
 
   treeselectChange(values: TreeNode[]) {

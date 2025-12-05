@@ -65,13 +65,13 @@ export class TextChipsComponent {
     const inputValue: string = this.currentText.trim();
 
     if (
-      inputValue != '' &&
+      inputValue !== '' &&
       !this.chips.includes(inputValue) &&
       !this.customChips.includes(inputValue)
     ) {
       this.customChipsChange.emit(this.customChips.concat(inputValue));
       this.chipAnimations[inputValue] = false;
-    } else if (inputValue != '') {
+    } else if (inputValue !== '') {
       this.chipAnimations[inputValue] = true;
       setTimeout(() => {
         this.chipAnimations[inputValue] = false;
@@ -82,10 +82,10 @@ export class TextChipsComponent {
 
   deleteElement(element: string) {
     if (this.chips.includes(element)) {
-      this.chipsChange.emit(this.chips.filter((value) => value != element));
+      this.chipsChange.emit(this.chips.filter((value) => value !== element));
     } else if (this.customChips.includes(element)) {
       this.customChipsChange.emit(
-        this.customChips.filter((value) => value != element)
+        this.customChips.filter((value) => value !== element)
       );
     }
 

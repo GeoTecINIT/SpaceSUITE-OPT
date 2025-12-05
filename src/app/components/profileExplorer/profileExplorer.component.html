@@ -2,7 +2,7 @@
 
 <p-confirmdialog />
 
-<div class="flex gap-4 m-2">
+<div #container class="flex gap-4 m-2">
   <filters
     [bokConcepts]="bokConcepts"
     [loading]="loading"
@@ -20,9 +20,9 @@
 
   <p-divider layout="vertical" />
 
-  <ng-container *ngIf="filteredProfiles.length != 0 || loading">
+  <ng-container *ngIf="filteredProfiles.length !== 0 || loading">
     <div class="flex flex-column gap-4 w-full">
-      <div class="flex flex-column gap-2">
+      <div class="flex flex-column gap-3">
         <ng-container *ngIf="!loading; else cardSkeleton">
           <ng-container
             *ngFor="let profile of paginatedProfiles; trackBy: trackById"
@@ -42,9 +42,22 @@
     </div>
   </ng-container>
 
-  <ng-container *ngIf="filteredProfiles.length == 0 && !loading">
+  <ng-container *ngIf="filteredProfiles.length === 0 && !loading">
     <p class="font-italic mx-auto">No profiles found</p>
   </ng-container>
+</div>
+
+<div
+  class="floating-container flex flex-column gap-2 align-items-end"
+  [ngStyle]="{ bottom: buttonBottom + 'px' }"
+>
+  <p-button
+    *ngIf="isLogged() && showButton"
+    (click)="createOccupationalProfile()"
+    icon="pi pi-plus"
+    label="Add Profile"
+    class="custom-button floating-button"
+  />
 </div>
 
 <ng-template #cardSkeleton>

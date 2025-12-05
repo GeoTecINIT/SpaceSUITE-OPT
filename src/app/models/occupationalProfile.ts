@@ -42,7 +42,7 @@ export class OccupationalProfile {
   static fromFirestore(data: any): OccupationalProfile {
     return new OccupationalProfile({
       ...data,
-      eqf: data.eqf != null ? String(data.eqf) : '',
+      eqf: data.eqf !== null ? String(data.eqf) : '',
     });
   }
 

@@ -40,13 +40,13 @@
   <p-progress-spinner
     class="flex custom-spinner"
     ariaLabel="loading"
-    *ngIf="currentConcept == ''"
+    *ngIf="currentConcept === ''"
   />
 
   <ng-template #dynamicContainer></ng-template>
 
   <div
-    *ngIf="currentConcept != ''"
+    *ngIf="currentConcept !== ''"
     class="flex justify-content-between align-items-center"
   >
     <div *ngIf="!invalidConcept" class="mx-4">

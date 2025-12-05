@@ -48,7 +48,7 @@ import { UtilsService } from '../../services/utils.service';
   providers: [ConfirmationService, MessageService],
 })
 export class ProfilePageComponent implements OnInit {
-  profile: OccupationalProfile | undefined;
+  profile?: OccupationalProfile;
 
   deprecatedConcepts: string[] = [];
   concepts: string[] = [];
@@ -96,7 +96,7 @@ export class ProfilePageComponent implements OnInit {
         ),
         take(1)
       )
-      .subscribe((newProfile: OccupationalProfile | undefined) => {
+      .subscribe((newProfile?: OccupationalProfile) => {
         if (newProfile) this.loadProfile(newProfile);
         else this.router.navigate(['not_found']);
       });
@@ -261,7 +261,7 @@ export class ProfilePageComponent implements OnInit {
   }
 
   checkUser() {
-    return this.firebaseService.userId == this.profile?.userId;
+    return this.firebaseService.userId === this.profile?.userId;
   }
 
   onClickConcept(code: string) {

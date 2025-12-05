@@ -74,7 +74,7 @@ export class CardFilterService {
   getOptionByLabel(label: string): Observable<FilterOption> {
     return this.filterOptionsSubject.pipe(
       map((filterOptions) => {
-        const option = filterOptions.filter((option) => option.label == label);
+        const option = filterOptions.filter((option) => option.label === label);
 
         if (option.length > 0) return option[0];
 
