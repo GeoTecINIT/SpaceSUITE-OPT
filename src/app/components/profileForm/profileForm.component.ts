@@ -17,6 +17,7 @@ import { DividerModule } from 'primeng/divider';
 import { FileUploadModule } from 'primeng/fileupload';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { IconFieldModule } from 'primeng/iconfield';
+import { IftaLabelModule } from 'primeng/iftalabel';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
@@ -34,15 +35,14 @@ import {
   Field,
   OccupationalProfile,
 } from '../../models/occupationalProfile';
+import { ESCOService } from '../../services/esco.service';
+import { FieldsService } from '../../services/fields.service';
 import { FirebaseService } from '../../services/firebase.service';
 import { OccupationalProfileService } from '../../services/occupationalProfile.service';
 import { BokModalComponent } from '../bokModal/bokModal.component';
 import { CustomSelectComponent } from '../customSelect/customSelect.component';
 import { MultiselectChipsComponent } from '../multiselectChips/multiselectChips.component';
 import { TextChipsComponent } from '../textChips/textChips.component';
-import { FieldsService } from '../../services/fields.service';
-import { IftaLabelModule } from 'primeng/iftalabel';
-import { ESCOService } from '../../services/esco.service';
 import { TreeselectChipsComponent } from '../treeselectChips/treeselectChips.component';
 
 @Component({

@@ -8,7 +8,6 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { PanelModule } from 'primeng/panel';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { TabsModule } from 'primeng/tabs';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
 import {
@@ -42,7 +41,6 @@ import { UtilsService } from '../../services/utils.service';
     ButtonModule,
     TagModule,
     PanelModule,
-    TabsModule,
     ConfirmDialogModule,
     ToastModule,
     ProgressBarModule,

@@ -80,8 +80,9 @@
         icon="pi pi-share-alt"
         [rounded]="true"
         variant="text"
-        pTooltip="Share"
+        pTooltip="In development"
         tooltipPosition="top"
+        disabled="true"
       />
 
       <p-button
@@ -89,8 +90,9 @@
         icon="pi pi-clone"
         [rounded]="true"
         variant="text"
-        pTooltip="Duplicate"
+        pTooltip="In development"
         tooltipPosition="top"
+        disabled="true"
       />
 
       <p-button
@@ -121,6 +123,7 @@
         tooltipPosition="top"
         tooltipStyleClass="danger-tooltip"
         [disabled]="!checkUser()"
+        (onClick)="deleteModal($event)"
       />
     </div>
   </div>

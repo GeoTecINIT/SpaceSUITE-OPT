@@ -1,8 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DividerModule } from 'primeng/divider';
 import { PaginatorModule, PaginatorState } from 'primeng/paginator';
 import { SkeletonModule } from 'primeng/skeleton';
+import { ToastModule } from 'primeng/toast';
 import { combineLatest, filter } from 'rxjs';
 import { FilterOption } from '../../models/filterOption';
 import { OccupationalProfile } from '../../models/occupationalProfile';
@@ -24,9 +28,12 @@ import { ProfileCardComponent } from '../profileCard/profileCard.component';
     SkeletonModule,
     FiltersComponent,
     ProfileCardComponent,
+    ToastModule,
+    ConfirmDialogModule,
   ],
+  providers: [ConfirmationService, MessageService],
 })
-export class ProfileExplorerComponent implements OnInit {
+export class ProfileExplorerComponent implements OnInit, AfterViewInit {
   loading: boolean = true;
   skeletonElements: number[] = [];
 
@@ -47,7 +54,9 @@ export class ProfileExplorerComponent implements OnInit {
   constructor(
     private occupationalProfileService: OccupationalProfileService,
     private filterService: CardFilterService,
-    private firebaseService: FirebaseService
+    private firebaseService: FirebaseService,
+    private route: ActivatedRoute,
+    private messageService: MessageService
   ) {
     this.skeletonElements = Array(this.rows);
   }
@@ -71,6 +80,26 @@ export class ProfileExplorerComponent implements OnInit {
 
       this.filterPipeline();
       this.loading = false;
+    });
+  }
+
+  ngAfterViewInit() {
+    this.route.queryParams.subscribe((params) => {
+      const submitted: boolean = params['submitted'];
+      const mode: string = params['mode'];
+      if (submitted) {
+        switch (mode) {
+          case 'delete':
+            this.messageService.add({
+              severity: 'info',
+              summary: 'Info',
+              detail: `Profile deleted without problems.`,
+              life: 3000,
+              closable: true,
+            });
+            break;
+        }
+      }
     });
   }
 

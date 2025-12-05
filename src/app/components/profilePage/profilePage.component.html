@@ -71,7 +71,7 @@
 
         <div class="flex w-full gap-1">
           <div
-            class="flex flex-wrap gap-2"
+            class="flex flex-wrap gap-2 align-items-center"
             style="flex: 3"
             [class.flex-column]="overTagLimit(concepts.length)"
             [class.align-items-start]="overTagLimit(concepts.length)"
@@ -233,12 +233,12 @@
           (onClick)="editProfile()"
         />
 
-        <!-- <p-button
+        <p-button
           class="flex md:hidden justify-content-center delete-button my-2"
           label="Delete Profile"
           icon="pi pi-trash"
           (onClick)="deleteModal($event)"
-        /> -->
+        />
       </ng-container>
 
       <p-button
@@ -268,12 +268,12 @@
             (onClick)="editProfile()"
           />
 
-          <!-- <p-button
+          <p-button
             class="delete-button"
             label="Delete Profile"
             icon="pi pi-trash"
             (onClick)="deleteModal($event)"
-          /> -->
+          />
         </div>
       </ng-container>
     </div>

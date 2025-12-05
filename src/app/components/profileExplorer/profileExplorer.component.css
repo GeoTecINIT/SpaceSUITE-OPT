@@ -23,3 +23,65 @@
   --p-select-hover-border-color: var(--hover-color);
   --p-select-focus-border-color: var(--hover-color);
 }
+
+.custom-toast {
+  --p-toast-info-background: color-mix(
+    in srgb,
+    var(--secondary-color) 10%,
+    rgba(255, 255, 255, 0.9) 90%
+  );
+  --p-toast-info-border-color: var(--secondary-color);
+  --p-toast-info-color: var(--secondary-color);
+  --p-toast-info-detail-color: var(--primary-color);
+
+  --p-toast-error-background: color-mix(
+    in srgb,
+    var(--danger-color) 10%,
+    rgba(255, 255, 255, 0.9) 90%
+  );
+  --p-toast-error-border-color: var(--danger-color);
+  --p-toast-error-color: var(--danger-color);
+  --p-toast-error-detail-color: var(--primary-color);
+
+  --p-toast-warn-background: color-mix(
+    in srgb,
+    var(--warning-color) 10%,
+    rgba(255, 255, 255, 0.9) 90%
+  );
+  --p-toast-warn-border-color: var(--warning-color);
+  --p-toast-warn-color: var(--warning-color);
+  --p-toast-warn-detail-color: var(--primary-color);
+}
+
+::ng-deep .p-confirmdialog {
+  color: var(--primary-color) !important;
+}
+
+::ng-deep .p-confirmdialog .p-confirmdialog-icon {
+  color: var(--primary-color) !important;
+}
+
+::ng-deep .p-confirmdialog .p-button {
+  --p-button-primary-background: var(--danger-color);
+  --p-button-primary-border-color: var(--danger-color);
+  --p-button-primary-hover-background: color-mix(
+    in srgb,
+    var(--danger-color) 90%,
+    black 10%
+  );
+  --p-button-primary-hover-border-color: color-mix(
+    in srgb,
+    var(--danger-color) 90%,
+    black 10%
+  );
+  --p-button-primary-active-background: color-mix(
+    in srgb,
+    var(--danger-color) 70%,
+    black 30%
+  );
+  --p-button-primary-active-border-color: color-mix(
+    in srgb,
+    var(--danger-color) 80%,
+    black 20%
+  );
+}
