@@ -17,8 +17,8 @@ import {
 import Aura from '@primeng/themes/aura';
 import { providePrimeNG } from 'primeng/config';
 import { EditProfilePageComponent } from './app/components/editProfilePage/editProfilePage.component';
-import { ProfileFormComponent } from './app/components/profileForm/profileForm.component';
 import { ProfileExplorerComponent } from './app/components/profileExplorer/profileExplorer.component';
+import { ProfileFormComponent } from './app/components/profileForm/profileForm.component';
 import { ProfilePageComponent } from './app/components/profilePage/profilePage.component';
 import { environment } from './environments/environment';
 
