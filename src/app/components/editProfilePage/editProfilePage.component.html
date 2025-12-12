@@ -1,3 +1,6 @@
 <ng-container *ngIf="profile">
-  <profile-form [inputProfile]="profile" pageName="Edit Profile"></profile-form>
+  <profile-form
+    [inputProfile]="profile"
+    [pageName]="isDuplicate ? 'Duplicate Profile' : 'Edit Profile'"
+  ></profile-form>
 </ng-container>

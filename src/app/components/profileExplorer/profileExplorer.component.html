@@ -27,7 +27,10 @@
           <ng-container
             *ngFor="let profile of paginatedProfiles; trackBy: trackById"
           >
-            <profile-card [occupationalProfile]="profile" />
+            <profile-card
+              [occupationalProfile]="profile"
+              [logged]="isLogged()"
+            />
           </ng-container>
         </ng-container>
       </div>
@@ -52,7 +55,7 @@
   [ngStyle]="{ bottom: buttonBottom + 'px' }"
 >
   <p-button
-    *ngIf="isLogged() && showButton"
+    *ngIf="isLogged()"
     (click)="createOccupationalProfile()"
     icon="pi pi-plus"
     label="Add Profile"

@@ -42,12 +42,18 @@ const routes: Routes = [
     canDeactivate: [exitWithoutSavingGuard],
   },
   {
-    path: 'profile/edit/:dynamicValue',
+    path: 'profile/new/:profileId',
     component: EditProfilePageComponent,
     canMatch: [AuthGuard],
     canDeactivate: [exitWithoutSavingGuard],
   },
-  { path: 'profile/:dynamicValue', component: ProfilePageComponent },
+  {
+    path: 'profile/edit/:profileId',
+    component: EditProfilePageComponent,
+    canMatch: [AuthGuard],
+    canDeactivate: [exitWithoutSavingGuard],
+  },
+  { path: 'profile/:profileId', component: ProfilePageComponent },
   { path: 'not_found', component: NotFoundPageComponent },
   { path: '**', component: NotFoundPageComponent },
 ];

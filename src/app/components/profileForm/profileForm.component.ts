@@ -30,6 +30,7 @@ import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
 import { catchError, finalize, of, Subscription, take } from 'rxjs';
 import { FilterOption } from '../../models/filterOption';
+import { FormType } from '../../models/formType';
 import {
   Competence,
   Field,
@@ -106,7 +107,7 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   fieldNames: string[] = [];
 
-  transversalSkills: TreeNode<any>[] = [];
+  competenceTree: TreeNode<any>[] = [];
   competences: string[] = [];
   customCompetences: string[] = [];
 
@@ -116,7 +117,9 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
   private userOrgsSubscription!: Subscription;
 
   private fields: Field[] = [];
-  private skills: Competence[] = [];
+  private allCompetences: Competence[] = [];
+
+  private formType: FormType = FormType.Create;
 
   constructor(
     private exitWithoutSavingService: ExitWithoutSavingService,
@@ -131,11 +134,20 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
   ) {}
 
   ngOnInit() {
+    this.formType = this.detectFormType(this.inputProfile);
+
+    this.initializeProfile();
+
     this.authSubscription = this.authService
       .getUserState()
       .subscribe((state) => {
         if (state?.logged) {
-          if (this.inputProfile === undefined) this.profile.userId = state.uid;
+          if (
+            this.formType === FormType.Create ||
+            this.formType === FormType.Duplicate
+          ) {
+            this.profile.userId = state.uid;
+          }
         } else {
           this.exitWithoutSavingService.bypassGuard.next(true);
           this.router.navigate(['profile']);
@@ -145,13 +157,10 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.userOrgsSubscription = this.firebaseService
       .getUserOrganizationList()
       .subscribe((organizations) => {
-        this.organizationSelector.values = [];
-        organizations.forEach((organization) =>
-          this.organizationSelector.values.push({
-            label: organization.name,
-            value: organization._id,
-          })
-        );
+        this.organizationSelector.values = organizations.map((org) => ({
+          label: org.name,
+          value: org._id,
+        }));
       });
 
     this.fieldsService.getFields().subscribe((fields) => {
@@ -161,49 +170,22 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.escoService
       .getTransversalSkillsFromJson()
       .pipe(take(1))
-      .subscribe((data) => {
-        this.transversalSkills = data;
-        this.skills = this.extractCompetencesFromTree(data);
+      .subscribe((tree) => {
+        this.competenceTree = tree;
+        this.allCompetences = this.extractCompetencesFromTree(tree);
 
-        if (this.inputProfile) {
-          this.profile = JSON.parse(JSON.stringify(this.inputProfile));
+        this.manageProfileCompetences();
 
+        if (this.profile.orgId) {
           this.firebaseService
-            .getOrganizationDivisions(this.profile.orgId!)
+            .getOrganizationDivisions(this.profile.orgId)
             .pipe(take(1))
             .subscribe(
               (divisions) => (this.divisionSelector.values = divisions)
             );
-          this.fieldNames = this.getFieldNames(this.profile.fields);
-
-          const validSkills = this.flattenTree(data);
-          const legacyCompetences: string[] = [];
-          this.profile.competences.forEach((c) => {
-            if (!validSkills.includes(c.preferredLabel)) {
-              legacyCompetences.push(c.preferredLabel);
-            }
-          });
-          this.profile.competences = this.profile.competences.filter((c) =>
-            validSkills.includes(c.preferredLabel)
-          );
-
-          legacyCompetences.forEach((l) => {
-            if (!this.profile.customCompetences.includes(l)) {
-              this.customCompetences.push(l);
-            }
-          });
-
-          this.profile.competences.forEach((competence) => {
-            this.competences.push(competence.preferredLabel);
-          });
-
-          this.profile.customCompetences.forEach((competence) => {
-            this.customCompetences.push(competence);
-          });
-
-          this.showCustomCompetences =
-            this.profile.customCompetences.length !== 0;
         }
+
+        this.fieldNames = this.getFieldNames(this.profile.fields);
       });
 
     this.exitWithoutSavingService.showModalSubject.subscribe((value) => {
@@ -222,55 +204,39 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.userOrgsSubscription.unsubscribe();
   }
 
-  private flattenTree(nodes: TreeNode[]): string[] {
-    let result: string[] = [];
-    nodes.forEach((node) => {
-      if (node.label) result.push(node.label);
-      if (node.children?.length) {
-        result = result.concat(this.flattenTree(node.children));
-      }
-    });
-    return result;
-  }
-
-  private extractCompetencesFromTree(nodes: any[]): Competence[] {
-    let list: Competence[] = [];
-
-    nodes.forEach((node) => {
-      list.push({
-        preferredLabel: node.label ?? '',
-        altLabels: node.altLabels ?? [],
-        description: node.description ?? '',
-        reuseLevel: node.reuseLevel ?? '',
-        skillType: node.skillType ?? '',
-        uri: node.uri ?? '',
-      });
-
-      if (node.children?.length) {
-        list = list.concat(this.extractCompetencesFromTree(node.children));
-      }
-    });
-
-    return list;
-  }
-
-  getUserName(): string | null {
-    const userData = this.firebaseService.getUserData();
-    if (userData) {
-      if (userData.displayName) return userData.displayName;
-      else return userData.email;
-    } else {
-      return '';
-    }
-  }
-
-  loadDivisions(newValue: { label: string; value: string }): void {
+  onOrganizationChange(newValue: { label: string; value: string }): void {
     this.profile.orgId = newValue.value;
     this.profile.orgName = newValue.label;
     this.profile.division = '';
     this.firebaseService
       .getOrganizationDivisions(this.profile.orgId!)
       .subscribe((divisions) => (this.divisionSelector.values = divisions));
+  }
+
+  onConceptsChange(concepts: string[]): void {
+    this.profile.knowledge = concepts;
+  }
+
+  onSkillsChange(skills: string[]): void {
+    this.profile.skills = skills;
+  }
+
+  onDeletedConcept(skills: string[]): void {
+    const matchedSkills = skills.filter((skill) =>
+      this.profile.skills.includes(skill)
+    );
+
+    if (matchedSkills.length > 0) {
+      this.confirmDeleteConcept(matchedSkills);
+    }
+  }
+
+  returnToHomepage(): void {
+    if (this.inputProfile !== undefined) {
+      this.router.navigate(['profile/' + this.inputProfile._id]);
+    } else {
+      this.router.navigate(['profile']);
+    }
   }
 
   submitProfile(): void {
@@ -289,11 +255,10 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
     if (allValid) {
       this.exitWithoutSavingService.bypassGuard.next(true);
 
+      const isUpdate = this.formType === FormType.Edit;
+
       this.occupationalProfileService
-        .submitOccupationalProfile(
-          this.profile,
-          this.inputProfile !== undefined
-        )
+        .submitOccupationalProfile(this.profile, isUpdate)
         .pipe(
           take(1),
           catchError((error) => {
@@ -313,7 +278,7 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
               this.router.navigate(['profile/' + this.profile._id], {
                 queryParams: {
                   submitted: true,
-                  mode: this.inputProfile !== undefined ? 'update' : 'create',
+                  mode: isUpdate ? 'update' : 'create',
                 },
               });
             }
@@ -334,15 +299,92 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  returnToHomepage() {
-    if (this.inputProfile !== undefined) {
-      this.router.navigate(['profile/' + this.inputProfile._id]);
-    } else {
-      this.router.navigate(['profile']);
+  private detectFormType(profile?: OccupationalProfile): FormType {
+    if (!profile) return FormType.Create;
+
+    if (profile._id === '' && profile.userId === '') return FormType.Duplicate;
+
+    return FormType.Edit;
+  }
+
+  private initializeProfile(): void {
+    switch (this.formType) {
+      case FormType.Create:
+        this.profile = new OccupationalProfile();
+
+        break;
+
+      case FormType.Edit:
+        this.profile = JSON.parse(JSON.stringify(this.inputProfile));
+
+        break;
+
+      case FormType.Duplicate:
+        this.profile = new OccupationalProfile(this.inputProfile);
+
+        break;
     }
   }
 
-  getFieldNames(fields: Field[]): string[] {
+  private extractCompetencesFromTree(nodes: any[]): Competence[] {
+    return nodes.reduce((acc: Competence[], node) => {
+      acc.push({
+        preferredLabel: node.label ?? '',
+        altLabels: node.altLabels ?? [],
+        description: node.description ?? '',
+        reuseLevel: node.reuseLevel ?? '',
+        skillType: node.skillType ?? '',
+        uri: node.uri ?? '',
+      });
+
+      if (node.children?.length) {
+        acc.push(...this.extractCompetencesFromTree(node.children));
+      }
+
+      return acc;
+    }, []);
+  }
+
+  private manageProfileCompetences(): void {
+    if (!this.inputProfile) return;
+
+    const competenceLabels = this.extractLabelsFromTree(this.competenceTree);
+    const legacyCompetences: string[] = [];
+
+    this.profile.competences.forEach((c) => {
+      if (!competenceLabels.includes(c.preferredLabel)) {
+        legacyCompetences.push(c.preferredLabel);
+      }
+    });
+
+    this.profile.competences = this.profile.competences.filter((c) =>
+      competenceLabels.includes(c.preferredLabel)
+    );
+
+    legacyCompetences.forEach((c) => {
+      if (!this.profile.customCompetences.includes(c)) {
+        this.customCompetences.push(c);
+      }
+    });
+
+    this.competences = this.profile.competences.map((c) => c.preferredLabel);
+    this.customCompetences.push(...this.profile.customCompetences);
+    this.showCustomCompetences = this.customCompetences.length > 0;
+  }
+
+  private extractLabelsFromTree(nodes: TreeNode<any>[]): string[] {
+    return nodes.reduce((acc: string[], node) => {
+      if (node.label) acc.push(node.label);
+
+      if (node.children?.length) {
+        acc.push(...this.extractLabelsFromTree(node.children));
+      }
+
+      return acc;
+    }, []);
+  }
+
+  private getFieldNames(fields: Field[]): string[] {
     let list: string[] = [];
 
     fields.forEach((field) => {
@@ -350,47 +392,6 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
     });
 
     return list;
-  }
-
-  private getFields(names: string[]): Field[] {
-    let list: Field[] = [];
-
-    this.fields.forEach((field) => {
-      if (names.includes(field.name)) {
-        list.push(field);
-      }
-    });
-
-    return list;
-  }
-
-  private getCompetences(labels: string[]): Competence[] {
-    let list: Competence[] = [];
-
-    this.skills.forEach((skill) => {
-      if (labels.includes(skill.preferredLabel)) {
-        list.push(skill);
-      }
-    });
-
-    return list;
-  }
-  conceptsChange(concepts: string[]): void {
-    this.profile.knowledge = concepts;
-  }
-
-  skillsChange(skills: string[]): void {
-    this.profile.skills = skills;
-  }
-
-  deletedConceptSkills(skills: string[]): void {
-    const matchedSkills = skills.filter((skill) =>
-      this.profile.skills.includes(skill)
-    );
-
-    if (matchedSkills.length > 0) {
-      this.confirmDeleteConcept(matchedSkills);
-    }
   }
 
   private confirmExitWithoutSaving(): void {
@@ -438,5 +439,29 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
         )),
       reject: () => {},
     });
+  }
+
+  private getCompetences(labels: string[]): Competence[] {
+    let list: Competence[] = [];
+
+    this.allCompetences.forEach((competence) => {
+      if (labels.includes(competence.preferredLabel)) {
+        list.push(competence);
+      }
+    });
+
+    return list;
+  }
+
+  private getFields(names: string[]): Field[] {
+    let list: Field[] = [];
+
+    this.fields.forEach((field) => {
+      if (names.includes(field.name)) {
+        list.push(field);
+      }
+    });
+
+    return list;
   }
 }

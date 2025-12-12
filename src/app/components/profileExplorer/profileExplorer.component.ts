@@ -61,7 +61,6 @@ export class ProfileExplorerComponent
   filteredProfiles: OccupationalProfile[] = [];
 
   @ViewChild('container') containerRef!: ElementRef;
-  showButton = true;
   buttonBottom = 32;
 
   private profiles: OccupationalProfile[] = [];
@@ -96,7 +95,12 @@ export class ProfileExplorerComponent
 
       this.searchOption = this.filterService.searchOption;
       this.searchValue = this.filterService.searchValue;
-      this.visibilityFilter = this.filterService.visibilityFilter;
+      if (!this.isLogged()) {
+        this.visibilityFilter = 'all';
+        this.filterService.visibilityFilter = 'all';
+      } else {
+        this.visibilityFilter = this.filterService.visibilityFilter;
+      }
 
       this.filterPipeline();
       this.loading = false;
@@ -170,10 +174,12 @@ export class ProfileExplorerComponent
   }
 
   setVisibilityFilter(filter: string): void {
-    this.visibilityFilter = filter;
-    this.filterService.visibilityFilter = filter;
+    setTimeout(() => {
+      this.visibilityFilter = filter;
+      this.filterService.visibilityFilter = filter;
 
-    this.filterPipeline();
+      this.filterPipeline();
+    });
   }
 
   filterPipeline(): void {

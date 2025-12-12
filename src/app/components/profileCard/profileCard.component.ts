@@ -22,6 +22,7 @@ import { UtilsService } from '../../services/utils.service';
 })
 export class ProfileCardComponent implements OnInit {
   @Input() occupationalProfile!: OccupationalProfile;
+  @Input() logged: boolean = false;
 
   concepts: string[] = [];
   selectedConceptsColor: Map<string, string> = new Map();
@@ -83,6 +84,10 @@ export class ProfileCardComponent implements OnInit {
 
   editProfile() {
     this.router.navigate(['profile/edit/' + this.occupationalProfile._id]);
+  }
+
+  duplicateProfile() {
+    this.router.navigate(['profile/new/' + this.occupationalProfile._id]);
   }
 
   deleteModal(event: Event) {

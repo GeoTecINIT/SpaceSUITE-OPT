@@ -61,6 +61,7 @@ export class ProfilePageComponent implements OnInit {
 
   private tagLimit: number = 30;
   knowledgeDistribution: Map<string, number> = new Map();
+  private organizations: string[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -74,10 +75,13 @@ export class ProfilePageComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.firebaseService.getUserOrganizationList().subscribe((orgs) => {
+      orgs.forEach((org) => this.organizations.push(org._id));
+    });
     combineLatest([this.route.paramMap, this.route.queryParams])
       .pipe(
         map(([paramMap, queryParams]) => {
-          const profileId = paramMap.get('dynamicValue') || '';
+          const profileId = paramMap.get('profileId') || '';
           const submitted =
             queryParams['submitted'] === 'true' ||
             queryParams['submitted'] === true;
@@ -208,6 +212,10 @@ export class ProfilePageComponent implements OnInit {
     this.router.navigate(['profile/edit/' + this.profile?._id]);
   }
 
+  duplicateProfile() {
+    this.router.navigate(['profile/new/' + this.profile?._id]);
+  }
+
   deleteModal(event: Event) {
     this.confirmationService.confirm({
       target: event.target as EventTarget,
@@ -261,7 +269,7 @@ export class ProfilePageComponent implements OnInit {
   }
 
   checkUser() {
-    return this.firebaseService.userId === this.profile?.userId;
+    return this.profile && this.organizations.includes(this.profile.orgId);
   }
 
   onClickConcept(code: string) {
@@ -326,5 +334,9 @@ export class ProfilePageComponent implements OnInit {
 
   get knowledgeDistributionArray() {
     return Array.from(this.knowledgeDistribution.entries());
+  }
+
+  isLogged(): boolean {
+    return this.firebaseService.getUserData() !== null;
   }
 }

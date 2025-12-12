@@ -225,20 +225,29 @@
         </div>
       </p-panel>
 
-      <ng-container *ngIf="checkUser()">
+      <ng-container *ngIf="isLogged()">
         <p-button
           class="md:hidden flex justify-content-center custom-button my-2"
-          label="Edit Profile"
-          icon="pi pi-pencil"
-          (onClick)="editProfile()"
+          label="Duplicate Profile"
+          icon="pi pi-clone"
+          (onClick)="duplicateProfile()"
         />
 
-        <p-button
-          class="flex md:hidden justify-content-center delete-button my-2"
-          label="Delete Profile"
-          icon="pi pi-trash"
-          (onClick)="deleteModal($event)"
-        />
+        <ng-container *ngIf="checkUser()">
+          <p-button
+            class="md:hidden flex justify-content-center custom-button my-2"
+            label="Edit Profile"
+            icon="pi pi-pencil"
+            (onClick)="editProfile()"
+          />
+
+          <p-button
+            class="flex md:hidden justify-content-center delete-button my-2"
+            label="Delete Profile"
+            icon="pi pi-trash"
+            (onClick)="deleteModal($event)"
+          />
+        </ng-container>
       </ng-container>
 
       <p-button
@@ -259,21 +268,30 @@
         (onClick)="goToMainPage()"
       />
 
-      <ng-container *ngIf="checkUser()">
+      <ng-container *ngIf="isLogged()">
         <div class="flex flex-wrap gap-2">
           <p-button
             class="custom-button"
-            label="Edit Profile"
-            icon="pi pi-pencil"
-            (onClick)="editProfile()"
+            label="Duplicate Profile"
+            icon="pi pi-clone"
+            (onClick)="duplicateProfile()"
           />
 
-          <p-button
-            class="delete-button"
-            label="Delete Profile"
-            icon="pi pi-trash"
-            (onClick)="deleteModal($event)"
-          />
+          <ng-container *ngIf="checkUser()">
+            <p-button
+              class="custom-button"
+              label="Edit Profile"
+              icon="pi pi-pencil"
+              (onClick)="editProfile()"
+            />
+
+            <p-button
+              class="delete-button"
+              label="Delete Profile"
+              icon="pi pi-trash"
+              (onClick)="deleteModal($event)"
+            />
+          </ng-container>
         </div>
       </ng-container>
     </div>

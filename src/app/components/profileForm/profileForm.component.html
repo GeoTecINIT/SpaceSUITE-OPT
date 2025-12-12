@@ -92,7 +92,7 @@
               ? undefined
               : { value: profile.orgId, label: profile.orgName }
           "
-          (ngModelChange)="loadDivisions($event)"
+          (ngModelChange)="onOrganizationChange($event)"
           class="custom-select w-15rem"
           optionLabel="label"
           [checkmark]="true"
@@ -206,9 +206,9 @@
         label="Knowledge *"
         [selectedConcepts]="profile.knowledge"
         [selectedSkills]="profile.skills"
-        (selectedConceptsChange)="conceptsChange($event)"
-        (selectedSkillsChange)="skillsChange($event)"
-        (deletedConcept)="deletedConceptSkills($event)"
+        (selectedConceptsChange)="onConceptsChange($event)"
+        (selectedSkillsChange)="onSkillsChange($event)"
+        (deletedConcept)="onDeletedConcept($event)"
         [style.color]="
           errorMap.get('knowledge') != undefined ? 'var(--danger-color)' : ''
         "
@@ -244,7 +244,7 @@
   <div class="flex flex-column gap-2">
     <treeselect-chips
       [(chips)]="this.competences"
-      [treeselectOptions]="transversalSkills"
+      [treeselectOptions]="competenceTree"
       fieldName="Transversal Skills"
       pTooltip="Skills considered unrelated to a particular job, task, academic discipline or area of knowledge but that can be used in a wide variety of situations and work settings. Based on the ESCO transversal and cross-sector skills."
       tooltipPosition="top"

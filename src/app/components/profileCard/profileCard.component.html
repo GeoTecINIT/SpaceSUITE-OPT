@@ -19,7 +19,7 @@
         </strong>
       </div>
 
-      <div class="flex gap-2 text-sm">
+      <div class="flex align-items-center gap-2 text-sm">
         <strong>{{ occupationalProfile.knowledge.length }} Knowledge</strong>
         |
         <strong>
@@ -41,6 +41,8 @@
         <strong>EQF: {{ occupationalProfile.eqf }}</strong>
         |
         <ng-container *ngIf="!occupationalProfile.isPublic">
+          <i class="pi pi-eye-slash"></i>
+
           <strong>Private</strong>
           |
         </ng-container>
@@ -90,9 +92,10 @@
         icon="pi pi-clone"
         [rounded]="true"
         variant="text"
-        pTooltip="Under development"
+        [pTooltip]="logged ? 'Duplicate' : 'Login to be able to duplicate.'"
         tooltipPosition="top"
-        disabled="true"
+        [disabled]="!logged"
+        (onClick)="duplicateProfile()"
       />
 
       <p-button
@@ -101,12 +104,14 @@
         [rounded]="true"
         variant="text"
         [pTooltip]="
-          checkUser()
-            ? 'Edit'
-            : 'You can only edit profiles from your organization.'
+          logged
+            ? checkUser()
+              ? 'Edit'
+              : 'You can only edit profiles from your organization.'
+            : 'Login to be able to edit.'
         "
         tooltipPosition="top"
-        [disabled]="!checkUser()"
+        [disabled]="!logged || !checkUser()"
         (onClick)="editProfile()"
       />
 
@@ -116,13 +121,15 @@
         [rounded]="true"
         variant="text"
         [pTooltip]="
-          checkUser()
-            ? 'Delete'
-            : 'You can only delete profiles from your organization.'
+          logged
+            ? checkUser()
+              ? 'Delete'
+              : 'You can only delete profiles from your organization.'
+            : 'Login to be able to delete.'
         "
         tooltipPosition="top"
-        tooltipStyleClass="danger-tooltip"
-        [disabled]="!checkUser()"
+        [tooltipStyleClass]="logged && checkUser() ? 'danger-tooltip' : ''"
+        [disabled]="!logged || !checkUser()"
         (onClick)="deleteModal($event)"
       />
     </div>
