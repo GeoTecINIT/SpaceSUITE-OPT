@@ -225,6 +225,40 @@
         </div>
       </p-panel>
 
+      <p-button
+        class="md:hidden flex justify-content-center custom-button my-2"
+        label="Share Profile"
+        icon="pi pi-share-alt"
+        (onClick)="op1.toggle($event)"
+      />
+
+      <p-popover #op1>
+        <div style="color: var(--primary-color)">
+          <div class="font-medium block mb-2">
+            <strong>Options</strong>
+          </div>
+
+          <div class="flex gap-5">
+            <i
+              class="pi pi-link popover-element"
+              pTooltip="Copy link"
+              tooltipPosition="top"
+              (click)="copyLink()"
+            ></i>
+            <i
+              class="pi pi-file-pdf popover-element"
+              pTooltip="Under development"
+              tooltipPosition="top"
+            ></i>
+            <i
+              class="pi pi-code popover-element"
+              pTooltip="Under development"
+              tooltipPosition="top"
+            ></i>
+          </div>
+        </div>
+      </p-popover>
+
       <ng-container *ngIf="isLogged()">
         <p-button
           class="md:hidden flex justify-content-center custom-button my-2"
@@ -268,8 +302,42 @@
         (onClick)="goToMainPage()"
       />
 
-      <ng-container *ngIf="isLogged()">
-        <div class="flex flex-wrap gap-2">
+      <div class="flex flex-wrap gap-2">
+        <p-button
+          class="custom-button"
+          label="Share Profile"
+          icon="pi pi-share-alt"
+          (onClick)="op2.toggle($event)"
+        />
+
+        <p-popover #op2>
+          <div style="color: var(--primary-color)">
+            <div class="font-medium block mb-2">
+              <strong>Options</strong>
+            </div>
+
+            <div class="flex gap-5">
+              <i
+                class="pi pi-link popover-element"
+                pTooltip="Copy link"
+                tooltipPosition="top"
+                (click)="copyLink()"
+              ></i>
+              <i
+                class="pi pi-file-pdf popover-element"
+                pTooltip="Under development"
+                tooltipPosition="top"
+              ></i>
+              <i
+                class="pi pi-code popover-element"
+                pTooltip="Under development"
+                tooltipPosition="top"
+              ></i>
+            </div>
+          </div>
+        </p-popover>
+
+        <ng-container *ngIf="isLogged()">
           <p-button
             class="custom-button"
             label="Duplicate Profile"
@@ -292,8 +360,8 @@
               (onClick)="deleteModal($event)"
             />
           </ng-container>
-        </div>
-      </ng-container>
+        </ng-container>
+      </div>
     </div>
   </div>
 </ng-container>

@@ -59,6 +59,11 @@
   );
 }
 
+.popover-element:hover {
+  color: var(--hover-color);
+  cursor: pointer;
+}
+
 ::ng-deep .p-card {
   border: 1px solid #e2e8f0 !important;
 }

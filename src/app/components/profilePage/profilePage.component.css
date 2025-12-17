@@ -119,6 +119,7 @@
 
 .popover-element:hover {
   color: var(--hover-color);
+  cursor: pointer;
 }
 
 ::ng-deep .p-confirmdialog {
@@ -152,4 +153,8 @@
     var(--danger-color) 80%,
     black 20%
   );
+}
+
+::ng-deep .p-tooltip {
+  --p-tooltip-background: var(--primary-color);
 }

@@ -82,10 +82,37 @@
         icon="pi pi-share-alt"
         [rounded]="true"
         variant="text"
-        pTooltip="Under development"
+        pTooltip="Share"
         tooltipPosition="top"
-        disabled="true"
+        (onClick)="op.toggle($event)"
       />
+
+      <p-popover #op>
+        <div style="color: var(--primary-color)">
+          <div class="font-medium block mb-2">
+            <strong>Options</strong>
+          </div>
+
+          <div class="flex gap-5">
+            <i
+              class="pi pi-link popover-element"
+              pTooltip="Copy link"
+              tooltipPosition="top"
+              (click)="copyLink()"
+            ></i>
+            <i
+              class="pi pi-file-pdf popover-element"
+              pTooltip="Under development"
+              tooltipPosition="top"
+            ></i>
+            <i
+              class="pi pi-code popover-element"
+              pTooltip="Under development"
+              tooltipPosition="top"
+            ></i>
+          </div>
+        </div>
+      </p-popover>
 
       <p-button
         class="custom-button"

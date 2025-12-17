@@ -6,10 +6,12 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { PanelModule } from 'primeng/panel';
+import { PopoverModule } from 'primeng/popover';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
+import { TooltipModule } from 'primeng/tooltip';
 import {
   catchError,
   combineLatest,
@@ -44,6 +46,8 @@ import { UtilsService } from '../../services/utils.service';
     ConfirmDialogModule,
     ToastModule,
     ProgressBarModule,
+    PopoverModule,
+    TooltipModule,
   ],
   providers: [ConfirmationService, MessageService],
 })
@@ -338,5 +342,17 @@ export class ProfilePageComponent implements OnInit {
 
   isLogged(): boolean {
     return this.firebaseService.getUserData() !== null;
+  }
+
+  copyLink(): void {
+    navigator.clipboard.writeText(window.location.href);
+
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Info',
+      detail: `You copied the profile url to clipboard!`,
+      life: 3000,
+      closable: true,
+    });
   }
 }

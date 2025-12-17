@@ -5,6 +5,7 @@ import { BokInformationService } from '@eo4geo/ngx-bok-visualization';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
+import { PopoverModule } from 'primeng/popover';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 import { catchError, finalize, of, take } from 'rxjs';
@@ -18,7 +19,14 @@ import { UtilsService } from '../../services/utils.service';
   selector: 'profile-card',
   templateUrl: './profileCard.component.html',
   styleUrl: './profileCard.component.css',
-  imports: [CommonModule, ButtonModule, CardModule, TagModule, TooltipModule],
+  imports: [
+    CommonModule,
+    ButtonModule,
+    CardModule,
+    TagModule,
+    TooltipModule,
+    PopoverModule,
+  ],
 })
 export class ProfileCardComponent implements OnInit {
   @Input() occupationalProfile!: OccupationalProfile;
@@ -70,12 +78,12 @@ export class ProfileCardComponent implements OnInit {
   }
 
   onClickConcept(code: string): void {
-    window.open('https://geospacebok.eu/' + code);
+    window.open(`https://geospacebok.eu/${code}`);
   }
 
   onClickTitle(event: MouseEvent): void {
     event.preventDefault();
-    this.router.navigate(['profile/' + this.occupationalProfile._id]);
+    this.router.navigate([`profile/${this.occupationalProfile._id}`]);
   }
 
   checkUser() {
@@ -83,11 +91,11 @@ export class ProfileCardComponent implements OnInit {
   }
 
   editProfile() {
-    this.router.navigate(['profile/edit/' + this.occupationalProfile._id]);
+    this.router.navigate([`profile/edit/${this.occupationalProfile._id}`]);
   }
 
   duplicateProfile() {
-    this.router.navigate(['profile/new/' + this.occupationalProfile._id]);
+    this.router.navigate([`profile/new/${this.occupationalProfile._id}`]);
   }
 
   deleteModal(event: Event) {
@@ -144,5 +152,19 @@ export class ProfileCardComponent implements OnInit {
         })
       )
       .subscribe();
+  }
+
+  copyLink(): void {
+    navigator.clipboard.writeText(
+      window.location.href + `profile/${this.occupationalProfile._id}`
+    );
+
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Info',
+      detail: `You copied the profile url to clipboard!`,
+      life: 3000,
+      closable: true,
+    });
   }
 }
