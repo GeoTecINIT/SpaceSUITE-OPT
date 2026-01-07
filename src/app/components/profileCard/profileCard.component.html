@@ -11,68 +11,75 @@
           {{ occupationalProfile.title }}
         </a>
 
-        <strong class="p-card-subtitle text-sm">
+        <span class="p-card-subtitle text-sm">
           {{ occupationalProfile.orgName }}
           <ng-container *ngIf="occupationalProfile.division !== ''">
             - {{ occupationalProfile.division }}
           </ng-container>
-        </strong>
+        </span>
       </div>
 
-      <div class="flex align-items-center gap-2 text-sm">
-        <strong>{{ occupationalProfile.knowledge.length }} Knowledge</strong>
-        |
-        <strong>
-          {{
-            occupationalProfile.skills.length +
-              occupationalProfile.customSkills.length
-          }}
-          Skills
-        </strong>
-        |
-        <strong>
-          {{
-            occupationalProfile.competences.length +
-              occupationalProfile.customCompetences.length
-          }}
-          Transversal Skills
-        </strong>
-        |
-        <strong>EQF: {{ occupationalProfile.eqf }}</strong>
-        |
-        <ng-container *ngIf="!occupationalProfile.isPublic">
-          <i class="pi pi-eye-slash"></i>
-
-          <strong>Private</strong>
+      <div class="flex flex-column gap-2">
+        <div class="flex align-items-center gap-2 text-sm">
+          <span>
+            <strong>Knowledge:</strong>
+            {{ occupationalProfile.knowledge.length }}
+          </span>
           |
-        </ng-container>
-        <strong>
-          Last updated:
-          {{ occupationalProfile.updatedAt?.toDate().toLocaleDateString() }}
-        </strong>
-      </div>
+          <span>
+            <strong>Skills:</strong>
+            {{
+              occupationalProfile.skills.length +
+                occupationalProfile.customSkills.length
+            }}
+          </span>
+          |
+          <span>
+            <strong>Transversal Skills:</strong>
+            {{
+              occupationalProfile.competences.length +
+                occupationalProfile.customCompetences.length
+            }}
+          </span>
+          |
+          <span>
+            <strong>EQF level:</strong>
+            {{ occupationalProfile.eqf }}
+          </span>
+          |
+          <ng-container *ngIf="!occupationalProfile.isPublic">
+            <i class="pi pi-eye-slash"></i>
+            <strong>Private</strong>
+            |
+          </ng-container>
+          <span>
+            <strong>Last updated:</strong>
+            {{ occupationalProfile.updatedAt?.toDate().toLocaleDateString() }}
+          </span>
+        </div>
 
-      <div class="text-truncate mb-2">
-        {{ occupationalProfile.description }}
-      </div>
+        <div class="text-truncate">
+          {{ occupationalProfile.description }}
+        </div>
 
-      <div class="flex flex-wrap gap-2">
-        <ng-container *ngFor="let concept of concepts">
-          <p-tag
-            class="custom-tag cursor-pointer text-xs"
-            [value]="concept"
-            [rounded]="true"
-            [style.background]="selectedConceptsColor.get(concept)"
-            (click)="onClickConcept(concept)"
-            [pTooltip]="selectedConceptsTooltip.get(concept)"
-            tooltipPosition="top"
-            [tooltipStyleClass]="
-              selectedConceptsTooltip.get(concept) === 'Deprecated concept'
-                ? 'danger-tooltip'
-                : ''
-            "
-          />
-        </ng-container>
+        <div class="flex flex-wrap gap-2">
+          <ng-container *ngFor="let concept of concepts">
+            <p-tag
+              class="custom-tag cursor-pointer text-xs"
+              [value]="concept"
+              [rounded]="true"
+              [style.background]="selectedConceptsColor.get(concept)"
+              (click)="onClickConcept(concept)"
+              [pTooltip]="selectedConceptsTooltip.get(concept)"
+              tooltipPosition="top"
+              [tooltipStyleClass]="
+                selectedConceptsTooltip.get(concept) === 'Deprecated concept'
+                  ? 'danger-tooltip'
+                  : ''
+              "
+            />
+          </ng-container>
+        </div>
       </div>
     </div>
 
