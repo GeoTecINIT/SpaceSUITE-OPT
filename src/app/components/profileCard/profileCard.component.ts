@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { BokInformationService } from '@eo4geo/ngx-bok-visualization';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
-import { PopoverModule } from 'primeng/popover';
+import { Popover, PopoverModule } from 'primeng/popover';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 import { catchError, finalize, of, take } from 'rxjs';
@@ -13,6 +13,7 @@ import { OccupationalProfile } from '../../models/occupationalProfile';
 import { FirebaseService } from '../../services/firebase.service';
 import { OccupationalProfileService } from '../../services/occupationalProfile.service';
 import { UtilsService } from '../../services/utils.service';
+import { PdfService } from '../../services/pdf.service';
 
 @Component({
   standalone: true,
@@ -38,6 +39,8 @@ export class ProfileCardComponent implements OnInit {
 
   private organizations: string[] = [];
 
+  @ViewChild('op') op!: Popover;
+
   constructor(
     private bokInfo: BokInformationService,
     private utilsService: UtilsService,
@@ -45,7 +48,8 @@ export class ProfileCardComponent implements OnInit {
     private firebaseService: FirebaseService,
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
-    private occupationalProfileService: OccupationalProfileService
+    private occupationalProfileService: OccupationalProfileService,
+    private pdfService: PdfService
   ) {}
 
   ngOnInit() {
@@ -166,5 +170,21 @@ export class ProfileCardComponent implements OnInit {
       life: 3000,
       closable: true,
     });
+  }
+
+  downloadPortfolioPdf() {
+    document.body.style.cursor = 'wait';
+    this.op.hide();
+    this.pdfService.generatePortfolioPdf(new OccupationalProfile(this.occupationalProfile)).subscribe( pdf => {
+      this.downloadURI(pdf.url, pdf.filename);
+      document.body.style.cursor = '';
+    });
+  }
+
+  private downloadURI(uri: string, name: string) {
+    const link = document.createElement("a");
+    link.download = name;
+    link.href = uri;
+    link.click();
   }
 }

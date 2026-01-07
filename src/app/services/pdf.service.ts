@@ -6,6 +6,7 @@ import { BokInformationService } from '@eo4geo/ngx-bok-visualization';
 import { PdfWorkerPayload } from '../models/pdfWorkerPayload';
 import { PdfWorkerResult } from '../models/pdfWorkerResult';
 import { OccupationalProfile } from '../models/occupationalProfile';
+import { Timestamp } from '@angular/fire/firestore';
 
 @Injectable({ providedIn: 'root' })
 export class PdfService {
@@ -78,6 +79,8 @@ export class PdfService {
     const parseBokConcepts$ = this.parseBokConcepts(profileToPrint.knowledge).pipe(
       tap(parsed => profileToPrint.knowledge = parsed || [])
     );
+    profileToPrint.createdAt = this.normalizeDate(profileToPrint.createdAt);
+    profileToPrint.updatedAt = this.normalizeDate(profileToPrint.updatedAt);
     return this.resourcesLoaded.pipe(
       filter(value => value === true), 
       take(1), 
@@ -108,8 +111,18 @@ export class PdfService {
   }
 
   private parseBokConcepts(concepts: string[]): Observable<string[] | null> {
-    const conceptsObservables = concepts.map(value => this.bokUtils.getConceptName(value).pipe(first()));
+    const conceptsObservables = concepts.map(value => this.bokUtils.getConceptName(value).pipe(first(), map( name => name ? `[${value}] ` + name : value)));
     return this.safeForkJoin(conceptsObservables);
+  }
+
+  private normalizeDate(value: any): Date | undefined {
+    if (!value) return undefined;
+    if (value instanceof Date) return value;
+    if (value instanceof Timestamp) return value.toDate();
+    if (typeof value === 'object' && 'seconds' in value) {
+      return new Timestamp(value.seconds, value.nanoseconds).toDate();
+    }
+    return undefined;
   }
 
   generatePdf(payload: PdfWorkerPayload): Promise<PdfWorkerResult> {
