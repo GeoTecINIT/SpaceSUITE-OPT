@@ -111,7 +111,7 @@ export class PdfService {
   }
 
   private parseBokConcepts(concepts: string[]): Observable<string[] | null> {
-    const conceptsObservables = concepts.map(value => this.bokUtils.getConceptName(value).pipe(first(), map( name => name ? `[${value}] ` + name : value)));
+    const conceptsObservables = concepts.map(value => this.bokUtils.getConceptName(value).pipe(first(), map( name =>`[${value}] ` + name)));
     return this.safeForkJoin(conceptsObservables);
   }
 
