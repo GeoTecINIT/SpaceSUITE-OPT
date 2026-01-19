@@ -74,7 +74,7 @@ export class CustomSelectComponent {
   onDropdownOpen() {
     setTimeout(() => {
       const input = document.querySelector(
-        '.p-select-filter'
+        '.p-select-filter',
       ) as HTMLInputElement | null;
       if (input) {
         const keyHandler = (event: KeyboardEvent) => {

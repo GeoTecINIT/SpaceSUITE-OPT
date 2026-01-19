@@ -80,14 +80,14 @@ export class BokModalComponent implements OnInit {
     private readonly bokInfo: BokInformationService,
     private readonly utilsService: UtilsService,
     private cdr: ChangeDetectorRef,
-    private messageService: MessageService
+    private messageService: MessageService,
   ) {}
 
   ngOnInit() {}
 
   removeChip(label: string): void {
     this._selectedConcepts = this._selectedConcepts.filter(
-      (concept) => concept !== label
+      (concept) => concept !== label,
     );
 
     this.conceptColors.delete(label);
@@ -133,7 +133,7 @@ export class BokModalComponent implements OnInit {
           this.currentConceptName = name;
           this.cdr.detectChanges();
         });
-      }
+      },
     );
   }
 
@@ -168,7 +168,7 @@ export class BokModalComponent implements OnInit {
       this.addMessage(
         `Concept "${concept}" is already annotated!`,
         'error',
-        'Error'
+        'Error',
       );
     }
   }

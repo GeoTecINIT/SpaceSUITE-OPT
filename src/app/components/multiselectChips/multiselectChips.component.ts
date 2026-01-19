@@ -58,7 +58,7 @@ export class MultiselectChipsComponent {
     private filterService: CardFilterService,
     private utilsService: UtilsService,
     private bokInfo: BokInformationService,
-    private fieldsService: FieldsService
+    private fieldsService: FieldsService,
   ) {}
 
   ngOnInit() {
@@ -69,7 +69,7 @@ export class MultiselectChipsComponent {
           (filterOption) =>
             (this.multiselectOptions = filterOption.values
               .filter((value) => value !== 'Other')
-              .map((v) => ({ label: v, value: v })))
+              .map((v) => ({ label: v, value: v }))),
         );
     } else if (this.optionsSource === 'fields') {
       this.fieldsService.getFields().subscribe((fields) => {
@@ -113,7 +113,7 @@ export class MultiselectChipsComponent {
   onDropdownOpen() {
     setTimeout(() => {
       const input = document.querySelector(
-        '.p-multiselect-filter-container .p-inputtext'
+        '.p-multiselect-filter-container .p-inputtext',
       ) as HTMLInputElement | null;
       if (input) {
         const keyHandler = (event: KeyboardEvent) => {
@@ -144,7 +144,7 @@ export class MultiselectChipsComponent {
 
   deleteElement(element: string) {
     this.multiSelection = this.multiSelection.filter(
-      (value) => value !== element
+      (value) => value !== element,
     );
     this.chipsChange.emit(this.chips.filter((value) => value !== element));
   }
@@ -152,7 +152,7 @@ export class MultiselectChipsComponent {
   multiselectChange(values: string[]) {
     this.multiSelection = values || [];
     const include = this.multiSelection.filter(
-      (value) => !this.chips.includes(value)
+      (value) => !this.chips.includes(value),
     );
     include.forEach((chip) => this.getBackgroundColor(chip));
     let exclude: string[] = [];
@@ -162,17 +162,17 @@ export class MultiselectChipsComponent {
           !this.multiSelection.includes(value) &&
           this.multiselectOptions
             .map((x) => x.items)
-            .some((array) => array.map((y: any) => y.value).includes(value))
+            .some((array) => array.map((y: any) => y.value).includes(value)),
       );
     } else {
       exclude = this.chips.filter(
         (value) =>
           !this.multiSelection.includes(value) &&
-          this.multiselectOptions.map((x) => x.value).includes(value)
+          this.multiselectOptions.map((x) => x.value).includes(value),
       );
     }
     this.chipsChange.emit(
-      this.chips.concat(include).filter((value) => !exclude.includes(value))
+      this.chips.concat(include).filter((value) => !exclude.includes(value)),
     );
   }
 

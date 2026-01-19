@@ -23,7 +23,7 @@ export class ClickOutsideDirective {
     }
 
     const clickedInside = this._elementRef.nativeElement.contains(
-      targetElement as HTMLElement
+      targetElement as HTMLElement,
     );
 
     if (!clickedInside) {

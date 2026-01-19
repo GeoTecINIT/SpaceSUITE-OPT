@@ -75,7 +75,7 @@ export class ProfilePageComponent implements OnInit {
     private bokInfo: BokInformationService,
     private firebaseService: FirebaseService,
     private confirmationService: ConfirmationService,
-    private messageService: MessageService
+    private messageService: MessageService,
   ) {}
 
   ngOnInit() {
@@ -99,10 +99,10 @@ export class ProfilePageComponent implements OnInit {
                 if (submitted && !profile) throw new Error('Profile not found');
               }),
               retry({ count: 1, delay: 500 }),
-              catchError(() => of(undefined))
-            )
+              catchError(() => of(undefined)),
+            ),
         ),
-        take(1)
+        take(1),
       )
       .subscribe((newProfile?: OccupationalProfile) => {
         if (newProfile) this.loadProfile(newProfile);
@@ -162,8 +162,8 @@ export class ProfilePageComponent implements OnInit {
             : '';
           this.conceptsColor.set(concept, softColor);
         }),
-        map(({ name }) => ({ concept, name }))
-      )
+        map(({ name }) => ({ concept, name })),
+      ),
     );
 
     forkJoin(conceptRequests).subscribe((results) => {
@@ -196,7 +196,7 @@ export class ProfilePageComponent implements OnInit {
       if (
         customCompetence !== '' &&
         this.transversalSkills.every(
-          (competence) => competence.preferredLabel !== customCompetence
+          (competence) => competence.preferredLabel !== customCompetence,
         )
       ) {
         this.transversalSkills.push({ preferredLabel: customCompetence });
@@ -267,7 +267,7 @@ export class ProfilePageComponent implements OnInit {
             this.router.navigate(['profile'], {
               queryParams: { submitted: true, mode: 'delete' },
             });
-        })
+        }),
       )
       .subscribe();
   }
@@ -307,7 +307,7 @@ export class ProfilePageComponent implements OnInit {
           Object.entries(counts).map(([area, count]) => [
             area,
             Math.round((count / total) * 100),
-          ])
+          ]),
         );
 
         allAreas.forEach((area) => {

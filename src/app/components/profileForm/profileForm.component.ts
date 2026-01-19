@@ -130,13 +130,15 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private confirmationService: ConfirmationService,
     private authService: AuthService,
     private fieldsService: FieldsService,
-    private escoService: ESCOService
+    private escoService: ESCOService,
   ) {}
 
   ngOnInit() {
     this.formType = this.detectFormType(this.inputProfile);
 
-    this.initializeProfile();
+    this.profile = new OccupationalProfile(
+      this.formType === FormType.Create ? undefined : this.inputProfile,
+    );
 
     this.authSubscription = this.authService
       .getUserState()
@@ -181,7 +183,7 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
             .getOrganizationDivisions(this.profile.orgId)
             .pipe(take(1))
             .subscribe(
-              (divisions) => (this.divisionSelector.values = divisions)
+              (divisions) => (this.divisionSelector.values = divisions),
             );
         }
 
@@ -223,7 +225,7 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onDeletedConcept(skills: string[]): void {
     const matchedSkills = skills.filter((skill) =>
-      this.profile.skills.includes(skill)
+      this.profile.skills.includes(skill),
     );
 
     if (matchedSkills.length > 0) {
@@ -246,10 +248,10 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.profile.fields = this.getFields(this.fieldNames);
 
     this.errorMap = this.occupationalProfileService.validateOccupationalProfile(
-      this.profile
+      this.profile,
     );
     const allValid: boolean = Array.from(this.errorMap.values()).every(
-      (value) => value === undefined
+      (value) => value === undefined,
     );
 
     if (allValid) {
@@ -282,7 +284,7 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
                 },
               });
             }
-          })
+          }),
         )
         .subscribe((actionId) => {
           this.profile._id = actionId || '';
@@ -305,25 +307,6 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
     if (profile._id === '' && profile.userId === '') return FormType.Duplicate;
 
     return FormType.Edit;
-  }
-
-  private initializeProfile(): void {
-    switch (this.formType) {
-      case FormType.Create:
-        this.profile = new OccupationalProfile();
-
-        break;
-
-      case FormType.Edit:
-        this.profile = JSON.parse(JSON.stringify(this.inputProfile));
-
-        break;
-
-      case FormType.Duplicate:
-        this.profile = new OccupationalProfile(this.inputProfile);
-
-        break;
-    }
   }
 
   private extractCompetencesFromTree(nodes: any[]): Competence[] {
@@ -358,7 +341,7 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
     });
 
     this.profile.competences = this.profile.competences.filter((c) =>
-      competenceLabels.includes(c.preferredLabel)
+      competenceLabels.includes(c.preferredLabel),
     );
 
     legacyCompetences.forEach((c) => {
@@ -435,7 +418,7 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
       },
       accept: () =>
         (this.profile.skills = this.profile.skills.filter(
-          (skill) => !skills.includes(skill)
+          (skill) => !skills.includes(skill),
         )),
       reject: () => {},
     });

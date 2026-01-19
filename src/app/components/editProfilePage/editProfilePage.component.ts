@@ -23,7 +23,7 @@ export class EditProfilePageComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private firebaseService: FirebaseService,
-    private exitWithoutSavingService: ExitWithoutSavingService
+    private exitWithoutSavingService: ExitWithoutSavingService,
   ) {}
 
   ngOnInit() {
@@ -55,9 +55,9 @@ export class EditProfilePageComponent implements OnInit {
               }
 
               return EMPTY;
-            })
+            }),
           );
-        })
+        }),
       )
       .subscribe();
   }
@@ -69,7 +69,7 @@ export class EditProfilePageComponent implements OnInit {
 
   private duplicateProfile(
     originalProfile: OccupationalProfile,
-    userOrgs: { _id: string; name: string }[]
+    userOrgs: { _id: string; name: string }[],
   ): void {
     this.profile = new OccupationalProfile(originalProfile);
     this.profile._id = '';

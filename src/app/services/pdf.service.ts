@@ -1,7 +1,21 @@
 import { Injectable } from '@angular/core';
 import { PdfResult } from '../models/pdfResult';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, concatMap, filter, finalize, first, forkJoin, from, map, Observable, of, switchMap, take, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  concatMap,
+  filter,
+  finalize,
+  first,
+  forkJoin,
+  from,
+  map,
+  Observable,
+  of,
+  switchMap,
+  take,
+  tap,
+} from 'rxjs';
 import { BokInformationService } from '@eo4geo/ngx-bok-visualization';
 import { PdfWorkerPayload } from '../models/pdfWorkerPayload';
 import { PdfWorkerResult } from '../models/pdfWorkerResult';
@@ -10,7 +24,6 @@ import { Timestamp } from '@angular/fire/firestore';
 
 @Injectable({ providedIn: 'root' })
 export class PdfService {
-
   private poppinsRegular?: string;
   private poppinsItalic?: string;
   private poppinsBold?: string;
@@ -18,50 +31,78 @@ export class PdfService {
   private EULogo?: string;
   private watermark?: string;
 
-  private resourcesLoaded: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  private resourcesLoaded: BehaviorSubject<boolean> = new BehaviorSubject(
+    false,
+  );
   private scaleFactor: number = 1.5;
 
-  constructor(private http: HttpClient, private bokUtils: BokInformationService) {
-    const poppinsRegular$ = this.loadFont('assets/fonts/poppins/Poppins-Regular.ttf').pipe(
-      first(), 
-      map(font => this.poppinsRegular = font)
-    );
-    const poppinsBold$ = this.loadFont('assets/fonts/poppins/Poppins-Bold.ttf').pipe(
-      first(), 
-      map(font => this.poppinsBold = font)
-    );
-    const poppinsItalic$ = this.loadFont('assets/fonts/poppins/Poppins-Italic.ttf').pipe(
-      first(), 
-      map(font => this.poppinsItalic = font),
-    );
-    const footerImage$ = this.http.get('assets/images/SpaceSUITE_horizontal_white.png', { responseType: 'blob' }).pipe(
+  constructor(
+    private http: HttpClient,
+    private bokUtils: BokInformationService,
+  ) {
+    const poppinsRegular$ = this.loadFont(
+      'assets/fonts/poppins/Poppins-Regular.ttf',
+    ).pipe(
       first(),
-      switchMap(blob => from(this.blobToBase64(blob))),
-      map(image => this.spaceSuiteWhiteLogo = image)
+      map((font) => (this.poppinsRegular = font)),
     );
-    const footerImage2$ = this.http.get('assets/images/EU_Funding.png', { responseType: 'blob' }).pipe(
+    const poppinsBold$ = this.loadFont(
+      'assets/fonts/poppins/Poppins-Bold.ttf',
+    ).pipe(
       first(),
-      switchMap(blob => from(this.blobToBase64(blob))),
-      map(image => this.EULogo = image)
+      map((font) => (this.poppinsBold = font)),
     );
-    const watermarkImage$ = this.http.get('assets/images/watermark.png', { responseType: 'blob' }).pipe(
+    const poppinsItalic$ = this.loadFont(
+      'assets/fonts/poppins/Poppins-Italic.ttf',
+    ).pipe(
       first(),
-      switchMap(blob => from(this.blobToBase64(blob))),
-      map(image => this.watermark = image)
+      map((font) => (this.poppinsItalic = font)),
     );
-    forkJoin([poppinsRegular$, poppinsBold$, poppinsItalic$, footerImage$, footerImage2$, watermarkImage$]).pipe(finalize(() => this.resourcesLoaded.next(true))).subscribe();
+    const footerImage$ = this.http
+      .get('assets/images/SpaceSUITE_horizontal_white.png', {
+        responseType: 'blob',
+      })
+      .pipe(
+        first(),
+        switchMap((blob) => from(this.blobToBase64(blob))),
+        map((image) => (this.spaceSuiteWhiteLogo = image)),
+      );
+    const footerImage2$ = this.http
+      .get('assets/images/EU_Funding.png', { responseType: 'blob' })
+      .pipe(
+        first(),
+        switchMap((blob) => from(this.blobToBase64(blob))),
+        map((image) => (this.EULogo = image)),
+      );
+    const watermarkImage$ = this.http
+      .get('assets/images/watermark.png', { responseType: 'blob' })
+      .pipe(
+        first(),
+        switchMap((blob) => from(this.blobToBase64(blob))),
+        map((image) => (this.watermark = image)),
+      );
+    forkJoin([
+      poppinsRegular$,
+      poppinsBold$,
+      poppinsItalic$,
+      footerImage$,
+      footerImage2$,
+      watermarkImage$,
+    ])
+      .pipe(finalize(() => this.resourcesLoaded.next(true)))
+      .subscribe();
   }
 
   private loadFont(url: string): Observable<string> {
     return this.http.get(url, { responseType: 'arraybuffer' }).pipe(
-      map(buffer => {
+      map((buffer) => {
         let binary = '';
         const bytes = new Uint8Array(buffer);
         for (let i = 0; i < bytes.length; i++) {
           binary += String.fromCharCode(bytes[i]);
         }
         return btoa(binary);
-      })
+      }),
     );
   }
 
@@ -75,43 +116,52 @@ export class PdfService {
   }
 
   generatePortfolioPdf(profile: OccupationalProfile): Observable<PdfResult> {
-    const profileToPrint: OccupationalProfile = new OccupationalProfile(profile);
-    const parseBokConcepts$ = this.parseBokConcepts(profileToPrint.knowledge).pipe(
-      tap(parsed => profileToPrint.knowledge = parsed || [])
+    const profileToPrint: OccupationalProfile = new OccupationalProfile(
+      profile,
     );
+    const parseBokConcepts$ = this.parseBokConcepts(
+      profileToPrint.knowledge,
+    ).pipe(tap((parsed) => (profileToPrint.knowledge = parsed || [])));
     profileToPrint.createdAt = this.normalizeDate(profileToPrint.createdAt);
     profileToPrint.updatedAt = this.normalizeDate(profileToPrint.updatedAt);
     return this.resourcesLoaded.pipe(
-      filter(value => value === true), 
-      take(1), 
-      concatMap(() => parseBokConcepts$), 
+      filter((value) => value === true),
+      take(1),
+      concatMap(() => parseBokConcepts$),
       switchMap(() =>
-        from(this.generatePdf({
-          profile: profileToPrint,
-          scaleFactor: this.scaleFactor,
-          assets: {
-            poppinsRegular: this.poppinsRegular,
-            poppinsBold: this.poppinsBold,
-            poppinsItalic: this.poppinsItalic,
-            watermark: this.watermark,
-            euLogo: this.EULogo,
-            spaceSuiteLogo: this.spaceSuiteWhiteLogo
-          }
-        }))
+        from(
+          this.generatePdf({
+            profile: profileToPrint,
+            scaleFactor: this.scaleFactor,
+            assets: {
+              poppinsRegular: this.poppinsRegular,
+              poppinsBold: this.poppinsBold,
+              poppinsItalic: this.poppinsItalic,
+              watermark: this.watermark,
+              euLogo: this.EULogo,
+              spaceSuiteLogo: this.spaceSuiteWhiteLogo,
+            },
+          }),
+        ),
       ),
-      map(result => {
+      map((result) => {
         const url = URL.createObjectURL(result.blob);
         return {
           blob: result.blob,
           url,
-          filename: result.filename
+          filename: result.filename,
         };
-      })
+      }),
     );
   }
 
   private parseBokConcepts(concepts: string[]): Observable<string[] | null> {
-    const conceptsObservables = concepts.map(value => this.bokUtils.getConceptName(value).pipe(first(), map( name =>`[${value}] ` + name)));
+    const conceptsObservables = concepts.map((value) =>
+      this.bokUtils.getConceptName(value).pipe(
+        first(),
+        map((name) => `[${value}] ` + name),
+      ),
+    );
     return this.safeForkJoin(conceptsObservables);
   }
 
@@ -129,7 +179,7 @@ export class PdfService {
     return new Promise((resolve, reject) => {
       const worker = new Worker(
         new URL('../workers/pdf-generator.worker', import.meta.url),
-        { type: 'module' }
+        { type: 'module' },
       );
 
       worker.onmessage = ({ data }: { data: PdfWorkerResult }) => {
@@ -137,7 +187,7 @@ export class PdfService {
         worker.terminate();
       };
 
-      worker.onerror = err => {
+      worker.onerror = (err) => {
         reject(err);
         worker.terminate();
       };
@@ -147,5 +197,5 @@ export class PdfService {
   }
 
   safeForkJoin = (sources: Observable<any>[]) =>
-      sources.length ? forkJoin(sources) : of(null);
+    sources.length ? forkJoin(sources) : of(null);
 }

@@ -25,12 +25,12 @@ export class FirebaseService {
 
   constructor(
     private auth: Auth = inject(Auth),
-    private db: Firestore = inject(Firestore)
+    private db: Firestore = inject(Firestore),
   ) {
     this.orgCollection = collection(this.db, 'Organizations');
     this.profileCollection = collection(
       this.db,
-      'OcuProfiles'
+      'OcuProfiles',
     ) as CollectionReference<OccupationalProfile>;
 
     authState(this.auth).subscribe((user) => (this.userId = user?.uid ?? ''));
@@ -39,8 +39,8 @@ export class FirebaseService {
   getOccupationalProfiles(): Observable<OccupationalProfile[]> {
     return collectionData(this.profileCollection, { idField: '_id' }).pipe(
       map((items) =>
-        items.map((data) => OccupationalProfile.fromFirestore(data))
-      )
+        items.map((data) => OccupationalProfile.fromFirestore(data)),
+      ),
     );
   }
 
@@ -75,8 +75,8 @@ export class FirebaseService {
           .map((org) => ({
             _id: org._id,
             name: org.name,
-          }))
-      )
+          })),
+      ),
     );
   }
 
@@ -86,7 +86,7 @@ export class FirebaseService {
     profile.lastModified = new Date().toDateString();
 
     return from(setDoc(newDocRef, profile.toPlain())).pipe(
-      map(() => profile._id)
+      map(() => profile._id),
     );
   }
 
@@ -98,7 +98,7 @@ export class FirebaseService {
     profile._id = newDocRef.id;
 
     return of(setDoc(newDocRef, profile.toPlain())).pipe(
-      map(() => profile._id)
+      map(() => profile._id),
     );
   }
 
@@ -107,7 +107,7 @@ export class FirebaseService {
     return from(deleteDoc(docRef)).pipe(
       concatMap(() => {
         return of();
-      })
+      }),
     );
   }
 }

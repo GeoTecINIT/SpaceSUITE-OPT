@@ -4,7 +4,7 @@ import jsPDF from 'jspdf';
 import { PdfWorkerPayload } from '../models/pdfWorkerPayload';
 import { Competence, OccupationalProfile } from '../models/occupationalProfile';
 
-addEventListener('message', ({data}: {data: PdfWorkerPayload}) => {
+addEventListener('message', ({ data }: { data: PdfWorkerPayload }) => {
   const { profile, assets, scaleFactor } = data;
   const doc = new jsPDF();
 
@@ -20,7 +20,7 @@ addEventListener('message', ({data}: {data: PdfWorkerPayload}) => {
   if (assets.poppinsBold) {
     doc.addFileToVFS('Poppins-Bold.ttf', assets.poppinsBold);
     doc.addFont('Poppins-Bold.ttf', 'Poppins', 'bold');
-  } 
+  }
   if (assets.poppinsItalic) {
     doc.addFileToVFS('Poppins-Italic.ttf', assets.poppinsItalic);
     doc.addFont('Poppins-Italic.ttf', 'Poppins', 'italic');
@@ -41,7 +41,7 @@ addEventListener('message', ({data}: {data: PdfWorkerPayload}) => {
 
   postMessage({
     blob,
-    filename: buildFilename(profile)
+    filename: buildFilename(profile),
   });
 });
 
@@ -54,7 +54,7 @@ function applyMetadata(doc: jsPDF, profile: OccupationalProfile) {
     title: `${profile.title} – Profile`,
     subject: 'Occupational Profile',
     author: 'SpaceSuite',
-    creator: 'SpaceSuite'
+    creator: 'SpaceSuite',
   });
 }
 
@@ -62,14 +62,19 @@ function applyMetadata(doc: jsPDF, profile: OccupationalProfile) {
     HEADER
 ============================ */
 
-function renderHeader(doc: jsPDF, p: OccupationalProfile, y: number,  assets: {
+function renderHeader(
+  doc: jsPDF,
+  p: OccupationalProfile,
+  y: number,
+  assets: {
     poppinsRegular?: string | undefined;
     poppinsBold?: string | undefined;
     poppinsItalic?: string | undefined;
     watermark?: string | undefined;
     euLogo?: string | undefined;
     spaceSuiteLogo?: string | undefined;
-  }): number {
+  },
+): number {
   doc.setFontSize(26).setFont('Poppins', 'bold');
   doc.setTextColor('#0e145d');
 
@@ -82,20 +87,25 @@ function renderHeader(doc: jsPDF, p: OccupationalProfile, y: number,  assets: {
   doc.setFontSize(10).setFont('Poppins', 'normal');
 
   doc.text(
-    [p.createdAt as Date ? `Created: ${p.createdAt.toLocaleDateString()}` : null, p.updatedAt as Date ? `Updated: ${p.updatedAt.toLocaleDateString()}` : null]
+    [
+      (p.createdAt as Date)
+        ? `Created: ${p.createdAt.toLocaleDateString()}`
+        : null,
+      (p.updatedAt as Date)
+        ? `Updated: ${p.updatedAt.toLocaleDateString()}`
+        : null,
+    ]
       .filter(Boolean)
-      .join(' | '), 
+      .join(' | '),
     20,
-    y
+    y,
   );
   y += 4 * 1.35;
 
   doc.text(
-    [p.orgName, p.division ?? null, 'EQF ' + p.eqf]
-      .filter(Boolean)
-      .join(' | '),
+    [p.orgName, p.division ?? null, 'EQF ' + p.eqf].filter(Boolean).join(' | '),
     20,
-    y
+    y,
   );
   y += 4 * 1.35;
 
@@ -106,14 +116,18 @@ function renderHeader(doc: jsPDF, p: OccupationalProfile, y: number,  assets: {
   FOOTER
 ============================ */
 
-function renderFooter(doc: jsPDF, assets: {
+function renderFooter(
+  doc: jsPDF,
+  assets: {
     poppinsRegular?: string | undefined;
     poppinsBold?: string | undefined;
     poppinsItalic?: string | undefined;
     watermark?: string | undefined;
     euLogo?: string | undefined;
     spaceSuiteLogo?: string | undefined;
-  }, y = 275): void {
+  },
+  y = 275,
+): void {
   const pageWidth = doc.internal.pageSize.getWidth();
   const footerHeight = doc.internal.pageSize.getHeight() - y;
 
@@ -123,14 +137,14 @@ function renderFooter(doc: jsPDF, assets: {
   const page = doc.getCurrentPageInfo().pageNumber;
   doc.setFontSize(9).setFont('Poppins', 'normal');
   doc.setTextColor('#ffffff');
-  doc.text(page.toString(), pageWidth / 2, y + footerHeight / 2 + 1) // + 1 
+  doc.text(page.toString(), pageWidth / 2, y + footerHeight / 2 + 1); // + 1
   doc.setFontSize(10).setFont('Poppins', 'normal');
   doc.setTextColor('#0e145d');
 
   if (assets.euLogo) {
     const props = doc.getImageProperties(assets.euLogo);
     const imgWidthPx = props.width;
-    const imgHeightPx = props.height
+    const imgHeightPx = props.height;
     const targetWidth = 30;
     const ratio = imgHeightPx / imgWidthPx;
     const targetHeight = targetWidth * ratio;
@@ -141,14 +155,14 @@ function renderFooter(doc: jsPDF, assets: {
       pageWidth - targetWidth - 20,
       y + footerHeight / 2 - targetHeight / 2,
       targetWidth,
-      targetHeight
+      targetHeight,
     );
   }
 
   if (assets.spaceSuiteLogo) {
     const props = doc.getImageProperties(assets.spaceSuiteLogo);
     const imgWidthPx = props.width;
-    const imgHeightPx = props.height
+    const imgHeightPx = props.height;
     const targetWidth = 30;
     const ratio = imgHeightPx / imgWidthPx;
     const targetHeight = targetWidth * ratio;
@@ -158,7 +172,7 @@ function renderFooter(doc: jsPDF, assets: {
       20,
       y + footerHeight / 2 - targetHeight / 2,
       targetWidth,
-      targetHeight
+      targetHeight,
     );
   }
 }
@@ -167,14 +181,19 @@ function renderFooter(doc: jsPDF, assets: {
     SUMMARY
 ============================ */
 
-function renderSummary(doc: jsPDF, p: OccupationalProfile, y: number, assets: {
+function renderSummary(
+  doc: jsPDF,
+  p: OccupationalProfile,
+  y: number,
+  assets: {
     poppinsRegular?: string | undefined;
     poppinsBold?: string | undefined;
     poppinsItalic?: string | undefined;
     watermark?: string | undefined;
     euLogo?: string | undefined;
     spaceSuiteLogo?: string | undefined;
-  }): number {
+  },
+): number {
   if (!p.description) return y;
 
   y = sectionTitle(doc, 'Profile Summary', y, assets);
@@ -193,25 +212,29 @@ function renderSummary(doc: jsPDF, p: OccupationalProfile, y: number, assets: {
     APPLICATION DOMAINS
 ============================ */
 
-function renderDomains(doc: jsPDF, p: OccupationalProfile, y: number, assets: {
+function renderDomains(
+  doc: jsPDF,
+  p: OccupationalProfile,
+  y: number,
+  assets: {
     poppinsRegular?: string | undefined;
     poppinsBold?: string | undefined;
     poppinsItalic?: string | undefined;
     watermark?: string | undefined;
     euLogo?: string | undefined;
     spaceSuiteLogo?: string | undefined;
-  }): number {
-
+  },
+): number {
   if (!p.fields.length) return y;
 
-  const domains: string[] = p.fields.map((field) =>
-    field.name + ' (' + field.grandparent + ')'
+  const domains: string[] = p.fields.map(
+    (field) => field.name + ' (' + field.grandparent + ')',
   );
 
   y = sectionTitle(doc, 'Application Domains', y, assets);
 
   y += 4 * 1.35;
-  domains.forEach(domain => {
+  domains.forEach((domain) => {
     const lines = doc.splitTextToSize(domain, 170);
     for (let i = 0; i < lines.length; i++) {
       if (i == 0) lines[i] = '• ' + lines[i];
@@ -230,25 +253,33 @@ function renderDomains(doc: jsPDF, p: OccupationalProfile, y: number, assets: {
     KNOWLEDGE
 ============================ */
 
-function renderKnowledge(doc: jsPDF, p: OccupationalProfile, y: number, assets: {
+function renderKnowledge(
+  doc: jsPDF,
+  p: OccupationalProfile,
+  y: number,
+  assets: {
     poppinsRegular?: string | undefined;
     poppinsBold?: string | undefined;
     poppinsItalic?: string | undefined;
     watermark?: string | undefined;
     euLogo?: string | undefined;
     spaceSuiteLogo?: string | undefined;
-  }): number {
-
+  },
+): number {
   if (!p.fields.length) return y;
 
   y = sectionTitle(doc, 'Required Knowledge', y, assets);
 
-  const knowledge = p.knowledge.map(k => extractConceptsFromKnowledgeAndSkills(k));
+  const knowledge = p.knowledge.map((k) =>
+    extractConceptsFromKnowledgeAndSkills(k),
+  );
 
   y += 4 * 1.35;
 
-  knowledge.forEach(knowledge => {
-    const url = 'https://geospacebok.eu/' + (knowledge.concept != '' ? knowledge.concept : knowledge.content);
+  knowledge.forEach((knowledge) => {
+    const url =
+      'https://geospacebok.eu/' +
+      (knowledge.concept != '' ? knowledge.concept : knowledge.content);
     const lines = doc.splitTextToSize(knowledge.content, 170);
     for (let i = 0; i < lines.length; i++) {
       if (i == 0) lines[i] = '• ' + lines[i];
@@ -256,7 +287,7 @@ function renderKnowledge(doc: jsPDF, p: OccupationalProfile, y: number, assets: 
     }
     const linesSize = lines.length * 4 * 1.35;
     y = checkEnd(doc, y, linesSize, assets);
-    doc.textWithLink(lines, 20, y, {url});
+    doc.textWithLink(lines, 20, y, { url });
     y += linesSize;
   });
 
@@ -267,23 +298,29 @@ function renderKnowledge(doc: jsPDF, p: OccupationalProfile, y: number, assets: 
     SKILLS
 ============================ */
 
-function renderSkills(doc: jsPDF, p: OccupationalProfile, y: number, assets: {
+function renderSkills(
+  doc: jsPDF,
+  p: OccupationalProfile,
+  y: number,
+  assets: {
     poppinsRegular?: string | undefined;
     poppinsBold?: string | undefined;
     poppinsItalic?: string | undefined;
     watermark?: string | undefined;
     euLogo?: string | undefined;
     spaceSuiteLogo?: string | undefined;
-  }): number {
-
+  },
+): number {
   if (!p.fields.length) return y;
 
   y = sectionTitle(doc, 'Required Skills', y, assets);
 
-  const totalSkills: AnnotatedElement[] = p.skills.concat(p.customSkills).map(skill => extractConceptsFromKnowledgeAndSkills(skill));
+  const totalSkills: AnnotatedElement[] = p.skills
+    .concat(p.customSkills)
+    .map((skill) => extractConceptsFromKnowledgeAndSkills(skill));
 
   y += 4 * 1.35;
-  totalSkills.forEach(skill => {
+  totalSkills.forEach((skill) => {
     const lines = doc.splitTextToSize(skill.content, 170);
     for (let i = 0; i < lines.length; i++) {
       if (i == 0) lines[i] = '• ' + lines[i];
@@ -291,7 +328,10 @@ function renderSkills(doc: jsPDF, p: OccupationalProfile, y: number, assets: {
     }
     const linesSize = lines.length * 4 * 1.35;
     y = checkEnd(doc, y, linesSize, assets);
-    if (skill.concept != '') doc.textWithLink(lines, 20, y, {url: 'https://geospacebok.eu/' + skill.concept});
+    if (skill.concept != '')
+      doc.textWithLink(lines, 20, y, {
+        url: 'https://geospacebok.eu/' + skill.concept,
+      });
     else doc.text(lines, 20, y);
     y += linesSize;
   });
@@ -303,23 +343,31 @@ function renderSkills(doc: jsPDF, p: OccupationalProfile, y: number, assets: {
     TRANSVERSAL SKILLS
 ============================ */
 
-function renderTransversalSkills(doc: jsPDF, p: OccupationalProfile, y: number, assets: {
+function renderTransversalSkills(
+  doc: jsPDF,
+  p: OccupationalProfile,
+  y: number,
+  assets: {
     poppinsRegular?: string | undefined;
     poppinsBold?: string | undefined;
     poppinsItalic?: string | undefined;
     watermark?: string | undefined;
     euLogo?: string | undefined;
     spaceSuiteLogo?: string | undefined;
-  }): number {
-
+  },
+): number {
   if (!p.fields.length) return y;
 
   y = sectionTitle(doc, 'Required Transversal Skills', y, assets);
 
-  const totalSkills: Competence[] = p.competences.concat(p.customCompetences.map(custom => { return {preferredLabel: custom}}));
+  const totalSkills: Competence[] = p.competences.concat(
+    p.customCompetences.map((custom) => {
+      return { preferredLabel: custom };
+    }),
+  );
 
   y += 4 * 1.35;
-  totalSkills.forEach(skill => {
+  totalSkills.forEach((skill) => {
     const lines = doc.splitTextToSize(skill.preferredLabel, 170);
     for (let i = 0; i < lines.length; i++) {
       if (i == 0) lines[i] = '• ' + lines[i];
@@ -327,7 +375,7 @@ function renderTransversalSkills(doc: jsPDF, p: OccupationalProfile, y: number, 
     }
     const linesSize = lines.length * 4 * 1.35;
     y = checkEnd(doc, y, linesSize, assets);
-    if (skill.uri) doc.textWithLink(lines, 20, y, {url: skill.uri});
+    if (skill.uri) doc.textWithLink(lines, 20, y, { url: skill.uri });
     else doc.text(lines, 20, y);
     y += linesSize;
   });
@@ -339,16 +387,21 @@ function renderTransversalSkills(doc: jsPDF, p: OccupationalProfile, y: number, 
     HELPERS
 ============================ */
 
-function sectionTitle(doc: jsPDF, title: string, y: number, assets: {
+function sectionTitle(
+  doc: jsPDF,
+  title: string,
+  y: number,
+  assets: {
     poppinsRegular?: string | undefined;
     poppinsBold?: string | undefined;
     poppinsItalic?: string | undefined;
     watermark?: string | undefined;
     euLogo?: string | undefined;
     spaceSuiteLogo?: string | undefined;
-  }): number {
+  },
+): number {
   y += 8 * 1.35;
-  y = checkEnd(doc, y, 0, assets);  
+  y = checkEnd(doc, y, 0, assets);
   doc.setFontSize(14).setFont('Poppins', 'bold');
   doc.setTextColor('#0e145d');
   doc.text(title, 20, y);
@@ -357,14 +410,19 @@ function sectionTitle(doc: jsPDF, title: string, y: number, assets: {
   return y + 2 * 1.35;
 }
 
-function checkEnd(doc: jsPDF, y: number, contentSize: number = 0, assets: {
+function checkEnd(
+  doc: jsPDF,
+  y: number,
+  contentSize: number = 0,
+  assets: {
     poppinsRegular?: string | undefined;
     poppinsBold?: string | undefined;
     poppinsItalic?: string | undefined;
     watermark?: string | undefined;
     euLogo?: string | undefined;
     spaceSuiteLogo?: string | undefined;
-  }): number {
+  },
+): number {
   if (y + contentSize > 270) {
     renderFooter(doc, assets);
     doc.addPage();
@@ -386,13 +444,14 @@ function buildFilename(p: OccupationalProfile): string {
   return `${p.title.replace(/\s+/g, '_')}_Profile.pdf`;
 }
 
-function extractConceptsFromKnowledgeAndSkills(element: string): AnnotatedElement {
+function extractConceptsFromKnowledgeAndSkills(
+  element: string,
+): AnnotatedElement {
   if (!element) return { concept: '', content: '' };
   const match = element.match(/^\[(.*?)\]\s*(.*)$/);
-  if (!match) return {concept: '', content: element};
-  return {concept: match[1], content: match[2]};
+  if (!match) return { concept: '', content: element };
+  return { concept: match[1], content: match[2] };
 }
-
 
 interface AnnotatedElement {
   concept: string;

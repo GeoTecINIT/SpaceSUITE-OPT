@@ -85,7 +85,7 @@ export class TextChipsComponent {
       this.chipsChange.emit(this.chips.filter((value) => value !== element));
     } else if (this.customChips.includes(element)) {
       this.customChipsChange.emit(
-        this.customChips.filter((value) => value !== element)
+        this.customChips.filter((value) => value !== element),
       );
     }
 

@@ -49,7 +49,7 @@ export class ProfileCardComponent implements OnInit {
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
     private occupationalProfileService: OccupationalProfileService,
-    private pdfService: PdfService
+    private pdfService: PdfService,
   ) {}
 
   ngOnInit() {
@@ -73,8 +73,8 @@ export class ProfileCardComponent implements OnInit {
         .subscribe((tooltip) =>
           this.selectedConceptsTooltip.set(
             concept,
-            tooltip ? tooltip : 'Deprecated concept'
-          )
+            tooltip ? tooltip : 'Deprecated concept',
+          ),
         );
     });
 
@@ -153,14 +153,14 @@ export class ProfileCardComponent implements OnInit {
               life: 3000,
               closable: true,
             });
-        })
+        }),
       )
       .subscribe();
   }
 
   copyLink(): void {
     navigator.clipboard.writeText(
-      window.location.href + `profile/${this.occupationalProfile._id}`
+      window.location.href + `profile/${this.occupationalProfile._id}`,
     );
 
     this.messageService.add({
@@ -175,14 +175,16 @@ export class ProfileCardComponent implements OnInit {
   downloadPortfolioPdf() {
     document.body.style.cursor = 'wait';
     this.op.hide();
-    this.pdfService.generatePortfolioPdf(new OccupationalProfile(this.occupationalProfile)).subscribe( pdf => {
-      this.downloadURI(pdf.url, pdf.filename);
-      document.body.style.cursor = '';
-    });
+    this.pdfService
+      .generatePortfolioPdf(new OccupationalProfile(this.occupationalProfile))
+      .subscribe((pdf) => {
+        this.downloadURI(pdf.url, pdf.filename);
+        document.body.style.cursor = '';
+      });
   }
 
   private downloadURI(uri: string, name: string) {
-    const link = document.createElement("a");
+    const link = document.createElement('a');
     link.download = name;
     link.href = uri;
     link.click();

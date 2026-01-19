@@ -75,7 +75,7 @@ export class ProfileExplorerComponent
     private route: ActivatedRoute,
     private messageService: MessageService,
     private router: Router,
-    private ngZone: NgZone
+    private ngZone: NgZone,
   ) {
     this.skeletonElements = Array(this.rows);
   }
@@ -212,12 +212,12 @@ export class ProfileExplorerComponent
   private updatePaginatedProfiles(): void {
     this.paginatedProfiles = this.filteredProfiles.slice(
       this.first,
-      this.first + this.rows
+      this.first + this.rows,
     );
   }
 
   private searchProfiles(
-    profiles: OccupationalProfile[]
+    profiles: OccupationalProfile[],
   ): OccupationalProfile[] {
     const searchedProfiles: OccupationalProfile[] = [];
     const value = this.searchValue.trim().toLowerCase();
@@ -243,10 +243,10 @@ export class ProfileExplorerComponent
         profiles.forEach((profile) => {
           if (
             profile.skills.some((skill) =>
-              skill.trim().toLowerCase().includes(value)
+              skill.trim().toLowerCase().includes(value),
             ) ||
             profile.customSkills.some((skill) =>
-              skill.trim().toLowerCase().includes(value)
+              skill.trim().toLowerCase().includes(value),
             )
           )
             searchedProfiles.push(profile);
@@ -258,10 +258,10 @@ export class ProfileExplorerComponent
         profiles.forEach((profile) => {
           if (
             profile.competences.some((competence) =>
-              competence.preferredLabel.trim().toLowerCase().includes(value)
+              competence.preferredLabel.trim().toLowerCase().includes(value),
             ) ||
             profile.customCompetences.some((competence) =>
-              competence.trim().toLowerCase().includes(value)
+              competence.trim().toLowerCase().includes(value),
             )
           )
             searchedProfiles.push(profile);
@@ -277,7 +277,7 @@ export class ProfileExplorerComponent
   }
 
   private filterProfiles(
-    profiles: OccupationalProfile[]
+    profiles: OccupationalProfile[],
   ): OccupationalProfile[] {
     const userId = this.firebaseService.getUserData()?.uid;
 
@@ -306,20 +306,20 @@ export class ProfileExplorerComponent
         (filter) =>
           !filter.selection ||
           filter.selection.length === 0 ||
-          this.filterService.checkProfile(profile, filter)
-      )
+          this.filterService.checkProfile(profile, filter),
+      ),
     );
 
     return filteredProfiles;
   }
 
   private filterByBoKConcept(
-    profiles: OccupationalProfile[]
+    profiles: OccupationalProfile[],
   ): OccupationalProfile[] {
     if (this.bokConcepts.length === 0) return profiles;
 
     return profiles.filter((profile) =>
-      this.bokConcepts.some((concept) => profile.knowledge.includes(concept))
+      this.bokConcepts.some((concept) => profile.knowledge.includes(concept)),
     );
   }
 }

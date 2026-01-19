@@ -1,27 +1,36 @@
 import { Injectable } from '@angular/core';
-import { Competence, Field, OccupationalProfile } from '../models/occupationalProfile';
+import {
+  Competence,
+  Field,
+  OccupationalProfile,
+} from '../models/occupationalProfile';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RdfService {
-
   /* ============================
      Public API
      ============================ */
 
   getRdfTtlUrl(model: OccupationalProfile): string {
-    const blob = new Blob([this.convertModelToTurtle(model)], { type: 'text/ttl' });
+    const blob = new Blob([this.convertModelToTurtle(model)], {
+      type: 'text/ttl',
+    });
     return window.URL.createObjectURL(blob);
   }
 
   getRdfXmlUrl(model: OccupationalProfile): string {
-    const blob = new Blob([this.convertModelToRdfXml(model)], { type: 'text/xml' });
+    const blob = new Blob([this.convertModelToRdfXml(model)], {
+      type: 'text/xml',
+    });
     return window.URL.createObjectURL(blob);
   }
 
   getRdfaUrl(model: OccupationalProfile): string {
-    const blob = new Blob([this.convertModelToRDFa(model)], { type: 'text/html' });
+    const blob = new Blob([this.convertModelToRDFa(model)], {
+      type: 'text/html',
+    });
     return window.URL.createObjectURL(blob);
   }
 
@@ -32,8 +41,7 @@ export class RdfService {
   private convertModelToTurtle(model: OccupationalProfile): string {
     let additionalObjects = '';
 
-    let ttl =
-`@prefix dcterms: <http://purl.org/dc/terms/> .
+    let ttl = `@prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix elm: <http://data.europa.eu/snb/model/elm> .
@@ -41,14 +49,12 @@ export class RdfService {
 @prefix esco: <http://data.europa.eu/esco/model#> .
 
 `;
-    
-    ttl += `geospacebok:OccupationalProfile rdf:type rdfs:Class .\n`;
 
+    ttl += `geospacebok:OccupationalProfile rdf:type rdfs:Class .\n`;
 
     ttl += `<https://geospacebok.eu/ocuprofiles/${model._id}> a geospacebok:OccupationalProfile ;\n`;
 
-    if (model.title)
-      ttl += `  dcterms:title "${this.escape(model.title)}" ;\n`;
+    if (model.title) ttl += `  dcterms:title "${this.escape(model.title)}" ;\n`;
 
     if (model.description)
       ttl += `  dcterms:description "${this.escape(model.description)}" ;\n`;
@@ -59,8 +65,7 @@ export class RdfService {
     if (model.updatedAt)
       ttl += `  dcterms:modified "${model.updatedAt instanceof Date ? model.updatedAt.toISOString() : model.updatedAt}" ;\n`;
 
-    if (model.eqf) 
-      ttl += `  elm:EQFLevel "${this.escape(model.eqf)}" ;\n`;
+    if (model.eqf) ttl += `  elm:EQFLevel "${this.escape(model.eqf)}" ;\n`;
 
     if (model.fields && model.fields.length != 0) {
       model.fields.forEach((field: Field) => {
@@ -75,24 +80,28 @@ export class RdfService {
     }
 
     if (model.skills.length != 0 || model.customSkills.length != 0) {
-      model.skills.concat(model.customSkills).forEach((skill: string, index: number) => {
-        ttl += `  esco:relatedEssentialSkill _:SKILL${index};\n`;
-        additionalObjects += `_:SKILL${index}\n`;
-        additionalObjects += `  rdf:type esco:Skill ;\n`;
-        additionalObjects += `  dcterms:title "${this.escape(skill)}" .\n\n`
-      });
+      model.skills
+        .concat(model.customSkills)
+        .forEach((skill: string, index: number) => {
+          ttl += `  esco:relatedEssentialSkill _:SKILL${index};\n`;
+          additionalObjects += `_:SKILL${index}\n`;
+          additionalObjects += `  rdf:type esco:Skill ;\n`;
+          additionalObjects += `  dcterms:title "${this.escape(skill)}" .\n\n`;
+        });
     }
 
     if (model.competences.length != 0 || model.customCompetences.length != 0) {
       model.competences.forEach((transversalSkill: Competence) => {
         ttl += `  esco:relatedEssentialSkills <${transversalSkill.uri}> ;\n`;
       });
-      model.customCompetences.forEach((transversalSkill: string, index: number) => {
-        ttl += `  esco:relatedEssentialSkill _:TRANSVERSAL${index} ;\n`;
-        additionalObjects += `_:TRANSVERSAL${index}\n`;
-        additionalObjects += `  rdf:type esco:Skill ;\n`;
-        additionalObjects += `  dcterms:title "${this.escape(transversalSkill)}" .\n\n`
-      });
+      model.customCompetences.forEach(
+        (transversalSkill: string, index: number) => {
+          ttl += `  esco:relatedEssentialSkill _:TRANSVERSAL${index} ;\n`;
+          additionalObjects += `_:TRANSVERSAL${index}\n`;
+          additionalObjects += `  rdf:type esco:Skill ;\n`;
+          additionalObjects += `  dcterms:title "${this.escape(transversalSkill)}" .\n\n`;
+        },
+      );
     }
 
     ttl = ttl.trim().replace(/;$/, '.') + '\n\n';
@@ -112,7 +121,7 @@ export class RdfService {
       dcterms: 'http://purl.org/dc/terms/',
       elm: 'http://data.europa.eu/snb/model/elm',
       esco: 'http://data.europa.eu/esco/model#',
-      geospacebok: 'https://geospacebok.eu/'
+      geospacebok: 'https://geospacebok.eu/',
     };
 
     let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
@@ -135,63 +144,63 @@ export class RdfService {
     xml += `    <rdf:type rdf:resource="${NS.geospacebok}OccupationalProfile"/>\n`;
 
     if (model.title)
-        xml += `    <dcterms:title>${this.escapeXml(model.title)}</dcterms:title>\n`;
+      xml += `    <dcterms:title>${this.escapeXml(model.title)}</dcterms:title>\n`;
 
     if (model.description)
-        xml += `    <dcterms:description>${this.escapeXml(model.description)}</dcterms:description>\n`;
+      xml += `    <dcterms:description>${this.escapeXml(model.description)}</dcterms:description>\n`;
 
     if (model.orgName)
-        xml += `    <dcterms:publisher>${this.escapeXml(
-        model.orgName + (model.division ? ' - ' + model.division : '')
-        )}</dcterms:publisher>\n`;
+      xml += `    <dcterms:publisher>${this.escapeXml(
+        model.orgName + (model.division ? ' - ' + model.division : ''),
+      )}</dcterms:publisher>\n`;
 
     if (model.updatedAt) {
-        const dt = model.updatedAt instanceof Date
-        ? model.updatedAt.toISOString()
-        : model.updatedAt;
-        xml += `    <dcterms:modified>${this.escapeXml(dt)}</dcterms:modified>\n`;
+      const dt =
+        model.updatedAt instanceof Date
+          ? model.updatedAt.toISOString()
+          : model.updatedAt;
+      xml += `    <dcterms:modified>${this.escapeXml(dt)}</dcterms:modified>\n`;
     }
 
     if (model.eqf)
-        xml += `    <elm:EQFLevel>${this.escapeXml(model.eqf)}</elm:EQFLevel>\n`;
+      xml += `    <elm:EQFLevel>${this.escapeXml(model.eqf)}</elm:EQFLevel>\n`;
 
     if (model.fields?.length) {
-        model.fields.forEach((field: Field) => {
+      model.fields.forEach((field: Field) => {
         xml += `    <elm:ISCEDFCode>${this.escapeXml(field.code)}</elm:ISCEDFCode>\n`;
-        });
+      });
     }
 
     if (model.knowledge?.length) {
-        model.knowledge.forEach((subj: string) => {
+      model.knowledge.forEach((subj: string) => {
         xml += `    <dcterms:subject rdf:resource="${NS.geospacebok}${subj}"/>\n`;
-        });
+      });
     }
 
     if (model.skills.length || model.customSkills.length) {
-        model.skills.concat(model.customSkills).forEach((skill: string) => {
+      model.skills.concat(model.customSkills).forEach((skill: string) => {
         xml += `    <esco:relatedEssentialSkill>\n`;
         xml += `      <rdf:Description>\n`;
         xml += `        <rdf:type rdf:resource="${NS.esco}Skill"/>\n`;
         xml += `        <dcterms:title>${this.escapeXml(skill)}</dcterms:title>\n`;
         xml += `      </rdf:Description>\n`;
         xml += `    </esco:relatedEssentialSkill>\n`;
-        });
+      });
     }
 
     if (model.competences.length || model.customCompetences.length) {
-
-        model.competences.forEach((comp: Competence) => {
+      model.competences.forEach((comp: Competence) => {
         xml += `    <esco:relatedEssentialSkill rdf:resource="${comp.uri}"/>\n`;
-        });
+      });
 
-        model.customCompetences.forEach((label: string) => {
+      model.customCompetences.forEach((label: string) => {
         xml += `    <esco:relatedEssentialSkill>\n`;
         xml += `      <rdf:Description>\n`;
         xml += `        <rdf:type rdf:resource="${NS.esco}Skill"/>\n`;
         xml += `        <dcterms:title>${this.escapeXml(label)}</dcterms:title>\n`;
         xml += `      </rdf:Description>\n`;
         xml += `    </esco:relatedEssentialSkill>\n`;
-        });
+      });
     }
 
     xml += `  </rdf:Description>\n\n`;
@@ -209,7 +218,7 @@ export class RdfService {
       geospacebok: 'https://geospacebok.eu/',
       dcterms: 'http://purl.org/dc/terms/',
       esco: 'http://data.europa.eu/esco/model#',
-      elm: 'http://data.europa.eu/snb/model/elm'
+      elm: 'http://data.europa.eu/snb/model/elm',
     };
 
     const escape = (v: string) => this.escapeHtml(v);
@@ -235,13 +244,14 @@ export class RdfService {
 
     if (model.orgName)
       html += `  <span property="publisher">${escape(
-        model.orgName + (model.division ? ' - ' + model.division : '')
+        model.orgName + (model.division ? ' - ' + model.division : ''),
       )}</span><br/>\n`;
 
     if (model.updatedAt) {
-      const dt = model.updatedAt instanceof Date
-        ? model.updatedAt.toISOString()
-        : model.updatedAt;
+      const dt =
+        model.updatedAt instanceof Date
+          ? model.updatedAt.toISOString()
+          : model.updatedAt;
       html += `  <time property="modified" datetime="${dt}">${dt}</time><br/>\n`;
     }
 
@@ -271,7 +281,6 @@ export class RdfService {
     }
 
     if (model.competences.length || model.customCompetences.length) {
-
       model.competences.forEach((comp: Competence) => {
         html += `  <link property="esco:relatedEssentialSkill" href="${comp.uri}"/>\n`;
       });
@@ -297,12 +306,20 @@ export class RdfService {
   private escape(str: string): string {
     console.log('Escaping string:', str);
     const inlineString: string = str
-      .split("\n")
-      .map(line => line.trim())
-      .filter(line => line.length > 0)
-      .join(" ");
-    return inlineString.replace(/[<>&'"]/g, c =>
-      ({ '<':'&lt;', '>':'&gt;', '&':'&amp;', '\'':'&apos;', '"':'&quot;' }[c]!)
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0)
+      .join(' ');
+    return inlineString.replace(
+      /[<>&'"]/g,
+      (c) =>
+        ({
+          '<': '&lt;',
+          '>': '&gt;',
+          '&': '&amp;',
+          "'": '&apos;',
+          '"': '&quot;',
+        })[c]!,
     );
   }
 
@@ -311,8 +328,9 @@ export class RdfService {
   }
 
   private escapeHtml(str: string): string {
-    return str.replace(/[<>&]/g, c =>
-      ({ '<':'&lt;', '>':'&gt;', '&':'&amp;' }[c]!)
+    return str.replace(
+      /[<>&]/g,
+      (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' })[c]!,
     );
   }
 }

@@ -21,7 +21,7 @@ export class CardFilterService {
 
   constructor(
     private readonly http: HttpClient,
-    private readonly profileService: OccupationalProfileService
+    private readonly profileService: OccupationalProfileService,
   ) {
     this.http
       .get<FilterOption[]>('/assets/filters.json')
@@ -31,7 +31,7 @@ export class CardFilterService {
           return this.profileService
             .getProfilesOrganizations()
             .pipe(map((organizations) => ({ filters, organizations })));
-        })
+        }),
       )
       .subscribe(({ filters, organizations }) => {
         const updatedFilters = [...filters];
@@ -44,14 +44,14 @@ export class CardFilterService {
     switch (filter.label) {
       case 'EQF Level':
         return filter.selection.some(
-          (selection) => profile.eqf === selection.slice(-1)
+          (selection) => profile.eqf === selection.slice(-1),
         );
 
       case 'Organizations':
         return filter.selection.some(
           (selection) =>
             profile.orgName?.trim().toLowerCase() ===
-            selection.trim().toLowerCase()
+            selection.trim().toLowerCase(),
         );
 
       default:
@@ -67,7 +67,7 @@ export class CardFilterService {
           values: f.values ?? [],
           selection: f.selection ?? [],
         }));
-      })
+      }),
     );
   }
 
@@ -83,7 +83,7 @@ export class CardFilterService {
           values: [],
           selection: [],
         };
-      })
+      }),
     );
   }
 }

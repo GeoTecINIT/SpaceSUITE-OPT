@@ -19,7 +19,7 @@ export class ESCOService {
   getAllTransversalSkills(
     lang: string = 'en',
     offset = 0,
-    limit = 200
+    limit = 200,
   ): Observable<string[]> {
     if (!this.cacheTransversalSkills$) {
       const params = new HttpParams()
@@ -40,7 +40,7 @@ export class ESCOService {
           catchError((err) => {
             console.error('Error fetching transversal skills', err);
             return of([]);
-          })
+          }),
         );
     }
     return this.cacheTransversalSkills$;
@@ -48,7 +48,7 @@ export class ESCOService {
 
   searchTransversalSkills(
     query: string,
-    lang: string = 'en'
+    lang: string = 'en',
   ): Observable<string[]> {
     const params = new HttpParams()
       .set('text', query)
@@ -67,7 +67,7 @@ export class ESCOService {
         catchError((err) => {
           console.error('Error fetching transversal skills', err);
           return of([]);
-        })
+        }),
       );
     return similarTransversalSkills$;
   }

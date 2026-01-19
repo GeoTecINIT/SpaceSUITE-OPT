@@ -88,7 +88,7 @@ export class FiltersComponent implements OnChanges {
 
   clearOptions(label: string): void {
     const currentOption = this.multiSelectOptions.find(
-      (option) => option.label === label
+      (option) => option.label === label,
     );
 
     if (currentOption) currentOption.selection = [];
@@ -113,7 +113,7 @@ export class FiltersComponent implements OnChanges {
   }
 
   getMultiselectOptions(
-    filterOption: FilterOption
+    filterOption: FilterOption,
   ): { id: string; value: string }[] {
     return filterOption.values.map((x, i) => ({
       id: filterOption.tags ? filterOption.tags[i] : x,
