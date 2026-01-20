@@ -225,75 +225,89 @@
         </div>
       </p-panel>
 
-      <p-button
-        class="md:hidden flex justify-content-center custom-button my-2"
-        label="Share Profile"
-        icon="pi pi-share-alt"
-        (onClick)="op1.toggle($event)"
-      />
-
-      <p-popover #op1>
-        <div style="color: var(--primary-color)">
-          <div class="font-medium block mb-2">
-            <strong>Options</strong>
-          </div>
-
-          <div class="flex gap-5">
-            <i
-              class="pi pi-link popover-element"
-              pTooltip="Copy link"
-              tooltipPosition="top"
-              (click)="copyLink()"
-            ></i>
-            <i
-              class="pi pi-file-pdf popover-element"
-              pTooltip="Under development"
-              tooltipPosition="top"
-            ></i>
-            <i
-              class="pi pi-code popover-element"
-              pTooltip="Under development"
-              tooltipPosition="top"
-            ></i>
-          </div>
-        </div>
-      </p-popover>
-
-      <ng-container *ngIf="isLogged()">
+      <div class="md:hidden flex flex-column gap-2 mb-2">
         <p-button
-          class="md:hidden flex justify-content-center custom-button my-2"
-          label="Duplicate Profile"
-          icon="pi pi-clone"
-          (onClick)="duplicateProfile()"
+          class="flex justify-content-center custom-button"
+          label="Share Profile"
+          icon="pi pi-share-alt"
+          (onClick)="copyLink()"
         />
 
-        <ng-container *ngIf="checkUser()">
+        <div class="flex justify-content-center">
           <p-button
-            class="md:hidden flex justify-content-center custom-button my-2"
-            label="Edit Profile"
-            icon="pi pi-pencil"
-            (onClick)="editProfile()"
+            class="custom-button"
+            label="Download Profile"
+            icon="pi pi-download"
+            (onClick)="op1.toggle($event)"
           />
 
+          <p-popover #op1>
+            <div style="color: var(--primary-color)">
+              <strong>Choose Format</strong>
+
+              <ul class="flex flex-column p-0 m-0">
+                <li class="flex p-2 popover-element" (click)="downloadPDF(op1)">
+                  PDF
+                </li>
+                <li
+                  class="flex p-2 popover-element"
+                  (click)="downloadRDF('rdfa', op1)"
+                >
+                  RDFa
+                </li>
+                <li
+                  class="flex p-2 popover-element"
+                  (click)="downloadRDF('xml', op1)"
+                >
+                  RDF/XML
+                </li>
+                <li
+                  class="flex p-2 popover-element"
+                  (click)="downloadRDF('ttl', op1)"
+                >
+                  Turtle
+                </li>
+              </ul>
+            </div>
+          </p-popover>
+        </div>
+
+        <ng-container *ngIf="isLogged()">
           <p-button
-            class="flex md:hidden justify-content-center delete-button my-2"
-            label="Delete Profile"
-            icon="pi pi-trash"
-            (onClick)="deleteModal($event)"
+            class="flex justify-content-center custom-button"
+            label="Duplicate Profile"
+            icon="pi pi-clone"
+            (onClick)="duplicateProfile()"
           />
+
+          <ng-container *ngIf="checkUser()">
+            <p-button
+              class="flex justify-content-center custom-button"
+              label="Edit Profile"
+              icon="pi pi-pencil"
+              (onClick)="editProfile()"
+            />
+
+            <p-button
+              class="flex justify-content-center delete-button"
+              label="Delete Profile"
+              icon="pi pi-trash"
+              (onClick)="deleteModal($event)"
+            />
+          </ng-container>
         </ng-container>
-      </ng-container>
 
-      <p-button
-        class="flex md:hidden justify-content-center custom-secondary-button my-2"
-        label="Return to Homepage"
-        severity="secondary"
-        icon="pi pi-arrow-left"
-        (onClick)="goToMainPage()"
-      />
+        <p-button
+          class="flex justify-content-center custom-secondary-button"
+          label="Return to Homepage"
+          severity="secondary"
+          icon="pi pi-arrow-left"
+          (onClick)="goToMainPage()"
+        />
+      </div>
     </div>
 
-    <div class="hidden md:flex justify-content-between mb-2 mt-auto">
+    <div class="hidden md:flex justify-content-between mb-2">
       <p-button
         class="custom-secondary-button"
         label="Return to Homepage"
@@ -307,35 +321,47 @@
           class="custom-button"
           label="Share Profile"
           icon="pi pi-share-alt"
-          (onClick)="op2.toggle($event)"
+          (onClick)="copyLink()"
         />
 
-        <p-popover #op2>
-          <div style="color: var(--primary-color)">
-            <div class="font-medium block mb-2">
-              <strong>Options</strong>
-            </div>
+        <div>
+          <p-button
+            class="custom-button"
+            label="Download Profile"
+            icon="pi pi-download"
+            (onClick)="op2.toggle($event)"
+          />
 
-            <div class="flex gap-5">
-              <i
-                class="pi pi-link popover-element"
-                pTooltip="Copy link"
-                tooltipPosition="top"
-                (click)="copyLink()"
-              ></i>
-              <i
-                class="pi pi-file-pdf popover-element"
-                pTooltip="Under development"
-                tooltipPosition="top"
-              ></i>
-              <i
-                class="pi pi-code popover-element"
-                pTooltip="Under development"
-                tooltipPosition="top"
-              ></i>
+          <p-popover #op2>
+            <div style="color: var(--primary-color)">
+              <strong>Choose Format</strong>
+
+              <ul class="flex flex-column p-0 m-0">
+                <li class="flex p-2 popover-element" (click)="downloadPDF(op2)">
+                  PDF
+                </li>
+                <li
+                  class="flex p-2 popover-element"
+                  (click)="downloadRDF('rdfa', op2)"
+                >
+                  RDFa
+                </li>
+                <li
+                  class="flex p-2 popover-element"
+                  (click)="downloadRDF('xml', op2)"
+                >
+                  RDF/XML
+                </li>
+                <li
+                  class="flex p-2 popover-element"
+                  (click)="downloadRDF('ttl', op2)"
+                >
+                  Turtle
+                </li>
+              </ul>
             </div>
-          </div>
-        </p-popover>
+          </p-popover>
+        </div>
 
         <ng-container *ngIf="isLogged()">
           <p-button

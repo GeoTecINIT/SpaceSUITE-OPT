@@ -14,6 +14,7 @@ import { FirebaseService } from '../../services/firebase.service';
 import { OccupationalProfileService } from '../../services/occupationalProfile.service';
 import { UtilsService } from '../../services/utils.service';
 import { PdfService } from '../../services/pdf.service';
+import { RdfService } from '../../services/rdf.service';
 
 @Component({
   standalone: true,
@@ -50,6 +51,7 @@ export class ProfileCardComponent implements OnInit {
     private messageService: MessageService,
     private occupationalProfileService: OccupationalProfileService,
     private pdfService: PdfService,
+    private rdfService: RdfService,
   ) {}
 
   ngOnInit() {
@@ -172,9 +174,10 @@ export class ProfileCardComponent implements OnInit {
     });
   }
 
-  downloadPortfolioPdf() {
+  downloadPDF(): void {
     document.body.style.cursor = 'wait';
     this.op.hide();
+
     this.pdfService
       .generatePortfolioPdf(new OccupationalProfile(this.occupationalProfile))
       .subscribe((pdf) => {
@@ -183,7 +186,42 @@ export class ProfileCardComponent implements OnInit {
       });
   }
 
-  private downloadURI(uri: string, name: string) {
+  downloadRDF(format: 'ttl' | 'xml' | 'rdfa'): void {
+    document.body.style.cursor = 'wait';
+    this.op.hide();
+
+    const fileName = (this.occupationalProfile.title || 'default_name')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, '_')
+      .replace(/[^\w_-]/g, '')
+      .toLowerCase();
+    const newProfile = new OccupationalProfile(this.occupationalProfile);
+
+    switch (format) {
+      case 'ttl':
+        const ttlUrl = this.rdfService.getRdfTtlUrl(newProfile);
+        this.downloadURI(ttlUrl, fileName + '_profile.ttl');
+
+        break;
+
+      case 'xml':
+        const xmlUrl = this.rdfService.getRdfXmlUrl(newProfile);
+        this.downloadURI(xmlUrl, fileName + '_profile.rdf.xml');
+
+        break;
+
+      case 'rdfa':
+        const rdfaUrl = this.rdfService.getRdfaUrl(newProfile);
+        this.downloadURI(rdfaUrl, fileName + '_profile.html');
+
+        break;
+    }
+
+    document.body.style.cursor = '';
+  }
+
+  private downloadURI(uri: string, name: string): void {
     const link = document.createElement('a');
     link.download = name;
     link.href = uri;

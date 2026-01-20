@@ -6,7 +6,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { PanelModule } from 'primeng/panel';
-import { PopoverModule } from 'primeng/popover';
+import { Popover, PopoverModule } from 'primeng/popover';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TagModule } from 'primeng/tag';
@@ -31,6 +31,8 @@ import {
 import { FirebaseService } from '../../services/firebase.service';
 import { OccupationalProfileService } from '../../services/occupationalProfile.service';
 import { UtilsService } from '../../services/utils.service';
+import { PdfService } from '../../services/pdf.service';
+import { RdfService } from '../../services/rdf.service';
 
 @Component({
   standalone: true,
@@ -76,6 +78,8 @@ export class ProfilePageComponent implements OnInit {
     private firebaseService: FirebaseService,
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
+    private pdfService: PdfService,
+    private rdfService: RdfService,
   ) {}
 
   ngOnInit() {
@@ -354,5 +358,59 @@ export class ProfilePageComponent implements OnInit {
       life: 3000,
       closable: true,
     });
+  }
+
+  downloadPDF(op: Popover): void {
+    document.body.style.cursor = 'wait';
+    op.hide();
+
+    this.pdfService
+      .generatePortfolioPdf(new OccupationalProfile(this.profile))
+      .subscribe((pdf) => {
+        this.downloadURI(pdf.url, pdf.filename);
+        document.body.style.cursor = '';
+      });
+  }
+
+  downloadRDF(format: 'ttl' | 'xml' | 'rdfa', op: Popover): void {
+    document.body.style.cursor = 'wait';
+    op.hide();
+
+    const fileName = (this.profile?.title || 'default_name')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, '_')
+      .replace(/[^\w_-]/g, '')
+      .toLowerCase();
+    const newProfile = new OccupationalProfile(this.profile);
+
+    switch (format) {
+      case 'ttl':
+        const ttlUrl = this.rdfService.getRdfTtlUrl(newProfile);
+        this.downloadURI(ttlUrl, fileName + '_profile.ttl');
+
+        break;
+
+      case 'xml':
+        const xmlUrl = this.rdfService.getRdfXmlUrl(newProfile);
+        this.downloadURI(xmlUrl, fileName + '_profile.rdf.xml');
+
+        break;
+
+      case 'rdfa':
+        const rdfaUrl = this.rdfService.getRdfaUrl(newProfile);
+        this.downloadURI(rdfaUrl, fileName + '_profile.html');
+
+        break;
+    }
+
+    document.body.style.cursor = '';
+  }
+
+  private downloadURI(uri: string, name: string): void {
+    const link = document.createElement('a');
+    link.download = name;
+    link.href = uri;
+    link.click();
   }
 }

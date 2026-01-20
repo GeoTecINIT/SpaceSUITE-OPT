@@ -63,13 +63,13 @@ export class RdfService {
       ttl += `  dcterms:publisher "${this.escape(model.orgName)}${model.division ? ' - ' + this.escape(model.division) : ''}"  ;\n`;
 
     if (model.updatedAt)
-      ttl += `  dcterms:modified "${model.updatedAt instanceof Date ? model.updatedAt.toISOString() : model.updatedAt}" ;\n`;
+      ttl += `  dcterms:modified "${model.updatedAt instanceof Date ? model.updatedAt.toISOString() : model.updatedAt.toDate().toISOString()}" ;\n`;
 
     if (model.eqf) ttl += `  elm:EQFLevel "${this.escape(model.eqf)}" ;\n`;
 
     if (model.fields && model.fields.length != 0) {
       model.fields.forEach((field: Field) => {
-        ttl += `  elm:ISCEDFCode "${this.escape(field.code)})" ;\n`;
+        ttl += `  elm:ISCEDFCode "${this.escape(field.code)}" ;\n`;
       });
     }
 
@@ -158,7 +158,7 @@ export class RdfService {
       const dt =
         model.updatedAt instanceof Date
           ? model.updatedAt.toISOString()
-          : model.updatedAt;
+          : model.updatedAt.toDate().toISOString();
       xml += `    <dcterms:modified>${this.escapeXml(dt)}</dcterms:modified>\n`;
     }
 
@@ -251,7 +251,7 @@ export class RdfService {
       const dt =
         model.updatedAt instanceof Date
           ? model.updatedAt.toISOString()
-          : model.updatedAt;
+          : model.updatedAt.toDate().toISOString();
       html += `  <time property="modified" datetime="${dt}">${dt}</time><br/>\n`;
     }
 

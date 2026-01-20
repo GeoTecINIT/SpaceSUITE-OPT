@@ -91,36 +91,44 @@
         variant="text"
         pTooltip="Share"
         tooltipPosition="top"
-        (onClick)="op.toggle($event)"
+        (onClick)="copyLink()"
       />
 
-      <p-popover #op>
-        <div style="color: var(--primary-color)">
-          <div class="font-medium block mb-2">
-            <strong>Options</strong>
-          </div>
+      <div>
+        <p-button
+          class="custom-button"
+          icon="pi pi-download"
+          [rounded]="true"
+          variant="text"
+          pTooltip="Download"
+          tooltipPosition="top"
+          (onClick)="op.toggle($event)"
+        />
 
-          <div class="flex gap-5">
-            <i
-              class="pi pi-link popover-element"
-              pTooltip="Copy link"
-              tooltipPosition="top"
-              (click)="copyLink()"
-            ></i>
-            <i
-              class="pi pi-file-pdf popover-element"
-              pTooltip="Download PDF"
-              tooltipPosition="top"
-              (click)="downloadPortfolioPdf()"
-            ></i>
-            <i
-              class="pi pi-code popover-element"
-              pTooltip="Under development"
-              tooltipPosition="top"
-            ></i>
+        <p-popover #op>
+          <div style="color: var(--primary-color)">
+            <strong>Choose Format</strong>
+
+            <ul class="flex flex-column p-0 m-0">
+              <li class="flex p-2 popover-element" (click)="downloadPDF()">
+                PDF
+              </li>
+              <li
+                class="flex p-2 popover-element"
+                (click)="downloadRDF('rdfa')"
+              >
+                RDFa
+              </li>
+              <li class="flex p-2 popover-element" (click)="downloadRDF('xml')">
+                RDF/XML
+              </li>
+              <li class="flex p-2 popover-element" (click)="downloadRDF('ttl')">
+                Turtle
+              </li>
+            </ul>
           </div>
-        </div>
-      </p-popover>
+        </p-popover>
+      </div>
 
       <p-button
         class="custom-button"
