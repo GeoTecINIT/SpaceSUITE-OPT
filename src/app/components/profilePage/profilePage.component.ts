@@ -88,6 +88,7 @@ export class ProfilePageComponent implements OnInit {
     });
     combineLatest([this.route.paramMap, this.route.queryParams])
       .pipe(
+        take(1),
         map(([paramMap, queryParams]) => {
           const profileId = paramMap.get('profileId') || '';
           const submitted =
@@ -106,7 +107,6 @@ export class ProfilePageComponent implements OnInit {
               catchError(() => of(undefined)),
             ),
         ),
-        take(1),
       )
       .subscribe((newProfile?: OccupationalProfile) => {
         if (newProfile) this.loadProfile(newProfile);
