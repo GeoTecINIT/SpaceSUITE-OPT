@@ -7,7 +7,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService, ExitWithoutSavingService } from '@eo4geo/ngx-bok-utils';
 import { ConfirmationService, MessageService, TreeNode } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -121,6 +121,9 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private formType: FormType = FormType.Create;
 
+  private origin: string = '';
+  private profileId: string = '';
+
   constructor(
     private exitWithoutSavingService: ExitWithoutSavingService,
     private firebaseService: FirebaseService,
@@ -131,9 +134,13 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private authService: AuthService,
     private fieldsService: FieldsService,
     private escoService: ESCOService,
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit() {
+    this.origin = this.route.snapshot.queryParamMap.get('origin') || '';
+    this.profileId = this.route.snapshot.paramMap.get('profileId') || '';
+
     this.formType = this.detectFormType(this.inputProfile);
 
     this.profile = new OccupationalProfile(
@@ -234,10 +241,12 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   returnToHomepage(): void {
-    if (this.inputProfile !== undefined) {
-      this.router.navigate(['profile/' + this.inputProfile._id]);
-    } else {
+    if (this.origin === 'details') {
+      this.router.navigate([`profile/${this.profileId}`]);
+    } else if (this.origin === 'explorer') {
       this.router.navigate(['profile']);
+    } else {
+      this.router.navigate(['not_found']);
     }
   }
 

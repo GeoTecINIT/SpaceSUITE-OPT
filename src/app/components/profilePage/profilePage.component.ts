@@ -88,7 +88,6 @@ export class ProfilePageComponent implements OnInit {
     });
     combineLatest([this.route.paramMap, this.route.queryParams])
       .pipe(
-        take(1),
         map(([paramMap, queryParams]) => {
           const profileId = paramMap.get('profileId') || '';
           const submitted =
@@ -107,6 +106,7 @@ export class ProfilePageComponent implements OnInit {
               catchError(() => of(undefined)),
             ),
         ),
+        take(1),
       )
       .subscribe((newProfile?: OccupationalProfile) => {
         if (newProfile) this.loadProfile(newProfile);
@@ -208,7 +208,7 @@ export class ProfilePageComponent implements OnInit {
     });
 
     this.profile.fields.forEach((field) => {
-      this.applicationDomains.push(field.name + ' (' + field.grandparent + ')');
+      this.applicationDomains.push(`${field.name} (${field.grandparent})`);
     });
   }
 
@@ -217,11 +217,15 @@ export class ProfilePageComponent implements OnInit {
   }
 
   editProfile() {
-    this.router.navigate(['profile/edit/' + this.profile?._id]);
+    this.router.navigate([`profile/edit/${this.profile?._id}`], {
+      queryParams: { origin: 'details' },
+    });
   }
 
   duplicateProfile() {
-    this.router.navigate(['profile/new/' + this.profile?._id]);
+    this.router.navigate([`profile/new/${this.profile?._id}`], {
+      queryParams: { origin: 'details' },
+    });
   }
 
   deleteModal(event: Event) {
@@ -281,7 +285,7 @@ export class ProfilePageComponent implements OnInit {
   }
 
   onClickConcept(code: string) {
-    window.open('https://geospacebok.eu/' + code);
+    window.open(`https://geospacebok.eu/${code}`);
   }
 
   onClickSkill(uri: string) {

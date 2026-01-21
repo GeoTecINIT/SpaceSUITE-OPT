@@ -97,11 +97,15 @@ export class ProfileCardComponent implements OnInit {
   }
 
   editProfile() {
-    this.router.navigate([`profile/edit/${this.occupationalProfile._id}`]);
+    this.router.navigate([`profile/edit/${this.occupationalProfile._id}`], {
+      queryParams: { origin: 'explorer' },
+    });
   }
 
   duplicateProfile() {
-    this.router.navigate([`profile/new/${this.occupationalProfile._id}`]);
+    this.router.navigate([`profile/new/${this.occupationalProfile._id}`], {
+      queryParams: { origin: 'explorer' },
+    });
   }
 
   deleteModal(event: Event) {

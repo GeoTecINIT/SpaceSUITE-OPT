@@ -196,7 +196,9 @@ export class ProfileExplorerComponent
   }
 
   createOccupationalProfile() {
-    this.router.navigate(['profile/new']);
+    this.router.navigate(['profile/new'], {
+      queryParams: { origin: 'explorer' },
+    });
   }
 
   private updateButtonPosition = () => {
