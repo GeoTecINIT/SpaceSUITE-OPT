@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { PaginatorState } from 'primeng/paginator';
-import { concatMap, map, Observable, ReplaySubject, take } from 'rxjs';
-import { FilterOption } from '../models/filterOption';
+import { combineLatest, map, Observable, ReplaySubject } from 'rxjs';
+import { Filter } from '../models/filter';
 import { OccupationalProfile } from '../models/occupationalProfile';
 import { OccupationalProfileService } from './occupationalProfile.service';
 
@@ -16,42 +16,38 @@ export class CardFilterService {
   searchValue: string = '';
   visibilityFilter: string = 'all';
 
-  private filterOptionsSubject: ReplaySubject<FilterOption[]> =
-    new ReplaySubject<FilterOption[]>(1);
+  private filtersSubject: ReplaySubject<Filter[]> = new ReplaySubject<Filter[]>(
+    1,
+  );
 
   constructor(
     private readonly http: HttpClient,
     private readonly profileService: OccupationalProfileService,
   ) {
-    this.http
-      .get<FilterOption[]>('/assets/filters.json')
+    combineLatest([
+      this.http.get<Filter[]>('/assets/filters.json'),
+      this.profileService.getOrganizations(),
+    ])
       .pipe(
-        take(1),
-        concatMap((filters: FilterOption[]) => {
-          return this.profileService
-            .getProfilesOrganizations()
-            .pipe(map((organizations) => ({ filters, organizations })));
+        map(([filters, organizations]) => {
+          const updatedFilters = [...filters];
+          updatedFilters[updatedFilters.length - 1].values = organizations;
+
+          return updatedFilters;
         }),
       )
-      .subscribe(({ filters, organizations }) => {
-        const updatedFilters = [...filters];
-        updatedFilters[updatedFilters.length - 1].values = organizations;
-        this.filterOptionsSubject.next(updatedFilters);
-      });
+      .subscribe(this.filtersSubject);
   }
 
-  checkProfile(profile: OccupationalProfile, filter: FilterOption): boolean {
+  checkProfile(profile: OccupationalProfile, filter: Filter): boolean {
     switch (filter.label) {
       case 'EQF Level':
-        return filter.selection.some(
-          (selection) => profile.eqf === selection.slice(-1),
-        );
+        return filter.selection.some((s) => profile.eqf === s.slice(-1));
 
       case 'Organizations':
         return filter.selection.some(
-          (selection) =>
-            profile.orgName?.trim().toLowerCase() ===
-            selection.trim().toLowerCase(),
+          (s) =>
+            profile.orgName?.trim().toLowerCase() === s.trim().toLowerCase(),
         );
 
       default:
@@ -59,31 +55,20 @@ export class CardFilterService {
     }
   }
 
-  getFilterOptions(): Observable<FilterOption[]> {
-    return this.filterOptionsSubject.asObservable().pipe(
-      map((filters) => {
-        return filters.map((f) => ({
-          ...f,
-          values: f.values ?? [],
-          selection: f.selection ?? [],
-        }));
-      }),
-    );
+  getFilters(): Observable<Filter[]> {
+    return this.filtersSubject.asObservable();
   }
 
-  getOptionByLabel(label: string): Observable<FilterOption> {
-    return this.filterOptionsSubject.pipe(
-      map((filterOptions) => {
-        const option = filterOptions.filter((option) => option.label === label);
-
-        if (option.length > 0) return option[0];
-
-        return {
-          label: label,
-          values: [],
-          selection: [],
-        };
-      }),
+  getFilter(label: string): Observable<Filter> {
+    return this.filtersSubject.asObservable().pipe(
+      map(
+        (filters) =>
+          filters.find((f) => f.label === label) ?? {
+            label,
+            values: [],
+            selection: [],
+          },
+      ),
     );
   }
 }

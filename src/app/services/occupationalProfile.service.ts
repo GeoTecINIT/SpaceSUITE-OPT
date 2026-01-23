@@ -54,7 +54,7 @@ export class OccupationalProfileService {
     return this.profiles$.pipe(map((map) => map.get(id)));
   }
 
-  getProfilesOrganizations(): Observable<string[]> {
+  getOrganizations(): Observable<string[]> {
     return this.profiles$.pipe(
       map((map) => [
         ...new Set(

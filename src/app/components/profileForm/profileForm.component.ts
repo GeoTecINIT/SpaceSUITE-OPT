@@ -29,7 +29,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
 import { catchError, finalize, of, Subscription, take } from 'rxjs';
-import { FilterOption } from '../../models/filterOption';
+import { Filter } from '../../models/filter';
 import { FormType } from '../../models/formType';
 import {
   Competence,
@@ -92,7 +92,7 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
     selection: [],
   };
 
-  divisionSelector: FilterOption = {
+  divisionSelector: Filter = {
     label: 'Division',
     values: [],
     selection: [],

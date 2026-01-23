@@ -18,7 +18,7 @@ import { MenuModule } from 'primeng/menu';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { TooltipModule } from 'primeng/tooltip';
-import { FilterOption } from '../../models/filterOption';
+import { Filter } from '../../models/filter';
 import { BokModalComponent } from '../bokModal/bokModal.component';
 
 @Component({
@@ -45,13 +45,13 @@ export class FiltersComponent implements OnChanges {
   @Input() bokConcepts: string[] = [];
   @Input() loading: boolean = false;
   @Input() logged: boolean = false;
-  @Input() multiSelectOptions: FilterOption[] = [];
+  @Input() multiSelectOptions: Filter[] = [];
   @Input() searchOption: string = 'Title';
   @Input() searchValue: string = '';
   @Input() visibilityFilter: string = 'all';
 
   @Output() bokConceptsChange: EventEmitter<string[]> = new EventEmitter();
-  @Output() multiSelectOptionsChange: EventEmitter<FilterOption[]> =
+  @Output() multiSelectOptionsChange: EventEmitter<Filter[]> =
     new EventEmitter();
   @Output() searchOptionChange: EventEmitter<string> = new EventEmitter();
   @Output() searchValueChange: EventEmitter<string> = new EventEmitter();
@@ -112,16 +112,14 @@ export class FiltersComponent implements OnChanges {
     this.visibilityFilterChange.emit(this.visibilityFilter);
   }
 
-  getMultiselectOptions(
-    filterOption: FilterOption,
-  ): { id: string; value: string }[] {
+  getMultiselectOptions(filterOption: Filter): { id: string; value: string }[] {
     return filterOption.values.map((x, i) => ({
       id: filterOption.tags ? filterOption.tags[i] : x,
       value: x,
     }));
   }
 
-  trackByLabel(index: number, item: FilterOption): string | number {
+  trackByLabel(index: number, item: Filter): string | number {
     return item.label ?? index;
   }
 }

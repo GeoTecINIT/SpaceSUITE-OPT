@@ -17,7 +17,7 @@ import { PaginatorModule, PaginatorState } from 'primeng/paginator';
 import { SkeletonModule } from 'primeng/skeleton';
 import { ToastModule } from 'primeng/toast';
 import { combineLatest, filter, Subscription, take } from 'rxjs';
-import { FilterOption } from '../../models/filterOption';
+import { Filter } from '../../models/filter';
 import { OccupationalProfile } from '../../models/occupationalProfile';
 import { CardFilterService } from '../../services/cardFilter.service';
 import { FirebaseService } from '../../services/firebase.service';
@@ -54,7 +54,7 @@ export class ProfileExplorerComponent
   paginatedProfiles: OccupationalProfile[] = [];
 
   bokConcepts: string[] = [];
-  filterOptions: FilterOption[] = [];
+  filterOptions: Filter[] = [];
   searchOption: string = 'Title';
   searchValue: string = '';
   visibilityFilter: string = 'all';
@@ -86,7 +86,7 @@ export class ProfileExplorerComponent
       .pipe(filter((p) => !!p));
     this.occupationalProfilesSubscription = combineLatest([
       this.firebaseService.getUserOrganizationList(),
-      this.filterService.getFilterOptions(),
+      this.filterService.getFilters(),
       profiles$,
     ]).subscribe(([orgs, filters, profiles]) => {
       this.organizations = orgs.map((o) => o._id);
@@ -95,6 +95,7 @@ export class ProfileExplorerComponent
 
       this.searchOption = this.filterService.searchOption;
       this.searchValue = this.filterService.searchValue;
+      this.bokConcepts = this.filterService.bokConcepts;
       if (!this.isLogged()) {
         this.visibilityFilter = 'all';
         this.filterService.visibilityFilter = 'all';
@@ -103,6 +104,11 @@ export class ProfileExplorerComponent
       }
 
       this.filterPipeline();
+
+      if (this.filterService.paginatorState) {
+        this.onPageChange(this.filterService.paginatorState);
+      }
+
       this.loading = false;
     });
   }

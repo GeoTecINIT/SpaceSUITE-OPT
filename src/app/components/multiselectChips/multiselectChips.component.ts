@@ -64,7 +64,7 @@ export class MultiselectChipsComponent {
   ngOnInit() {
     if (this.optionsSource === 'filters') {
       this.filterService
-        .getOptionByLabel(this.optionsName)
+        .getFilter(this.optionsName)
         .subscribe(
           (filterOption) =>
             (this.multiselectOptions = filterOption.values
