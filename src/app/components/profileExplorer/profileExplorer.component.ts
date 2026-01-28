@@ -183,6 +183,7 @@ export class ProfileExplorerComponent
     setTimeout(() => {
       this.visibilityFilter = filter;
       this.filterService.visibilityFilter = filter;
+      this.filterService.paginatorState.first = 0;
 
       this.filterPipeline();
     });

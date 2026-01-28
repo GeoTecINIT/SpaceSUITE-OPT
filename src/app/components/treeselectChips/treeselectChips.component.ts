@@ -57,7 +57,7 @@ export class TreeselectChipsComponent implements OnInit, OnChanges {
     }
   }
 
-  addChip(chip: string) {
+  addChip(chip: string): void {
     if (!this.chips.includes(chip)) {
       this.chips.push(chip);
       this.chipsChange.emit(this.chips);
@@ -72,13 +72,13 @@ export class TreeselectChipsComponent implements OnInit, OnChanges {
     }
   }
 
-  deleteChip(chip: string) {
+  deleteChip(chip: string): void {
     this.chips = this.chips.filter((c) => c !== chip);
     this.chipsChange.emit(this.chips);
     this.treeSelection = this.treeSelection.filter((n) => n.label !== chip);
   }
 
-  clear() {
+  clear(): void {
     this.chips = [];
     this.chipsChange.emit(this.chips);
   }
