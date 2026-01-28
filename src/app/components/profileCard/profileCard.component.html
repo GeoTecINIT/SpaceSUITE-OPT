@@ -62,24 +62,25 @@
           {{ occupationalProfile.description }}
         </div>
 
-        <div class="flex flex-wrap gap-2">
-          <ng-container *ngFor="let concept of concepts">
-            <p-tag
-              class="custom-tag cursor-pointer text-xs"
-              [value]="concept"
-              [rounded]="true"
-              [style.background]="selectedConceptsColor.get(concept)"
-              (click)="onClickConcept(concept)"
-              [pTooltip]="selectedConceptsTooltip.get(concept)"
-              tooltipPosition="top"
-              [tooltipStyleClass]="
-                selectedConceptsTooltip.get(concept) === 'Deprecated concept'
-                  ? 'danger-tooltip'
-                  : ''
-              "
-            />
-          </ng-container>
-        </div>
+        @if (showSkelleton) {
+          <div class="mt-2 h-4rem overflow-hidden">
+              <div class="flex align-items-center gap-2 flex-wrap">
+                  <ng-content *ngFor="let i of skeletonElements">
+                      <p-skeleton height="1.5rem" width="8rem" class="mb-2" borderRadius="16px" />
+                  </ng-content>
+              </div>
+          </div>
+        }
+        @else {
+          <div #container class="mt-2 {{limitTagsHeigth ? 'max-h-4rem' : ''}} overflow-hidden">
+            <div #subjects class="flex align-items-center">
+                <skill-tags [tags]="concepts" [compactBoKTags]="compactConcepts" [compactThreshold]="2000">
+                    <i *ngIf="compactConcepts" class="pi pi-info-circle more-tag align-self-center" (click)="conceptsOp.toggle($event)"></i>
+                </skill-tags>
+            </div>
+          </div>
+        } 
+        
       </div>
     </div>
 
@@ -178,3 +179,9 @@
     </div>
   </div>
 </p-card>
+
+<p-popover #conceptsOp>
+    <div class="flex align-items-center gap-2 my-2 flex-wrap max-w-19rem">
+        <skill-tags [tags]="concepts" [compactBoKTags]="false"></skill-tags>
+    </div>
+</p-popover>
