@@ -243,8 +243,8 @@
 
   <div class="flex flex-column gap-2">
     <treeselect-chips
-      [(chips)]="this.competences"
-      [treeselectOptions]="competenceTree"
+      [(chips)]="this.competenceLabels"
+      [treeNodes]="competenceTree"
       fieldName="Transversal Skills"
       pTooltip="Skills considered unrelated to a particular job, task, academic discipline or area of knowledge but that can be used in a wide variety of situations and work settings. Based on the ESCO transversal and cross-sector skills."
       tooltipPosition="top"

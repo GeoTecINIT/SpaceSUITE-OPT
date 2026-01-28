@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { Injectable } from '@angular/core';
 import { TreeNode } from 'primeng/api';
+import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -14,7 +14,7 @@ export class ESCOService {
 
   private cacheTransversalSkills$?: Observable<string[]>;
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   getAllTransversalSkills(
     lang: string = 'en',
@@ -73,8 +73,6 @@ export class ESCOService {
   }
 
   getTransversalSkillsFromJson(): Observable<TreeNode[]> {
-    return this.http
-      .get('assets/transversalSkills.json')
-      .pipe(map((data) => data as TreeNode<any>[]));
+    return this.http.get<TreeNode[]>('assets/transversalSkills.json');
   }
 }

@@ -9,12 +9,13 @@
   >
     <p-treeselect
       #treeSelect
-      [options]="treeselectOptions"
-      [ngModel]="treeSelection"
+      [options]="treeNodes"
+      [(ngModel)]="treeSelection"
       inputId="{{ fieldName }}"
       class="w-full custom-treeselect"
-      (ngModelChange)="treeselectChange($event)"
-      (onClear)="treeSelect.hide()"
+      (onNodeSelect)="addChip($event.node.label!)"
+      (onNodeUnselect)="deleteChip($event.node.label!)"
+      (onClear)="treeSelect.hide(); clear()"
       [class.invalid-treeselect]="error"
       [filter]="true"
       resetFilterOnHide="true"
@@ -32,7 +33,7 @@
       panelStyleClass="custom-treeselect"
       [propagateSelectionUp]="false"
       [virtualScrollOptions]="{ scrollHeight: '252px' }"
-      [loading]="treeselectOptions.length === 0"
+      [loading]="treeNodes.length === 0"
     >
       <ng-template #filtericon>
         <i class="pi pi-bookmark"></i>
@@ -49,7 +50,7 @@
       <p-chip
         [label]="chip"
         [removable]="true"
-        (onRemove)="deleteElement(chip)"
+        (onRemove)="deleteChip(chip)"
         class="custom-chip"
         [ngClass]="chipAnimations[chip] ? 'chip-animation' : ''"
       />
