@@ -108,7 +108,8 @@ export class FiltersComponent implements OnChanges {
     this.multiSelectOptionsChange.emit(this.multiSelectOptions);
   }
 
-  updateVisibilityFilter(): void {
+  updateVisibilityFilter(newVisibility: string): void {
+    this.visibilityFilter = newVisibility;
     this.visibilityFilterChange.emit(this.visibilityFilter);
   }
 

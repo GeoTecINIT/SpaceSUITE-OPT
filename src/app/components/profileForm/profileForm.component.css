@@ -207,6 +207,8 @@
 ::ng-deep .p-tooltip {
   --p-tooltip-background: var(--primary-color);
   --p-tooltip-color: white;
+  --p-tooltip-max-width: 20rem;
+  text-align: center;
 }
 
 ::ng-deep .p-confirmdialog {

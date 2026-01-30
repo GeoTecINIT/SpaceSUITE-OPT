@@ -5,29 +5,31 @@
     <p-divider class="m-0" />
   </div>
 
-  <ng-container *ngIf="logged">
-    <div class="flex">
-      <p-selectbutton
-        class="custom-togglebutton"
-        [(ngModel)]="visibilityFilter"
-        [options]="visibilityFilterOptions"
-        [allowEmpty]="false"
-        optionLabel="label"
-        optionValue="value"
-        (ngModelChange)="updateVisibilityFilter()"
-        [disabled]="loading"
-        size="small"
-      >
-        <ng-template #item let-item>
-          <div class="flex flex-column">
-            <i [class]="item.icon"></i>
+  <div class="flex">
+    <p-selectbutton
+      class="custom-togglebutton w-full"
+      [ngModel]="logged ? visibilityFilter : undefined"
+      [options]="
+        logged ? visibilityFilterOptions : [visibilityFilterOptions[2]]
+      "
+      [allowEmpty]="!logged"
+      optionLabel="label"
+      optionValue="value"
+      (ngModelChange)="updateVisibilityFilter($event)"
+      [disabled]="!logged"
+      size="small"
+      [pTooltip]="!logged ? 'You must be logged in to use this field.' : ''"
+      tooltipPosition="top"
+    >
+      <ng-template #item let-item>
+        <div class="flex flex-column">
+          <i [class]="item.icon"></i>
 
-            {{ item.label }}
-          </div>
-        </ng-template>
-      </p-selectbutton>
-    </div>
-  </ng-container>
+          {{ item.label }}
+        </div>
+      </ng-template>
+    </p-selectbutton>
+  </div>
 
   <div class="flex flex-column">
     Search by {{ searchOption }}
