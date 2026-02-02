@@ -30,9 +30,9 @@ import {
 } from '../../models/occupationalProfile';
 import { FirebaseService } from '../../services/firebase.service';
 import { OccupationalProfileService } from '../../services/occupationalProfile.service';
-import { UtilsService } from '../../services/utils.service';
 import { PdfService } from '../../services/pdf.service';
 import { RdfService } from '../../services/rdf.service';
+import { UtilsService } from '../../services/utils.service';
 
 @Component({
   standalone: true,
@@ -56,7 +56,6 @@ import { RdfService } from '../../services/rdf.service';
 export class ProfilePageComponent implements OnInit {
   profile?: OccupationalProfile;
 
-  deprecatedConcepts: string[] = [];
   concepts: string[] = [];
   allSkills: string[] = [];
   transversalSkills: Competence[] = [];
@@ -146,7 +145,6 @@ export class ProfilePageComponent implements OnInit {
   private loadProfile(newProfile: OccupationalProfile) {
     this.profile = newProfile;
     this.concepts = [];
-    this.deprecatedConcepts = [];
     this.allSkills = [];
     this.transversalSkills = [];
     this.applicationDomains = [];
@@ -159,7 +157,7 @@ export class ProfilePageComponent implements OnInit {
         color: this.bokInfo.getConceptColor(concept).pipe(take(1)),
       }).pipe(
         tap(({ name, color }) => {
-          this.conceptsTooltip.set(concept, name || 'Deprecated concept');
+          this.conceptsTooltip.set(concept, name);
 
           const softColor = color
             ? this.utilsService.convertHexToRgba(color, 0.5)
@@ -171,12 +169,8 @@ export class ProfilePageComponent implements OnInit {
     );
 
     forkJoin(conceptRequests).subscribe((results) => {
-      results.forEach(({ concept, name }) => {
-        if (name) {
-          this.concepts.push(concept);
-        } else {
-          this.deprecatedConcepts.push(concept);
-        }
+      results.forEach(({ concept }) => {
+        this.concepts.push(concept);
       });
 
       this.getConcept(this.concepts);

@@ -104,45 +104,6 @@
         </div>
       </p-panel>
 
-      <ng-container *ngIf="deprecatedConcepts.length > 0">
-        <p-panel
-          #deprecatedConceptsPanel
-          class="my-2 custom-panel"
-          [header]="`Deprecated Knowledge (${deprecatedConcepts.length})`"
-          [toggleable]="true"
-          [collapsed]="overTagLimit(deprecatedConcepts.length)"
-        >
-          <ng-template #headericons>
-            <p-button
-              [icon]="
-                deprecatedConceptsPanel.collapsed
-                  ? 'pi pi-chevron-down'
-                  : 'pi pi-chevron-up'
-              "
-              severity="secondary"
-              text
-            />
-          </ng-template>
-
-          <p class="danger-text text-xs mt-0">
-            *These are obsolete concepts, so they are not present in the current
-            version of the Bok.
-          </p>
-
-          <div class="flex flex-wrap gap-2">
-            <ng-container *ngFor="let deprecatedConcept of deprecatedConcepts">
-              <p-tag
-                class="tag bok-tag cursor-pointer"
-                [value]="deprecatedConcept"
-                [rounded]="true"
-                [style.background]="conceptsColor.get(deprecatedConcept)"
-                (click)="onClickConcept(deprecatedConcept)"
-              />
-            </ng-container>
-          </div>
-        </p-panel>
-      </ng-container>
-
       <p-panel
         #skillsPanel
         class="my-2 custom-panel"

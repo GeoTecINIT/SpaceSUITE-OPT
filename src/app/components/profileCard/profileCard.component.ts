@@ -12,9 +12,9 @@ import { catchError, finalize, of, take } from 'rxjs';
 import { OccupationalProfile } from '../../models/occupationalProfile';
 import { FirebaseService } from '../../services/firebase.service';
 import { OccupationalProfileService } from '../../services/occupationalProfile.service';
-import { UtilsService } from '../../services/utils.service';
 import { PdfService } from '../../services/pdf.service';
 import { RdfService } from '../../services/rdf.service';
+import { UtilsService } from '../../services/utils.service';
 
 @Component({
   standalone: true,
@@ -73,10 +73,7 @@ export class ProfileCardComponent implements OnInit {
       this.bokInfo
         .getConceptName(concept)
         .subscribe((tooltip) =>
-          this.selectedConceptsTooltip.set(
-            concept,
-            tooltip ? tooltip : 'Deprecated concept',
-          ),
+          this.selectedConceptsTooltip.set(concept, tooltip),
         );
     });
 

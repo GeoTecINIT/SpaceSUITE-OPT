@@ -72,11 +72,6 @@
               (click)="onClickConcept(concept)"
               [pTooltip]="selectedConceptsTooltip.get(concept)"
               tooltipPosition="top"
-              [tooltipStyleClass]="
-                selectedConceptsTooltip.get(concept) === 'Deprecated concept'
-                  ? 'danger-tooltip'
-                  : ''
-              "
             />
           </ng-container>
         </div>
