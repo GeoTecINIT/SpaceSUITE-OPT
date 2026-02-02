@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Input, NgZone, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -47,6 +47,8 @@ export class ProfileCardComponent implements OnInit {
   @ViewChild('conceptsOp') conceptsOp!: Popover;
 
   concepts: Tag[] = [];
+  conceptsLoaded: boolean = false;
+  overflow: boolean = false;
   compactConcepts: boolean = false;
   limitTagsHeigth: boolean = true;
 
@@ -62,6 +64,7 @@ export class ProfileCardComponent implements OnInit {
     private occupationalProfileService: OccupationalProfileService,
     private pdfService: PdfService,
     private rdfService: RdfService,
+    private cdr: ChangeDetectorRef
   ) {
     this.skeletonElements = Array(10).fill(null);
   }
@@ -74,13 +77,21 @@ export class ProfileCardComponent implements OnInit {
     this.utilsService.stringToTag(this.occupationalProfile.knowledge, 'bok').pipe(defaultIfEmpty([])).subscribe(results => {
       this.concepts = [...this.concepts, ...results];
       this.concepts.sort((a, b) => a.label.localeCompare(b.label));
+      this.conceptsLoaded = true;
       this.showSkelleton = false;
-      requestAnimationFrame(() => {
-        this.compactConcepts = this.checkOverflow();
-        this.limitTagsHeigth = false;
-      })
     });
   }
+
+  ngAfterViewChecked() {
+    if (this.conceptsLoaded && this.limitTagsHeigth) {
+      this.overflow = this.checkOverflow();
+      console.log(this.overflow)
+      this.limitTagsHeigth = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  compactConceptsChanged = () => this.compactConcepts = !this.compactConcepts;
 
   checkOverflow(): boolean {
     const containerHeight = this.containerElement.nativeElement.clientHeight;

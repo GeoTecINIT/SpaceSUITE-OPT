@@ -74,7 +74,7 @@
         @else {
           <div #container class="mt-2 {{limitTagsHeigth ? 'max-h-4rem' : ''}} overflow-hidden">
             <div #subjects class="flex align-items-center">
-                <skill-tags [tags]="concepts" [compactBoKTags]="compactConcepts" [compactThreshold]="2000">
+                <skill-tags [tags]="concepts" [compactThreshold]="overflow ? 2000 : 500" (layoutUpdated)="compactConceptsChanged()" class="min-w-full">
                     <i *ngIf="compactConcepts" class="pi pi-info-circle more-tag align-self-center" (click)="conceptsOp.toggle($event)"></i>
                 </skill-tags>
             </div>
