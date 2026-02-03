@@ -18,15 +18,11 @@ import { FirebaseService } from './firebase.service';
   providedIn: 'root',
 })
 export class OccupationalProfileService {
-  private profilesMap: BehaviorSubject<
+  private profilesSubject: BehaviorSubject<
     Map<string, OccupationalProfile> | undefined
   > = new BehaviorSubject<Map<string, OccupationalProfile> | undefined>(
     undefined,
   );
-  private profiles$: Observable<Map<string, OccupationalProfile>> =
-    this.profilesMap.pipe(
-      filter((m): m is Map<string, OccupationalProfile> => m !== undefined),
-    );
 
   constructor(
     private firebaseService: FirebaseService,
@@ -38,31 +34,33 @@ export class OccupationalProfileService {
         tap((profiles) => {
           const formattedProfiles = this.formatOccupationalProfiles(profiles);
           const map = new Map(formattedProfiles.map((p) => [p._id, p]));
-          this.profilesMap.next(map);
+          this.profilesSubject.next(map);
         }),
       )
       .subscribe();
   }
 
-  getOccupationalProfiles(): Observable<OccupationalProfile[]> {
-    return this.profiles$.pipe(map((map) => Array.from(map.values())));
+  getOccupationalProfiles(): Observable<OccupationalProfile[] | undefined> {
+    return this.profilesSubject
+      .asObservable()
+      .pipe(map((map) => (map ? Array.from(map.values()) : undefined)));
   }
 
   getOccupationalProfile(
     id: string,
   ): Observable<OccupationalProfile | undefined> {
-    return this.profiles$.pipe(map((map) => map.get(id)));
+    return this.profilesSubject.asObservable().pipe(
+      filter((map) => map !== undefined),
+      map((map) => map.get(id)),
+    );
   }
 
   getOrganizations(): Observable<string[]> {
-    return this.profiles$.pipe(
-      map((map) => [
-        ...new Set(
-          Array.from(map.values())
-            .filter((p) => !!p.orgName)
-            .map((p) => p.orgName!),
-        ),
-      ]),
+    return this.profilesSubject.asObservable().pipe(
+      map((map) => {
+        if (map === undefined || map.size === 0) return [];
+        return [...new Set(Array.from(map.values()).map((p) => p.orgId))];
+      }),
     );
   }
 

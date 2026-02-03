@@ -16,7 +16,7 @@ import { DividerModule } from 'primeng/divider';
 import { PaginatorModule, PaginatorState } from 'primeng/paginator';
 import { SkeletonModule } from 'primeng/skeleton';
 import { ToastModule } from 'primeng/toast';
-import { combineLatest, filter, Subscription, take } from 'rxjs';
+import { combineLatest, filter, map, Subscription, take } from 'rxjs';
 import { Filter } from '../../models/filter';
 import { OccupationalProfile } from '../../models/occupationalProfile';
 import { CardFilterService } from '../../services/cardFilter.service';
@@ -81,15 +81,16 @@ export class ProfileExplorerComponent
   }
 
   ngOnInit() {
-    const profiles$ = this.occupationalProfileService
-      .getOccupationalProfiles()
-      .pipe(filter((p) => !!p));
     this.occupationalProfilesSubscription = combineLatest([
-      this.firebaseService.getUserOrganizationList(),
+      this.firebaseService
+        .getUserOrganizationList()
+        .pipe(map((orgs) => orgs.map((o) => o._id))),
       this.filterService.getFilters(),
-      profiles$,
+      this.occupationalProfileService
+        .getOccupationalProfiles()
+        .pipe(filter((p) => p !== undefined)),
     ]).subscribe(([orgs, filters, profiles]) => {
-      this.organizations = orgs.map((o) => o._id);
+      this.organizations = orgs;
       this.filterOptions = filters;
       this.profiles = profiles;
 
