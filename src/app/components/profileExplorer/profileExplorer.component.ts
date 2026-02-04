@@ -250,6 +250,11 @@ export class ProfileExplorerComponent
         break;
 
       case 'Skills':
+        if (value === '') {
+          searchedProfiles.push(...profiles);
+          break;
+        }
+
         profiles.forEach((profile) => {
           if (
             profile.skills.some((skill) =>
@@ -265,6 +270,11 @@ export class ProfileExplorerComponent
         break;
 
       case 'Transversal Skills':
+        if (value === '') {
+          searchedProfiles.push(...profiles);
+          break;
+        }
+
         profiles.forEach((profile) => {
           if (
             profile.competences.some((competence) =>
