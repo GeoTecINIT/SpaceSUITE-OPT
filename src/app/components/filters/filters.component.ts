@@ -119,8 +119,4 @@ export class FiltersComponent implements OnChanges {
       value: x,
     }));
   }
-
-  trackByLabel(index: number, item: Filter): string | number {
-    return item.label ?? index;
-  }
 }

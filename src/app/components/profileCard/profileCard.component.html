@@ -13,9 +13,10 @@
 
         <span class="p-card-subtitle text-sm">
           {{ occupationalProfile.orgName }}
-          <ng-container *ngIf="occupationalProfile.division !== ''">
+
+          @if (occupationalProfile.division !== "") {
             - {{ occupationalProfile.division }}
-          </ng-container>
+          }
         </span>
       </div>
 
@@ -47,11 +48,13 @@
             {{ occupationalProfile.eqf }}
           </span>
           |
-          <ng-container *ngIf="!occupationalProfile.isPublic">
+
+          @if (!occupationalProfile.isPublic) {
             <i class="pi pi-eye-slash"></i>
             <strong>Private</strong>
             |
-          </ng-container>
+          }
+
           <span>
             <strong>Last updated:</strong>
             {{ occupationalProfile.updatedAt?.toDate().toLocaleDateString() }}
@@ -63,7 +66,7 @@
         </div>
 
         <div class="flex flex-wrap gap-2">
-          <ng-container *ngFor="let concept of concepts">
+          @for (concept of concepts; track $index) {
             <p-tag
               class="custom-tag cursor-pointer text-xs"
               [value]="concept"
@@ -73,7 +76,7 @@
               [pTooltip]="selectedConceptsTooltip.get(concept)"
               tooltipPosition="top"
             />
-          </ng-container>
+          }
         </div>
       </div>
     </div>

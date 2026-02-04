@@ -75,19 +75,18 @@
     </p-menu>
   </div>
 
-  <ng-container
-    *ngFor="let option of multiSelectOptions; trackBy: trackByLabel"
-  >
+  @for (option of multiSelectOptions; track option.label) {
     <div>
       <div class="flex align-items-center">
         {{ option.label }}
 
-        <i
-          *ngIf="option.tooltip"
-          [pTooltip]="option.tooltip"
-          tooltipPosition="right"
-          class="ml-2 pi pi-info-circle"
-        ></i>
+        @if (option.tooltip) {
+          <i
+            [pTooltip]="option.tooltip"
+            tooltipPosition="right"
+            class="ml-2 pi pi-info-circle"
+          ></i>
+        }
       </div>
 
       <p-multiselect
@@ -105,7 +104,7 @@
         optionLabel="id"
       />
     </div>
-  </ng-container>
+  }
 
   <div class="max-w-20rem">
     <bokModal

@@ -2,7 +2,7 @@
 
 <p-confirmdialog />
 
-<ng-container *ngIf="profile; else spinner">
+@if (profile) {
   <div class="flex flex-column gap-2">
     <h1 class="mb-0">{{ profile.title }}</h1>
 
@@ -42,9 +42,9 @@
         <strong>Application domain(s):</strong>
 
         <ul class="m-0">
-          <li *ngFor="let domain of applicationDomains">
-            {{ domain }}
-          </li>
+          @for (domain of applicationDomains; track $index) {
+            <li>{{ domain }}</li>
+          }
         </ul>
       </div>
     </div>
@@ -75,7 +75,7 @@
             [class.flex-column]="overTagLimit(concepts.length)"
             [class.align-items-start]="overTagLimit(concepts.length)"
           >
-            <ng-container *ngFor="let concept of concepts">
+            @for (concept of concepts; track $index) {
               <p-tag
                 class="tag bok-tag cursor-pointer"
                 [value]="`[${concept}] ${conceptsTooltip.get(concept)}`"
@@ -83,11 +83,11 @@
                 [style.background]="conceptsColor.get(concept)"
                 (click)="onClickConcept(concept)"
               />
-            </ng-container>
+            }
           </div>
 
           <div class="flex flex-column w-3">
-            <ng-container *ngFor="let item of knowledgeDistributionArray">
+            @for (item of knowledgeDistributionArray; track $index) {
               <span class="text-xs">
                 <strong>{{ item[1] }}%</strong> | {{ item[0] }} -
                 {{ conceptsTooltip.get(item[0]) }}
@@ -99,7 +99,7 @@
                 [showValue]="false"
                 [color]="conceptsColor.get(item[0])"
               ></p-progressbar>
-            </ng-container>
+            }
           </div>
         </div>
       </p-panel>
@@ -128,9 +128,9 @@
               : 'flex flex-wrap gap-2'
           "
         >
-          <ng-container *ngFor="let skill of allSkills">
+          @for (skill of allSkills; track $index) {
             <p-tag class="tag skill-tag" [value]="skill" [rounded]="true" />
-          </ng-container>
+          }
         </div>
       </p-panel>
 
@@ -160,7 +160,7 @@
               : 'flex flex-wrap gap-2'
           "
         >
-          <ng-container *ngFor="let transversalSkill of transversalSkills">
+          @for (transversalSkill of transversalSkills; track $index) {
             <p-tag
               [class]="
                 transversalSkill.uri
@@ -173,7 +173,7 @@
                 transversalSkill.uri && onClickSkill(transversalSkill.uri)
               "
             />
-          </ng-container>
+          }
         </div>
       </p-panel>
 
@@ -224,7 +224,7 @@
           </p-popover>
         </div>
 
-        <ng-container *ngIf="isLogged()">
+        @if (isLogged()) {
           <p-button
             class="flex justify-content-center custom-button"
             label="Duplicate Profile"
@@ -232,7 +232,7 @@
             (onClick)="duplicateProfile()"
           />
 
-          <ng-container *ngIf="checkUser()">
+          @if (checkUser()) {
             <p-button
               class="flex justify-content-center custom-button"
               label="Edit Profile"
@@ -246,8 +246,8 @@
               icon="pi pi-trash"
               (onClick)="deleteModal($event)"
             />
-          </ng-container>
-        </ng-container>
+          }
+        }
 
         <p-button
           class="flex justify-content-center custom-secondary-button"
@@ -315,7 +315,7 @@
           </p-popover>
         </div>
 
-        <ng-container *ngIf="isLogged()">
+        @if (isLogged()) {
           <p-button
             class="custom-button"
             label="Duplicate Profile"
@@ -323,7 +323,7 @@
             (onClick)="duplicateProfile()"
           />
 
-          <ng-container *ngIf="checkUser()">
+          @if (checkUser()) {
             <p-button
               class="custom-button"
               label="Edit Profile"
@@ -337,15 +337,13 @@
               icon="pi pi-trash"
               (onClick)="deleteModal($event)"
             />
-          </ng-container>
-        </ng-container>
+          }
+        }
       </div>
     </div>
   </div>
-</ng-container>
-
-<ng-template #spinner>
+} @else {
   <div class="flex justify-content-center align-items-center h-screen">
     <p-progress-spinner strokeWidth="3" ariaLabel="loading" />
   </div>
-</ng-template>
+}

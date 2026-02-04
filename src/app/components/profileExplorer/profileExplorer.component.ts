@@ -147,10 +147,6 @@ export class ProfileExplorerComponent
     return this.firebaseService.getUserData() !== null;
   }
 
-  trackById(index: number, item: any): string | number {
-    return item._id ?? item.id ?? index;
-  }
-
   onPageChange(event: PaginatorState): void {
     this.first = event.first ?? 0;
     this.rows = event.rows ?? 6;
