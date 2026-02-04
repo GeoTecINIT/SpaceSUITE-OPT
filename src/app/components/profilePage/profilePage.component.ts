@@ -16,6 +16,7 @@ import {
   catchError,
   combineLatest,
   concatMap,
+  filter,
   finalize,
   forkJoin,
   map,
@@ -105,6 +106,7 @@ export class ProfilePageComponent implements OnInit {
               catchError(() => of(undefined)),
             ),
         ),
+        filter((profile) => profile?.updatedAt !== null),
         take(1),
       )
       .subscribe((newProfile?: OccupationalProfile) => {
