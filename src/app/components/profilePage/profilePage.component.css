@@ -154,7 +154,3 @@
     black 20%
   );
 }
-
-::ng-deep .p-tooltip {
-  --p-tooltip-background: var(--primary-color);
-}

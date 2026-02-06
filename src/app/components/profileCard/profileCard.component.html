@@ -1,7 +1,7 @@
 <p-card class="custom-card">
   <div class="flex justify-content-between align-items-center gap-6">
     <div class="flex flex-column">
-      <div class="flex align-items-baseline gap-3">
+      <div>
         <a
           class="p-card-title card-title"
           href="profile/{{ occupationalProfile._id }}"
@@ -11,7 +11,7 @@
           {{ occupationalProfile.title }}
         </a>
 
-        <span class="p-card-subtitle text-sm">
+        <span class="p-card-subtitle text-sm ml-2">
           {{ occupationalProfile.orgName }}
 
           @if (occupationalProfile.division !== "") {
@@ -21,13 +21,13 @@
       </div>
 
       <div class="flex flex-column gap-2">
-        <div class="flex align-items-center gap-2 text-sm">
-          <span>
+        <div class="flex flex-wrap align-items-center gap-2 text-sm">
+          <span class="white-space-nowrap">
             <strong>Knowledge:</strong>
             {{ occupationalProfile.knowledge.length }}
           </span>
           |
-          <span>
+          <span class="white-space-nowrap">
             <strong>Skills:</strong>
             {{
               occupationalProfile.skills.length +
@@ -35,7 +35,7 @@
             }}
           </span>
           |
-          <span>
+          <span class="white-space-nowrap">
             <strong>Transversal Skills:</strong>
             {{
               occupationalProfile.competences.length +
@@ -43,7 +43,7 @@
             }}
           </span>
           |
-          <span>
+          <span class="white-space-nowrap">
             <strong>EQF level:</strong>
             {{ occupationalProfile.eqf }}
           </span>
@@ -55,7 +55,7 @@
             |
           }
 
-          <span>
+          <span class="white-space-nowrap">
             <strong>Last updated:</strong>
             {{ occupationalProfile.updatedAt?.toDate().toLocaleDateString() }}
           </span>
@@ -81,7 +81,7 @@
       </div>
     </div>
 
-    <div class="flex gap-2">
+    <div class="hidden xl:flex gap-2">
       <p-button
         class="custom-button"
         icon="pi pi-share-alt"

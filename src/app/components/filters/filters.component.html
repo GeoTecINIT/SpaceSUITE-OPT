@@ -7,7 +7,7 @@
 
   <div class="flex">
     <p-selectbutton
-      class="custom-togglebutton w-full"
+      class="custom-togglebutton"
       [ngModel]="logged ? visibilityFilter : undefined"
       [options]="
         logged ? visibilityFilterOptions : [visibilityFilterOptions[2]]
@@ -76,25 +76,25 @@
   </div>
 
   @for (option of multiSelectOptions; track option.label) {
-    <div>
+    <div class="flex flex-column">
       <div class="flex align-items-center">
         {{ option.label }}
 
         @if (option.tooltip) {
           <i
+            class="ml-2 pi pi-info-circle"
             [pTooltip]="option.tooltip"
             tooltipPosition="right"
-            class="ml-2 pi pi-info-circle"
           ></i>
         }
       </div>
 
       <p-multiselect
+        class="mt-1 w-20rem custom-multiselect"
         [options]="getMultiselectOptions(option)"
         [(ngModel)]="option.selection"
         (ngModelChange)="updateSelectOptions()"
         placeholder="Select {{ option.label }}"
-        class="mt-1 w-20rem custom-multiselect"
         panelStyleClass="max-w-20rem"
         [disabled]="loading"
         [showClear]="true"

@@ -2,14 +2,14 @@
 
 <p-confirmdialog />
 
-<h2 class="flex justify-content-center mb-0">{{ pageName }}</h2>
+<h2 class="flex justify-content-center mb-4">{{ pageName }}</h2>
 
 <div class="flex flex-column gap-3">
   <div class="flex flex-column">
-    <p-floatlabel variant="on" class="custom-floatlabel flex">
+    <p-floatlabel variant="on" class="custom-floatlabel">
       <p-iconfield>
         <input
-          class="custom-input"
+          class="custom-input w-full"
           pInputText
           id="title"
           autocomplete="off"
@@ -40,8 +40,8 @@
     }
   </div>
 
-  <div class="flex gap-3">
-    <div>
+  <div class="flex flex-column xl:flex-row gap-3">
+    <div class="flex w-full">
       <p-selectbutton
         [options]="visibilityFieldOptions"
         [(ngModel)]="profile.isPublic"
@@ -55,7 +55,7 @@
       />
     </div>
 
-    <div>
+    <div class="w-full">
       <custom-select
         fieldName="EQF Level"
         [(selection)]="profile.eqf"
@@ -74,13 +74,14 @@
       }
     </div>
 
-    <div>
+    <div class="w-full">
       <p-floatlabel
         variant="on"
         class="custom-floatlabel"
         [class.invalid-floatlabel]="errorMap.get('organization') !== undefined"
       >
         <p-select
+          class="custom-select w-full"
           inputId="org"
           [options]="organizationSelector.values"
           [ngModel]="
@@ -89,7 +90,6 @@
               : { value: profile.orgId, label: profile.orgName }
           "
           (ngModelChange)="onOrganizationChange($event)"
-          class="custom-select w-15rem"
           optionLabel="label"
           [checkmark]="true"
           [class.invalid-select]="errorMap.get('organization') !== undefined"
@@ -107,12 +107,12 @@
       }
     </div>
 
-    <div>
+    <div class="w-full">
       <p-floatlabel variant="on" class="custom-floatlabel">
         <p-select
+          class="custom-select w-full"
           [options]="divisionSelector.values"
           [(ngModel)]="profile.division"
-          class="custom-select w-10rem"
           [disabled]="divisionSelector.values.length === 0"
           [checkmark]="true"
           inputId="division"
@@ -127,8 +127,8 @@
     </div>
   </div>
 
-  <div class="flex gap-3">
-    <div class="w-9">
+  <div class="flex flex-column xl:flex-row gap-3">
+    <div class="xl:w-7">
       <div>
         <p-floatlabel variant="on" class="custom-floatlabel">
           <textarea
@@ -165,7 +165,7 @@
       </div>
     </div>
 
-    <div class="w-3">
+    <div class="xl:w-5">
       <multiselect-chips
         optionsSource="fields"
         fieldName="Application Domain(s)"

@@ -6,39 +6,39 @@
   <div class="flex flex-column gap-2">
     <h1 class="mb-0">{{ profile.title }}</h1>
 
-    <div class="flex gap-2 text-sm">
-      <span>
+    <div class="flex flex-wrap gap-2 text-sm">
+      <span class="white-space-nowrap">
         <strong>Last updated: </strong>
         {{ profile.updatedAt?.toDate().toLocaleDateString() }}
       </span>
       |
-      <span>
+      <span class="white-space-nowrap">
         <strong>Visibility: </strong>
         {{ profile.isPublic ? "Public" : "Private" }}
       </span>
       |
-      <span>
+      <span class="white-space-nowrap">
         <strong>EQF Level: </strong>
         {{ profile.eqf }}
       </span>
       |
-      <span>
+      <span class="white-space-nowrap">
         <strong>Organization: </strong>
         {{ profile.orgName }}
       </span>
       |
-      <span>
+      <span class="white-space-nowrap">
         <strong>Division: </strong>
         {{ profile.division || "-" }}
       </span>
     </div>
 
-    <div class="flex gap-4">
-      <div class="w-9 text-justify">
+    <div class="flex flex-column xl:flex-row gap-2 xl:gap-4">
+      <div class="xl:w-9 text-justify">
         {{ profile.description }}
       </div>
 
-      <div class="w-3">
+      <div class="xl:w-3">
         <strong>Application domain(s):</strong>
 
         <ul class="m-0">
@@ -69,9 +69,9 @@
           />
         </ng-template>
 
-        <div class="flex">
+        <div class="flex flex-column xl:flex-row gap-3">
           <div
-            class="flex flex-wrap gap-2 w-9 h-full"
+            class="flex flex-wrap gap-2 xl:w-9 h-full"
             [class.flex-column]="overTagLimit(concepts.length)"
             [class.align-items-start]="overTagLimit(concepts.length)"
           >
@@ -86,7 +86,7 @@
             }
           </div>
 
-          <div class="flex flex-column w-3">
+          <div class="flex flex-column xl:w-3">
             @for (item of knowledgeDistributionArray; track $index) {
               <span class="text-xs">
                 <strong>{{ item[1] }}%</strong> | {{ item[0] }} -
@@ -177,7 +177,7 @@
         </div>
       </p-panel>
 
-      <div class="md:hidden flex flex-column gap-2 mb-2">
+      <div class="xl:hidden flex flex-column gap-2 mb-2">
         <p-button
           class="flex justify-content-center custom-button"
           label="Share Profile"
@@ -259,7 +259,7 @@
       </div>
     </div>
 
-    <div class="hidden md:flex justify-content-between mb-2">
+    <div class="hidden xl:flex justify-content-between mb-2">
       <p-button
         class="custom-secondary-button"
         label="Return to Homepage"

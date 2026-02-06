@@ -2,8 +2,9 @@
 
 <p-confirmdialog />
 
-<div #container class="flex gap-4 m-2">
+<div #container class="flex flex-column xl:flex-row gap-4 m-2">
   <filters
+    class="flex justify-content-center"
     [bokConcepts]="bokConcepts"
     [loading]="loading"
     [logged]="isLogged()"
@@ -18,7 +19,8 @@
     (visibilityFilterChange)="setVisibilityFilter($event)"
   />
 
-  <p-divider layout="vertical" />
+  <p-divider layout="vertical" class="hidden xl:flex" />
+  <p-divider class="flex xl:hidden" />
 
   @if (filteredProfiles.length !== 0 || loading) {
     <div class="flex flex-column gap-4 w-full">
@@ -37,13 +39,15 @@
         }
       </div>
 
-      <p-paginator
-        class="custom-paginator"
-        [first]="first"
-        [rows]="rows"
-        [totalRecords]="filteredProfiles.length"
-        (onPageChange)="onPageChange($event)"
-      />
+      @if (!loading) {
+        <p-paginator
+          class="custom-paginator"
+          [first]="first"
+          [rows]="rows"
+          [totalRecords]="filteredProfiles.length"
+          (onPageChange)="onPageChange($event)"
+        />
+      }
     </div>
   }
 
@@ -58,10 +62,10 @@
     [ngStyle]="{ bottom: buttonBottom + 'px' }"
   >
     <p-button
-      (click)="createOccupationalProfile()"
+      class="custom-button floating-button"
       icon="pi pi-plus"
       label="Add Profile"
-      class="custom-button floating-button"
+      (click)="createOccupationalProfile()"
     />
   </div>
 }
