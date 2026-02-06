@@ -75,7 +75,7 @@
           </div>
         }
         @else {
-          <div #container class="mt-2 {{limitTagsHeigth ? 'max-h-4rem' : ''}} overflow-hidden">
+          <div #container class="mt-2 {{limitTagsHeigth ? 'max-h-8rem' : ''}} overflow-hidden">
             <div #subjects class="flex align-items-center">
                 <skill-tags [tags]="concepts" [compactThreshold]="overflow ? 2000 : 500" (layoutUpdated)="compactConceptsChanged()" class="min-w-full">
                     @if (compactConcepts) {

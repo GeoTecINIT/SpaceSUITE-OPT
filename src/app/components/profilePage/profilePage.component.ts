@@ -16,11 +16,15 @@ import {
   catchError,
   combineLatest,
   concatMap,
+  count,
   defaultIfEmpty,
   filter,
   finalize,
+  first,
   forkJoin,
+  from,
   map,
+  mergeMap,
   of,
   retry,
   switchMap,
@@ -155,8 +159,8 @@ export class ProfilePageComponent implements OnInit {
     this.utilsService.stringToTag(this.profile.knowledge, 'bok').pipe(defaultIfEmpty([])).subscribe(results => {
       this.concepts = [...this.concepts, ...results];
       this.concepts.sort((a, b) => a.label.localeCompare(b.label));
+      this.getConcept(this.concepts);
     });
-    this.getConcept(this.concepts);
 
     this.profile.skills.forEach((skill) => {
       if (skill !== '') this.allSkills.push(skill);
@@ -273,29 +277,26 @@ export class ProfilePageComponent implements OnInit {
   }
 
   getConcept(concepts: Tag[]) {
-    const allAreas: Map<string, Tag> = new Map();
-
-    concepts.forEach((concepts) => {
-      this.bokInfo.getKnowledgeAreas(concepts.label).pipe(
-        switchMap(areas => this.utilsService.stringToTag(areas, 'bok'))
-      ).subscribe((areasTags) => {
-        areasTags.forEach(area => allAreas.set(area.label, area));
-
-        const total = allAreas.size;
-        if (total === 0) return;
-
-        const counts = Array.from(allAreas.keys()).reduce<Record<string, number>>((acc, area) => {
-          acc[area] = (acc[area] || 0) + 1;
-          return acc;
-        }, {});
-
-        this.knowledgeDistribution = new Map(
-          Object.entries(counts).map(([area, count]) => [
-            allAreas.get(area)!,
-            Math.round((count / total) * 100),
-          ]),
-        );
+    const conceptsAreas = concepts.map(concept => concept.label.substring(0, 2).toUpperCase());
+    this.utilsService.stringToTag(conceptsAreas, 'bok').subscribe(areasTags => {
+      const allAreas = new Map<string, Tag>();
+      const counts = new Map<string, number>();
+      let total = 0;
+      
+      areasTags.flat().forEach(area => {
+        allAreas.set(area.label, area);
+        counts.set(area.label, (counts.get(area.label) || 0) + 1);
+        total += 1;
       });
+            
+      if (total > 0) {
+        this.knowledgeDistribution = new Map(
+          Array.from(counts.entries()).map(([label, count]) => [
+            allAreas.get(label)!,
+            Math.round((count / total) * 100)
+          ])
+        );
+      }
     });
   }
 

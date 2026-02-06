@@ -85,7 +85,6 @@ export class ProfileCardComponent implements OnInit {
   ngAfterViewChecked() {
     if (this.conceptsLoaded && this.limitTagsHeigth) {
       this.overflow = this.checkOverflow();
-      console.log(this.overflow)
       this.limitTagsHeigth = false;
       this.cdr.detectChanges();
     }

@@ -69,8 +69,8 @@
           />
         </ng-template>
 
-        <div class="flex w-full gap-1">
-          <skill-tags [tags]="concepts" [compactBoKTags]="true"></skill-tags>
+        <div class="flex flex-column xl:flex-row gap-3">
+          <skill-tags class="xl:w-9" [tags]="concepts" [compactBoKTags]="true"></skill-tags>
 
           <div class="flex flex-column xl:w-3">
             @for (item of knowledgeDistributionArray; track $index) {
