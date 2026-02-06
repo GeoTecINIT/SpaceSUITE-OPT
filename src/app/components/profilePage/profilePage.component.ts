@@ -16,12 +16,14 @@ import {
   catchError,
   combineLatest,
   concatMap,
+  defaultIfEmpty,
   filter,
   finalize,
   forkJoin,
   map,
   of,
   retry,
+  switchMap,
   take,
   tap,
 } from 'rxjs';
@@ -34,6 +36,7 @@ import { OccupationalProfileService } from '../../services/occupationalProfile.s
 import { PdfService } from '../../services/pdf.service';
 import { RdfService } from '../../services/rdf.service';
 import { UtilsService } from '../../services/utils.service';
+import { SkillTagComponent, Tag } from "@eo4geo/ngx-bok-utils";
 
 @Component({
   standalone: true,
@@ -51,22 +54,20 @@ import { UtilsService } from '../../services/utils.service';
     ProgressBarModule,
     PopoverModule,
     TooltipModule,
-  ],
+    SkillTagComponent
+],
   providers: [ConfirmationService, MessageService],
 })
 export class ProfilePageComponent implements OnInit {
   profile?: OccupationalProfile;
 
-  concepts: string[] = [];
+  concepts: Tag[] = [];
   allSkills: string[] = [];
   transversalSkills: Competence[] = [];
   applicationDomains: string[] = [];
 
-  conceptsColor: Map<string, string> = new Map();
-  conceptsTooltip: Map<string, string> = new Map();
-
   private tagLimit: number = 30;
-  knowledgeDistribution: Map<string, number> = new Map();
+  knowledgeDistribution: Map<Tag, number> = new Map();
   private organizations: string[] = [];
 
   constructor(
@@ -150,33 +151,12 @@ export class ProfilePageComponent implements OnInit {
     this.allSkills = [];
     this.transversalSkills = [];
     this.applicationDomains = [];
-    this.conceptsColor.clear();
-    this.conceptsTooltip.clear();
 
-    const conceptRequests = newProfile.knowledge.map((concept) =>
-      forkJoin({
-        name: this.bokInfo.getConceptName(concept).pipe(take(1)),
-        color: this.bokInfo.getConceptColor(concept).pipe(take(1)),
-      }).pipe(
-        tap(({ name, color }) => {
-          this.conceptsTooltip.set(concept, name);
-
-          const softColor = color
-            ? this.utilsService.convertHexToRgba(color, 0.5)
-            : '';
-          this.conceptsColor.set(concept, softColor);
-        }),
-        map(({ name }) => ({ concept, name })),
-      ),
-    );
-
-    forkJoin(conceptRequests).subscribe((results) => {
-      results.forEach(({ concept }) => {
-        this.concepts.push(concept);
-      });
-
-      this.getConcept(this.concepts);
+    this.utilsService.stringToTag(this.profile.knowledge, 'bok').pipe(defaultIfEmpty([])).subscribe(results => {
+      this.concepts = [...this.concepts, ...results];
+      this.concepts.sort((a, b) => a.label.localeCompare(b.label));
     });
+    this.getConcept(this.concepts);
 
     this.profile.skills.forEach((skill) => {
       if (skill !== '') this.allSkills.push(skill);
@@ -292,50 +272,29 @@ export class ProfilePageComponent implements OnInit {
     return length > this.tagLimit;
   }
 
-  getConcept(codes: string[]) {
-    const allAreas: string[] = [];
+  getConcept(concepts: Tag[]) {
+    const allAreas: Map<string, Tag> = new Map();
 
-    codes.forEach((code) => {
-      this.bokInfo.getKnowledgeAreas(code).subscribe((areas) => {
-        allAreas.push(...areas);
+    concepts.forEach((concepts) => {
+      this.bokInfo.getKnowledgeAreas(concepts.label).pipe(
+        switchMap(areas => this.utilsService.stringToTag(areas, 'bok'))
+      ).subscribe((areasTags) => {
+        areasTags.forEach(area => allAreas.set(area.label, area));
 
-        const total = allAreas.length;
+        const total = allAreas.size;
         if (total === 0) return;
 
-        const counts = allAreas.reduce<Record<string, number>>((acc, area) => {
+        const counts = Array.from(allAreas.keys()).reduce<Record<string, number>>((acc, area) => {
           acc[area] = (acc[area] || 0) + 1;
           return acc;
         }, {});
 
         this.knowledgeDistribution = new Map(
           Object.entries(counts).map(([area, count]) => [
-            area,
+            allAreas.get(area)!,
             Math.round((count / total) * 100),
           ]),
         );
-
-        allAreas.forEach((area) => {
-          if (!this.conceptsColor.has(area)) {
-            this.bokInfo
-              .getConceptColor(area)
-              .pipe(take(1))
-              .subscribe((color) => {
-                const softColor = color
-                  ? this.utilsService.convertHexToRgba(color, 0.5)
-                  : '';
-                this.conceptsColor.set(area, softColor);
-              });
-          }
-
-          if (!this.conceptsTooltip.has(area)) {
-            this.bokInfo
-              .getConceptName(area)
-              .pipe(take(1))
-              .subscribe((name) => {
-                this.conceptsTooltip.set(area, name);
-              });
-          }
-        });
       });
     });
   }

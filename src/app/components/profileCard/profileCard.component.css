@@ -75,3 +75,13 @@
 ::ng-deep .danger-tooltip {
   --p-tooltip-background: var(--danger-color) !important;
 }
+.more-tag {
+    font-size: 1.1rem;
+    color: var(--primary-color);
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.more-tag:hover {
+    color: var(--hover-color);
+}

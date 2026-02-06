@@ -69,35 +69,21 @@
           />
         </ng-template>
 
-        <div class="flex flex-column xl:flex-row gap-3">
-          <div
-            class="flex flex-wrap gap-2 xl:w-9 h-full"
-            [class.flex-column]="overTagLimit(concepts.length)"
-            [class.align-items-start]="overTagLimit(concepts.length)"
-          >
-            @for (concept of concepts; track $index) {
-              <p-tag
-                class="tag bok-tag cursor-pointer"
-                [value]="`[${concept}] ${conceptsTooltip.get(concept)}`"
-                [rounded]="true"
-                [style.background]="conceptsColor.get(concept)"
-                (click)="onClickConcept(concept)"
-              />
-            }
-          </div>
+        <div class="flex w-full gap-1">
+          <skill-tags [tags]="concepts" [compactBoKTags]="true"></skill-tags>
 
           <div class="flex flex-column xl:w-3">
             @for (item of knowledgeDistributionArray; track $index) {
               <span class="text-xs">
-                <strong>{{ item[1] }}%</strong> | {{ item[0] }} -
-                {{ conceptsTooltip.get(item[0]) }}
+                <strong>{{ item[1] }}%</strong> | {{ item[0].label }} -
+                {{ item[0].tooltip }}
               </span>
 
               <p-progressbar
                 class="custom-bar mb-2"
                 [value]="item[1]"
                 [showValue]="false"
-                [color]="conceptsColor.get(item[0])"
+                [color]="item[0].color"
               ></p-progressbar>
             }
           </div>

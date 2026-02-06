@@ -1,19 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Input, NgZone, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { BokInformationService } from '@eo4geo/ngx-bok-visualization';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { Popover, PopoverModule } from 'primeng/popover';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
-import { catchError, finalize, of, take } from 'rxjs';
+import { catchError, defaultIfEmpty, finalize, of, take } from 'rxjs';
 import { OccupationalProfile } from '../../models/occupationalProfile';
 import { FirebaseService } from '../../services/firebase.service';
 import { OccupationalProfileService } from '../../services/occupationalProfile.service';
 import { PdfService } from '../../services/pdf.service';
+import { SkillTagComponent, Tag } from "@eo4geo/ngx-bok-utils";
 import { RdfService } from '../../services/rdf.service';
+import { SkeletonModule } from 'primeng/skeleton';
 import { UtilsService } from '../../services/utils.service';
 
 @Component({
@@ -28,22 +29,33 @@ import { UtilsService } from '../../services/utils.service';
     TagModule,
     TooltipModule,
     PopoverModule,
+    SkeletonModule,
+    SkillTagComponent
   ],
 })
 export class ProfileCardComponent implements OnInit {
   @Input() occupationalProfile!: OccupationalProfile;
   @Input() logged: boolean = false;
 
-  concepts: string[] = [];
-  selectedConceptsColor: Map<string, string> = new Map();
-  selectedConceptsTooltip: Map<string, string> = new Map();
-
   private organizations: string[] = [];
 
   @ViewChild('op') op!: Popover;
 
+  @ViewChild('container') containerElement!: ElementRef;
+  @ViewChild('subjects') subjectsElement!: ElementRef;
+
+  @ViewChild('conceptsOp') conceptsOp!: Popover;
+
+  concepts: Tag[] = [];
+  conceptsLoaded: boolean = false;
+  overflow: boolean = false;
+  compactConcepts: boolean = false;
+  limitTagsHeigth: boolean = true;
+
+  skeletonElements: number[] = [];
+  showSkelleton: boolean = true;
+
   constructor(
-    private bokInfo: BokInformationService,
     private utilsService: UtilsService,
     private router: Router,
     private firebaseService: FirebaseService,
@@ -52,32 +64,39 @@ export class ProfileCardComponent implements OnInit {
     private occupationalProfileService: OccupationalProfileService,
     private pdfService: PdfService,
     private rdfService: RdfService,
-  ) {}
+    private cdr: ChangeDetectorRef
+  ) {
+    this.skeletonElements = Array(10).fill(null);
+  }
 
   ngOnInit() {
     this.firebaseService.getUserOrganizationList().subscribe((orgs) => {
       orgs.forEach((org) => this.organizations.push(org._id));
     });
 
-    this.occupationalProfile.knowledge.forEach((concept) => {
-      this.concepts.push(concept);
-
-      this.bokInfo.getConceptColor(concept).subscribe((color) => {
-        const softColor = color
-          ? this.utilsService.convertHexToRgba(color, 0.5)
-          : '';
-
-        this.selectedConceptsColor.set(concept, softColor);
-      });
-
-      this.bokInfo
-        .getConceptName(concept)
-        .subscribe((tooltip) =>
-          this.selectedConceptsTooltip.set(concept, tooltip),
-        );
+    this.utilsService.stringToTag(this.occupationalProfile.knowledge, 'bok').pipe(defaultIfEmpty([])).subscribe(results => {
+      this.concepts = [...this.concepts, ...results];
+      this.concepts.sort((a, b) => a.label.localeCompare(b.label));
+      this.conceptsLoaded = true;
+      this.showSkelleton = false;
     });
+  }
 
-    this.concepts.sort();
+  ngAfterViewChecked() {
+    if (this.conceptsLoaded && this.limitTagsHeigth) {
+      this.overflow = this.checkOverflow();
+      console.log(this.overflow)
+      this.limitTagsHeigth = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  compactConceptsChanged = () => this.compactConcepts = !this.compactConcepts;
+
+  checkOverflow(): boolean {
+    const containerHeight = this.containerElement.nativeElement.clientHeight;
+    const subjectsHeight = this.subjectsElement.nativeElement.scrollHeight;
+    return (subjectsHeight > containerHeight);
   }
 
   onClickConcept(code: string): void {
