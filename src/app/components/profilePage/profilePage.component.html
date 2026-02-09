@@ -33,12 +33,12 @@
       </span>
     </div>
 
-    <div class="flex flex-column xl:flex-row gap-2 xl:gap-4">
-      <div class="xl:w-9 text-justify">
+    <div [class]="applicationDomains.length > 4 ? 'flex flex-column gap-3' : 'flex flex-column xl:flex-row gap-3 xl:gap-4'">
+      <div [class]="applicationDomains.length > 4 ? 'text-justify' : 'xl:w-9 text-justify'">
         {{ profile.description }}
       </div>
 
-      <div class="xl:w-3">
+      <div [class]="applicationDomains.length > 4 ? '' : 'xl:w-3'">
         <strong>Application domain(s):</strong>
 
         <ul class="m-0">
