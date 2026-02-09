@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, ElementRef, Input, NgZone, OnInit, ViewChild } from '@angular/core';
+import { afterNextRender, ChangeDetectorRef, Component, ElementRef, Input, NgZone, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -45,6 +45,10 @@ export class ProfileCardComponent implements OnInit {
   @ViewChild('subjects') subjectsElement!: ElementRef;
 
   @ViewChild('conceptsOp') conceptsOp!: Popover;
+  
+  @ViewChild('card') cardComponent!: ElementRef;
+  maxOverflowWidth: number = 2000;
+  minOverflowWidth: number = 500;
 
   concepts: Tag[] = [];
   conceptsLoaded: boolean = false;
@@ -84,6 +88,9 @@ export class ProfileCardComponent implements OnInit {
 
   ngAfterViewChecked() {
     if (this.conceptsLoaded && this.limitTagsHeigth) {
+      const currentWidth = this.cardComponent.nativeElement.clientWidth;
+      this.maxOverflowWidth = currentWidth * 1.4;
+      this.minOverflowWidth = currentWidth * 0.6;
       this.overflow = this.checkOverflow();
       this.limitTagsHeigth = false;
       this.cdr.detectChanges();

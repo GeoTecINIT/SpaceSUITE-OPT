@@ -277,16 +277,18 @@ export class ProfilePageComponent implements OnInit {
   }
 
   getConcept(concepts: Tag[]) {
-    const conceptsAreas = concepts.map(concept => concept.label.substring(0, 2).toUpperCase());
+    const conceptsAreas = concepts.map(concept => {
+      if (concept.label === 'GIST') return concept.label;
+      return concept.label.substring(0, 2).toUpperCase()
+    });
     this.utilsService.stringToTag(conceptsAreas, 'bok').subscribe(areasTags => {
       const allAreas = new Map<string, Tag>();
       const counts = new Map<string, number>();
-      let total = 0;
+      const total = concepts.length;
       
       areasTags.flat().forEach(area => {
         allAreas.set(area.label, area);
         counts.set(area.label, (counts.get(area.label) || 0) + 1);
-        total += 1;
       });
             
       if (total > 0) {
