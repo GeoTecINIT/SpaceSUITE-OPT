@@ -3,13 +3,14 @@ import { HeaderComponent, FooterComponent } from '@eo4geo/ngx-bok-utils';
 import { MenuItem } from 'primeng/api';
 import { Router, RouterOutlet } from '@angular/router';
 import { PdfService } from './services/pdf.service';
+import { ReleaseNotesComponent } from './components/releaseNotes/releaseNotes.component';
 
 @Component({
   standalone: true,
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  imports: [RouterOutlet, HeaderComponent, FooterComponent],
+  imports: [RouterOutlet, HeaderComponent, FooterComponent, ReleaseNotesComponent],
 })
 export class AppComponent {
   headerItems: MenuItem[] = [
@@ -98,6 +99,8 @@ export class AppComponent {
       ],
     },
   ];
+
+  releaseNotes: boolean = false;
 
   constructor(private router: Router, private pdfService: PdfService) {}
 
