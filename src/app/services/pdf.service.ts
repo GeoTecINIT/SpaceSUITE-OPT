@@ -31,6 +31,8 @@ export class PdfService {
   private EULogo?: string;
   private watermark?: string;
 
+  private pdfUrl = '/assets/OPT_User_Guide.pdf';
+
   private resourcesLoaded: BehaviorSubject<boolean> = new BehaviorSubject(
     false,
   );
@@ -198,4 +200,8 @@ export class PdfService {
 
   safeForkJoin = (sources: Observable<any>[]) =>
     sources.length ? forkJoin(sources) : of(null);
+
+  getUserGuidePdf(): Observable<Blob> {
+    return this.http.get(this.pdfUrl, { responseType: 'blob' });
+  }
 }
