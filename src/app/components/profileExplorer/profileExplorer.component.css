@@ -97,3 +97,17 @@
     black 20%
   );
 }
+
+.custom-secondary-button {
+  --p-button-secondary-color: color-mix(
+    in srgb,
+    var(--primary-color) 80%,
+    white 20%
+  );
+  --p-button-secondary-hover-color: color-mix(
+    in srgb,
+    var(--primary-color) 90%,
+    white 10%
+  );
+  --p-button-secondary-active-color: var(--primary-color);
+}

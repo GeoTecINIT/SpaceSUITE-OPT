@@ -59,7 +59,8 @@ export class OccupationalProfileService {
     return this.profilesSubject.asObservable().pipe(
       map((map) => {
         if (map === undefined || map.size === 0) return [];
-        return [...new Set(Array.from(map.values()).map((p) => p.orgId))];
+
+        return [...new Set(Array.from(map.values()).map((p) => p.orgName))];
       }),
     );
   }

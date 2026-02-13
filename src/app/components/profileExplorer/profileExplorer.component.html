@@ -22,24 +22,64 @@
   <p-divider layout="vertical" class="hidden xl:flex" />
   <p-divider class="flex xl:hidden" />
 
-  @if (filteredProfiles.length !== 0 || loading) {
-    <div class="flex flex-column gap-4 w-full">
+  <div class="flex flex-column w-full">
+    <p-buttongroup class="ml-auto mt-3 align-self-center">
+      <p-button
+        severity="secondary"
+        (click)="switchSortOrientation()"
+        [icon]="sortAsc ? 'pi pi-sort-amount-up' : 'pi pi-sort-amount-down'"
+        size="small"
+        [label]="'Order By ' + sortOption"
+        class="custom-secondary-button"
+      />
+
+      <p-button
+        severity="secondary"
+        (click)="menu.toggle($event)"
+        icon="pi pi-chevron-down"
+        class="flex custom-secondary-button"
+        size="small"
+      />
+    </p-buttongroup>
+
+    <p-menu #menu [model]="sortOptions" popup styleClass="!min-w-fit">
+      <ng-template #item let-item>
+        <a
+          pRipple
+          class="flex items-center p-menu-item-link"
+          (click)="setSortOption(item.label)"
+        >
+          <i
+            class="w-1rem"
+            [ngClass]="item.label == sortOption ? 'pi pi-check' : ''"
+          ></i>
+
+          <span class="ml-2">{{ item.label }}</span>
+        </a>
+      </ng-template>
+    </p-menu>
+
+    <p-divider />
+
+    @if (loading) {
       <div class="flex flex-column gap-3">
-        @if (!loading) {
+        @for (item of skeletonElements; track $index) {
+          <p-skeleton width="100%" height="11rem" borderRadius="12px" />
+        }
+      </div>
+    } @else if (filteredProfiles.length === 0) {
+      <p class="font-italic mx-auto">No profiles found</p>
+    } @else {
+      <div class="flex flex-column gap-4">
+        <div class="flex flex-column gap-3">
           @for (profile of paginatedProfiles; track profile._id) {
             <profile-card
               [occupationalProfile]="profile"
               [logged]="isLogged()"
             />
           }
-        } @else {
-          @for (item of skeletonElements; track $index) {
-            <p-skeleton width="100%" height="10rem" borderRadius="12px" />
-          }
-        }
-      </div>
+        </div>
 
-      @if (!loading) {
         <p-paginator
           class="custom-paginator"
           [first]="first"
@@ -47,13 +87,9 @@
           [totalRecords]="filteredProfiles.length"
           (onPageChange)="onPageChange($event)"
         />
-      }
-    </div>
-  }
-
-  @if (filteredProfiles.length === 0 && !loading) {
-    <p class="font-italic mx-auto">No profiles found</p>
-  }
+      </div>
+    }
+  </div>
 </div>
 
 @if (isLogged()) {

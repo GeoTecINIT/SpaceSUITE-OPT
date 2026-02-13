@@ -9,10 +9,12 @@ import {
   ViewChild,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
+import { ButtonGroupModule } from 'primeng/buttongroup';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DividerModule } from 'primeng/divider';
+import { MenuModule } from 'primeng/menu';
 import { PaginatorModule, PaginatorState } from 'primeng/paginator';
 import { SkeletonModule } from 'primeng/skeleton';
 import { ToastModule } from 'primeng/toast';
@@ -20,6 +22,7 @@ import { combineLatest, filter, map, Subscription, take } from 'rxjs';
 import { Filter } from '../../models/filter';
 import { OccupationalProfile } from '../../models/occupationalProfile';
 import { CardFilterService } from '../../services/cardFilter.service';
+import { CardSortingService } from '../../services/cardSorting.service';
 import { FirebaseService } from '../../services/firebase.service';
 import { OccupationalProfileService } from '../../services/occupationalProfile.service';
 import { FiltersComponent } from '../filters/filters.component';
@@ -40,6 +43,8 @@ import { ProfileCardComponent } from '../profileCard/profileCard.component';
     ToastModule,
     ConfirmDialogModule,
     ButtonModule,
+    ButtonGroupModule,
+    MenuModule,
   ],
   providers: [ConfirmationService, MessageService],
 })
@@ -63,6 +68,10 @@ export class ProfileExplorerComponent
   @ViewChild('container') containerRef!: ElementRef;
   buttonBottom = 32;
 
+  sortOptions: MenuItem[] = [{ label: 'Title' }, { label: 'Last updated' }];
+  sortOption: string = 'Title';
+  sortAsc: boolean = false;
+
   private profiles: OccupationalProfile[] = [];
   private organizations: string[] = [];
 
@@ -76,6 +85,7 @@ export class ProfileExplorerComponent
     private messageService: MessageService,
     private router: Router,
     private ngZone: NgZone,
+    private sortingService: CardSortingService,
   ) {
     this.skeletonElements = Array(this.rows);
   }
@@ -97,6 +107,8 @@ export class ProfileExplorerComponent
       this.searchOption = this.filterService.searchOption;
       this.searchValue = this.filterService.searchValue;
       this.bokConcepts = this.filterService.bokConcepts;
+      this.sortAsc = this.sortingService.sortAsc;
+      this.sortOption = this.sortingService.sortOption;
       if (!this.isLogged()) {
         this.visibilityFilter = 'all';
         this.filterService.visibilityFilter = 'all';
@@ -155,6 +167,20 @@ export class ProfileExplorerComponent
     this.updatePaginatedProfiles();
   }
 
+  switchSortOrientation(): void {
+    this.sortAsc = !this.sortAsc;
+    this.sortingService.sortAsc = this.sortAsc;
+
+    this.filterPipeline();
+  }
+
+  setSortOption(option: string): void {
+    this.sortOption = option;
+    this.sortingService.sortOption = option;
+
+    this.filterPipeline();
+  }
+
   setBoKConcepts(concepts: string[]): void {
     this.bokConcepts = concepts;
     this.filterService.bokConcepts = concepts;
@@ -189,7 +215,8 @@ export class ProfileExplorerComponent
   filterPipeline(): void {
     this.first = 0;
 
-    const searched = this.searchProfiles(this.profiles);
+    const sorted = this.sortProfiles(this.profiles);
+    const searched = this.searchProfiles(sorted);
     const filtered = this.filterProfiles(searched);
     this.filteredProfiles = this.filterByBoKConcept(filtered);
 
@@ -220,6 +247,10 @@ export class ProfileExplorerComponent
       this.first,
       this.first + this.rows,
     );
+  }
+
+  private sortProfiles(profiles: OccupationalProfile[]): OccupationalProfile[] {
+    return this.sortingService.sortProfiles(profiles);
   }
 
   private searchProfiles(
