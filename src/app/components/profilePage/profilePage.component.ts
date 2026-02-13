@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BokInformationService } from '@eo4geo/ngx-bok-visualization';
+import { AuthService, SkillTagComponent, Tag } from '@eo4geo/ngx-bok-utils';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -16,18 +16,15 @@ import {
   catchError,
   combineLatest,
   concatMap,
-  count,
   defaultIfEmpty,
   filter,
   finalize,
-  first,
   forkJoin,
-  from,
   map,
-  mergeMap,
   of,
   retry,
-  switchMap,
+  skip,
+  Subscription,
   take,
   tap,
 } from 'rxjs';
@@ -40,7 +37,12 @@ import { OccupationalProfileService } from '../../services/occupationalProfile.s
 import { PdfService } from '../../services/pdf.service';
 import { RdfService } from '../../services/rdf.service';
 import { UtilsService } from '../../services/utils.service';
-import { SkillTagComponent, Tag } from "@eo4geo/ngx-bok-utils";
+
+interface AuthState {
+  logged: boolean;
+  nameInitial: string;
+  uid: string;
+}
 
 @Component({
   standalone: true,
@@ -58,11 +60,11 @@ import { SkillTagComponent, Tag } from "@eo4geo/ngx-bok-utils";
     ProgressBarModule,
     PopoverModule,
     TooltipModule,
-    SkillTagComponent
-],
+    SkillTagComponent,
+  ],
   providers: [ConfirmationService, MessageService],
 })
-export class ProfilePageComponent implements OnInit {
+export class ProfilePageComponent implements OnInit, AfterViewInit, OnDestroy {
   profile?: OccupationalProfile;
 
   concepts: Tag[] = [];
@@ -72,14 +74,19 @@ export class ProfilePageComponent implements OnInit {
 
   private tagLimit: number = 30;
   knowledgeDistribution: Map<Tag, number> = new Map();
+
+  private userOrgIdsSubscription!: Subscription;
   private organizations: string[] = [];
+
+  private authStateSubscription!: Subscription;
+  private authState: AuthState | undefined = undefined;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private occupationalProfileService: OccupationalProfileService,
     private utilsService: UtilsService,
-    private bokInfo: BokInformationService,
+    private authService: AuthService,
     private firebaseService: FirebaseService,
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
@@ -88,36 +95,73 @@ export class ProfilePageComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.firebaseService.getUserOrganizationList().subscribe((orgs) => {
-      orgs.forEach((org) => this.organizations.push(org._id));
-    });
-    combineLatest([this.route.paramMap, this.route.queryParams])
-      .pipe(
-        map(([paramMap, queryParams]) => {
-          const profileId = paramMap.get('profileId') || '';
-          const submitted =
-            queryParams['submitted'] === 'true' ||
-            queryParams['submitted'] === true;
-          return { profileId: profileId, submitted };
-        }),
-        concatMap(({ profileId, submitted }) =>
-          this.occupationalProfileService
-            .getOccupationalProfile(profileId)
-            .pipe(
-              tap((profile) => {
-                if (submitted && !profile) throw new Error('Profile not found');
-              }),
-              retry({ count: 1, delay: 500 }),
-              catchError(() => of(undefined)),
-            ),
+    const routeData$ = combineLatest([
+      this.route.paramMap,
+      this.route.queryParams,
+    ]).pipe(
+      map(([paramMap, queryParams]) => {
+        const profileId = paramMap.get('profileId') || '';
+        const submitted =
+          queryParams['submitted'] === 'true' ||
+          queryParams['submitted'] === true;
+        return { profileId: profileId, submitted };
+      }),
+      concatMap(({ profileId, submitted }) =>
+        this.occupationalProfileService.getOccupationalProfile(profileId).pipe(
+          tap((profile) => {
+            if (submitted && !profile) throw new Error('Profile not found');
+          }),
+          retry({ count: 1, delay: 500 }),
+          catchError(() => of(undefined)),
         ),
-        filter((profile) => profile?.updatedAt !== null),
-        take(1),
+      ),
+      filter((profile) => profile?.updatedAt !== null),
+      take(1),
+    );
+
+    const orgIds$ = this.firebaseService.getUserOrganizationList().pipe(
+      map((orgs) => orgs.map((o) => o._id)),
+      tap((orgIds) => (this.organizations = orgIds)),
+      take(1),
+    );
+
+    const userState$ = this.authService.getUserState().pipe(
+      tap((authState) => (this.authState = authState)),
+      take(1),
+    );
+
+    forkJoin([routeData$, orgIds$, userState$]).subscribe(
+      ([newProfile, _, userData]) => {
+        const isProfileMissing = !newProfile;
+        const isNotPublic = newProfile && !newProfile.isPublic;
+        const belongsToUserOrg =
+          newProfile?.orgId && this.organizations.includes(newProfile.orgId);
+        const belongsToUser =
+          newProfile && userData && newProfile.userId === userData.uid;
+
+        if (
+          isProfileMissing ||
+          (isNotPublic && !(belongsToUserOrg || belongsToUser))
+        ) {
+          this.router.navigate(['not_found']);
+        } else this.loadProfile(newProfile);
+      },
+    );
+
+    this.userOrgIdsSubscription = this.firebaseService
+      .getUserOrganizationList()
+      .pipe(
+        skip(1),
+        map((orgs) => orgs.map((o) => o._id)),
       )
-      .subscribe((newProfile?: OccupationalProfile) => {
-        if (newProfile) this.loadProfile(newProfile);
-        else this.router.navigate(['not_found']);
+      .subscribe((ids) => {
+        this.organizations = ids;
       });
+
+    this.authStateSubscription = this.authService
+      .getUserState()
+      .pipe(skip(1))
+      .subscribe((authState) => (this.authState = authState));
   }
 
   ngAfterViewInit() {
@@ -149,6 +193,11 @@ export class ProfilePageComponent implements OnInit {
     });
   }
 
+  ngOnDestroy() {
+    this.authStateSubscription.unsubscribe();
+    this.userOrgIdsSubscription.unsubscribe();
+  }
+
   private loadProfile(newProfile: OccupationalProfile) {
     this.profile = newProfile;
     this.concepts = [];
@@ -156,11 +205,14 @@ export class ProfilePageComponent implements OnInit {
     this.transversalSkills = [];
     this.applicationDomains = [];
 
-    this.utilsService.stringToTag(this.profile.knowledge, 'bok').pipe(defaultIfEmpty([])).subscribe(results => {
-      this.concepts = [...this.concepts, ...results];
-      this.concepts.sort((a, b) => a.label.localeCompare(b.label));
-      this.getConcept(this.concepts);
-    });
+    this.utilsService
+      .stringToTag(this.profile.knowledge, 'bok')
+      .pipe(defaultIfEmpty([]))
+      .subscribe((results) => {
+        this.concepts = [...this.concepts, ...results];
+        this.concepts.sort((a, b) => a.label.localeCompare(b.label));
+        this.getConcept(this.concepts);
+      });
 
     this.profile.skills.forEach((skill) => {
       if (skill !== '') this.allSkills.push(skill);
@@ -261,7 +313,10 @@ export class ProfilePageComponent implements OnInit {
   }
 
   checkUser() {
-    return this.profile && this.organizations.includes(this.profile.orgId);
+    return (
+      this.authState?.uid == this.profile?.userId ||
+      (this.profile && this.organizations.includes(this.profile.orgId))
+    );
   }
 
   onClickConcept(code: string) {
@@ -277,29 +332,31 @@ export class ProfilePageComponent implements OnInit {
   }
 
   getConcept(concepts: Tag[]) {
-    const conceptsAreas = concepts.map(concept => {
+    const conceptsAreas = concepts.map((concept) => {
       if (concept.label === 'GIST') return concept.label;
-      return concept.label.substring(0, 2).toUpperCase()
+      return concept.label.substring(0, 2).toUpperCase();
     });
-    this.utilsService.stringToTag(conceptsAreas, 'bok').subscribe(areasTags => {
-      const allAreas = new Map<string, Tag>();
-      const counts = new Map<string, number>();
-      const total = concepts.length;
-      
-      areasTags.flat().forEach(area => {
-        allAreas.set(area.label, area);
-        counts.set(area.label, (counts.get(area.label) || 0) + 1);
+    this.utilsService
+      .stringToTag(conceptsAreas, 'bok')
+      .subscribe((areasTags) => {
+        const allAreas = new Map<string, Tag>();
+        const counts = new Map<string, number>();
+        const total = concepts.length;
+
+        areasTags.flat().forEach((area) => {
+          allAreas.set(area.label, area);
+          counts.set(area.label, (counts.get(area.label) || 0) + 1);
+        });
+
+        if (total > 0) {
+          this.knowledgeDistribution = new Map(
+            Array.from(counts.entries()).map(([label, count]) => [
+              allAreas.get(label)!,
+              Math.round((count / total) * 100),
+            ]),
+          );
+        }
       });
-            
-      if (total > 0) {
-        this.knowledgeDistribution = new Map(
-          Array.from(counts.entries()).map(([label, count]) => [
-            allAreas.get(label)!,
-            Math.round((count / total) * 100)
-          ])
-        );
-      }
-    });
   }
 
   get knowledgeDistributionArray() {
@@ -307,7 +364,7 @@ export class ProfilePageComponent implements OnInit {
   }
 
   isLogged(): boolean {
-    return this.firebaseService.getUserData() !== null;
+    return this.authState?.logged ?? false;
   }
 
   copyLink(): void {
