@@ -52,10 +52,27 @@ addEventListener('message', ({ data }: { data: PdfWorkerPayload }) => {
 function applyMetadata(doc: jsPDF, profile: OccupationalProfile) {
   doc.setProperties({
     title: `${profile.title} – Profile`,
-    subject: 'Occupational Profile',
+    subject: getSubjectMetadata(profile),
     author: 'SpaceSuite',
-    creator: 'SpaceSuite',
+    creator: 'SpaceSuite Occupational Profile Tool',
+    keywords: 'spacesuite, occupational profile',
   });
+}
+
+function getSubjectMetadata(profile: OccupationalProfile) {
+  let subject = '@prefix dc: <http://purl.org/dc/terms/> . @prefix eo4geo: <http://bok.eo4geo.eu/> . ';
+  if (profile.knowledge && profile.knowledge.length > 0) {
+    subject = subject + '<> dc:type "Job Offer"; <> dc:title "' + profile.title + '"';
+    profile.knowledge.forEach(know => {
+      // const bokCode = concept.split('] ')[1];
+      const bokCode = know.split(']', 1)[0].split('[', 2)[1];
+      if (bokCode) {
+        subject = subject + '; dc:relation eo4geo:' + bokCode;
+      }
+    });
+    subject = subject + ' .';
+  }
+  return subject;
 }
 
 /* ============================
