@@ -1,16 +1,21 @@
 import { Component } from '@angular/core';
-import { HeaderComponent, FooterComponent } from '@eo4geo/ngx-bok-utils';
-import { MenuItem } from 'primeng/api';
 import { Router, RouterOutlet } from '@angular/router';
-import { PdfService } from './services/pdf.service';
+import { FooterComponent, HeaderComponent } from '@eo4geo/ngx-bok-utils';
+import { MenuItem } from 'primeng/api';
 import { ReleaseNotesComponent } from './components/releaseNotes/releaseNotes.component';
+import { PdfService } from './services/pdf.service';
 
 @Component({
   standalone: true,
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  imports: [RouterOutlet, HeaderComponent, FooterComponent, ReleaseNotesComponent],
+  imports: [
+    RouterOutlet,
+    HeaderComponent,
+    FooterComponent,
+    ReleaseNotesComponent,
+  ],
 })
 export class AppComponent {
   headerItems: MenuItem[] = [
@@ -52,7 +57,7 @@ export class AppComponent {
           label: 'Skill Portfolio',
           icon: 'pi pi-user',
           url: 'https://spacesuite-project-spt.web.app',
-          target: '_blank'
+          target: '_blank',
         },
         {
           label: 'BoK Annotation Tool',
@@ -102,7 +107,10 @@ export class AppComponent {
 
   releaseNotes: boolean = false;
 
-  constructor(private router: Router, private pdfService: PdfService) {}
+  constructor(
+    private router: Router,
+    private pdfService: PdfService,
+  ) {}
 
   redirectToProfile(): void {
     this.router.navigate(['userProfile'], { replaceUrl: true });
@@ -113,7 +121,7 @@ export class AppComponent {
   }
 
   openPdf() {
-    this.pdfService.getUserGuidePdf().subscribe(pdfBlob => {
+    this.pdfService.getUserGuidePdf().subscribe((pdfBlob) => {
       const pdfUrl = URL.createObjectURL(pdfBlob);
       window.open(pdfUrl, '_blank');
     });

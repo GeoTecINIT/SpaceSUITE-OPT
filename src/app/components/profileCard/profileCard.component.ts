@@ -1,10 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { afterNextRender, ChangeDetectorRef, Component, ElementRef, Input, NgZone, OnInit, ViewChild } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  Input,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { Router } from '@angular/router';
+import { SkillTagComponent, Tag } from '@eo4geo/ngx-bok-utils';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { Popover, PopoverModule } from 'primeng/popover';
+import { SkeletonModule } from 'primeng/skeleton';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 import { catchError, defaultIfEmpty, finalize, of, take } from 'rxjs';
@@ -12,9 +21,7 @@ import { OccupationalProfile } from '../../models/occupationalProfile';
 import { FirebaseService } from '../../services/firebase.service';
 import { OccupationalProfileService } from '../../services/occupationalProfile.service';
 import { PdfService } from '../../services/pdf.service';
-import { SkillTagComponent, Tag } from "@eo4geo/ngx-bok-utils";
 import { RdfService } from '../../services/rdf.service';
-import { SkeletonModule } from 'primeng/skeleton';
 import { UtilsService } from '../../services/utils.service';
 
 @Component({
@@ -30,7 +37,7 @@ import { UtilsService } from '../../services/utils.service';
     TooltipModule,
     PopoverModule,
     SkeletonModule,
-    SkillTagComponent
+    SkillTagComponent,
   ],
 })
 export class ProfileCardComponent implements OnInit {
@@ -45,7 +52,7 @@ export class ProfileCardComponent implements OnInit {
   @ViewChild('subjects') subjectsElement!: ElementRef;
 
   @ViewChild('conceptsOp') conceptsOp!: Popover;
-  
+
   @ViewChild('card') cardComponent!: ElementRef;
   maxOverflowWidth: number = 2000;
   minOverflowWidth: number = 500;
@@ -54,10 +61,10 @@ export class ProfileCardComponent implements OnInit {
   conceptsLoaded: boolean = false;
   overflow: boolean = false;
   compactConcepts: boolean = false;
-  limitTagsHeigth: boolean = true;
+  limitTagsHeight: boolean = true;
 
   skeletonElements: number[] = [];
-  showSkelleton: boolean = true;
+  showSkeleton: boolean = true;
 
   constructor(
     private utilsService: UtilsService,
@@ -68,7 +75,7 @@ export class ProfileCardComponent implements OnInit {
     private occupationalProfileService: OccupationalProfileService,
     private pdfService: PdfService,
     private rdfService: RdfService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {
     this.skeletonElements = Array(10).fill(null);
   }
@@ -78,31 +85,34 @@ export class ProfileCardComponent implements OnInit {
       orgs.forEach((org) => this.organizations.push(org._id));
     });
 
-    this.utilsService.stringToTag(this.occupationalProfile.knowledge, 'bok').pipe(defaultIfEmpty([])).subscribe(results => {
-      this.concepts = [...this.concepts, ...results];
-      this.concepts.sort((a, b) => a.label.localeCompare(b.label));
-      this.conceptsLoaded = true;
-      this.showSkelleton = false;
-    });
+    this.utilsService
+      .stringToTag(this.occupationalProfile.knowledge, 'bok')
+      .pipe(defaultIfEmpty([]))
+      .subscribe((results) => {
+        this.concepts = [...this.concepts, ...results];
+        this.concepts.sort((a, b) => a.label.localeCompare(b.label));
+        this.conceptsLoaded = true;
+        this.showSkeleton = false;
+      });
   }
 
   ngAfterViewChecked() {
-    if (this.conceptsLoaded && this.limitTagsHeigth) {
+    if (this.conceptsLoaded && this.limitTagsHeight) {
       const currentWidth = this.cardComponent.nativeElement.clientWidth;
       this.maxOverflowWidth = currentWidth * 1.4;
       this.minOverflowWidth = currentWidth * 0.6;
       this.overflow = this.checkOverflow();
-      this.limitTagsHeigth = false;
+      this.limitTagsHeight = false;
       this.cdr.detectChanges();
     }
   }
 
-  compactConceptsChanged = () => this.compactConcepts = !this.compactConcepts;
+  compactConceptsChanged = () => (this.compactConcepts = !this.compactConcepts);
 
   checkOverflow(): boolean {
     const containerHeight = this.containerElement.nativeElement.clientHeight;
     const subjectsHeight = this.subjectsElement.nativeElement.scrollHeight;
-    return (subjectsHeight > containerHeight);
+    return subjectsHeight > containerHeight;
   }
 
   onClickConcept(code: string): void {

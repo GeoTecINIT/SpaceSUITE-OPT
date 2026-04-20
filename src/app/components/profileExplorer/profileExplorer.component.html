@@ -25,20 +25,20 @@
   <div class="flex flex-column w-full">
     <p-buttongroup class="ml-auto mt-2 align-self-center">
       <p-button
-        severity="secondary"
-        (click)="switchSortOrientation()"
-        [icon]="sortAsc ? 'pi pi-sort-amount-up' : 'pi pi-sort-amount-down'"
-        size="small"
-        [label]="'Order By ' + sortOption"
         class="custom-secondary-button"
+        severity="secondary"
+        size="small"
+        [icon]="sortAsc ? 'pi pi-sort-amount-up' : 'pi pi-sort-amount-down'"
+        [label]="'Order By ' + sortOption"
+        (click)="switchSortOrientation()"
       />
 
       <p-button
-        severity="secondary"
-        (click)="menu.toggle($event)"
-        icon="pi pi-chevron-down"
         class="flex custom-secondary-button"
+        severity="secondary"
         size="small"
+        icon="pi pi-chevron-down"
+        (click)="menu.toggle($event)"
       />
     </p-buttongroup>
 

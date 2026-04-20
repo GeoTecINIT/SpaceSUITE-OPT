@@ -1,8 +1,8 @@
 /// <reference lib="webworker" />
 
 import jsPDF from 'jspdf';
-import { PdfWorkerPayload } from '../models/pdfWorkerPayload';
 import { Competence, OccupationalProfile } from '../models/occupationalProfile';
+import { PdfWorkerPayload } from '../models/pdfWorkerPayload';
 
 addEventListener('message', ({ data }: { data: PdfWorkerPayload }) => {
   const { profile, assets, scaleFactor } = data;
@@ -60,10 +60,12 @@ function applyMetadata(doc: jsPDF, profile: OccupationalProfile) {
 }
 
 function getSubjectMetadata(profile: OccupationalProfile) {
-  let subject = '@prefix dc: <http://purl.org/dc/terms/> . @prefix eo4geo: <http://bok.eo4geo.eu/> . ';
+  let subject =
+    '@prefix dc: <http://purl.org/dc/terms/> . @prefix eo4geo: <http://bok.eo4geo.eu/> . ';
   if (profile.knowledge && profile.knowledge.length > 0) {
-    subject = subject + '<> dc:type "Job Offer"; <> dc:title "' + profile.title + '"';
-    profile.knowledge.forEach(know => {
+    subject =
+      subject + '<> dc:type "Job Offer"; <> dc:title "' + profile.title + '"';
+    profile.knowledge.forEach((know) => {
       // const bokCode = concept.split('] ')[1];
       const bokCode = know.split(']', 1)[0].split('[', 2)[1];
       if (bokCode) {

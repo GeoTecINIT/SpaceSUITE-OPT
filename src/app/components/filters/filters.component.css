@@ -1,25 +1,3 @@
-.custom-togglebutton {
-  --p-togglebutton-checked-color: var(--primary-color);
-  --p-togglebutton-icon-checked-color: var(--primary-color);
-  --p-togglebutton-hover-color: var(--primary-color);
-  --p-togglebutton-icon-hover-color: var(--primary-color);
-}
-
-.custom-input {
-  --p-inputtext-focus-border-color: var(--hover-color);
-  --p-inputtext-hover-border-color: var(--hover-color);
-}
-
-.disabled-addon {
-  opacity: 1;
-  background: var(--p-inputtext-disabled-background);
-  color: var(--p-inputtext-disabled-color);
-}
-
-.input-button {
-  --p-button-text-secondary-color: var(--p-multiselect-dropdown-color);
-}
-
 .custom-multiselect {
   --p-multiselect-focus-border-color: var(--hover-color);
   --p-multiselect-hover-border-color: var(--hover-color);
@@ -46,6 +24,23 @@
     var(--secondary-color) 20%,
     rgba(0, 0, 0, 0) 80%
   );
+}
+
+.custom-togglebutton {
+  --p-togglebutton-checked-color: var(--primary-color);
+  --p-togglebutton-icon-checked-color: var(--primary-color);
+  --p-togglebutton-hover-color: var(--primary-color);
+  --p-togglebutton-icon-hover-color: var(--primary-color);
+}
+
+.disabled-addon {
+  opacity: 1;
+  background: var(--p-inputtext-disabled-background);
+  color: var(--p-inputtext-disabled-color);
+}
+
+.input-button {
+  --p-button-text-secondary-color: var(--p-multiselect-dropdown-color);
 }
 
 ::ng-deep .p-multiselect-option span {

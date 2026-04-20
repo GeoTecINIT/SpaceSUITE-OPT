@@ -18,39 +18,6 @@
   --p-treeselect-dropdown-color: var(--danger-color);
 }
 
-.custom-chip {
-  --p-chip-color: var(--primary-color);
-  --p-chip-remove-icon-color: var(--primary-color);
-  --p-chip-remove-icon-focus-ring-color: var(--primary-color);
-}
-
-.chip-animation {
-  animation: bounce-scale 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  will-change: transform;
-  backface-visibility: hidden;
-  --p-chip-color: var(--danger-color) !important;
-  --p-chip-remove-icon-color: var(--danger-color) !important;
-  --p-chip-remove-icon-focus-ring-color: var(--danger-color) !important;
-}
-
-.custom-border {
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  box-shadow:
-    rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-    rgba(0, 0, 0, 0) 0px 0px 0px 0px,
-    rgba(18, 18, 23, 0.05) 0px 1px 2px 0px;
-  transition: border-color 0.2s;
-}
-
-.custom-border-error {
-  border-color: var(--danger-color);
-}
-
-.custom-border:hover {
-  border-color: var(--hover-color);
-}
-
 @keyframes bounce-scale {
   10% {
     transform: scale(1);

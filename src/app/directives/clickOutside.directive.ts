@@ -1,9 +1,9 @@
 import {
   Directive,
   ElementRef,
-  Output,
   EventEmitter,
   HostListener,
+  Output,
 } from '@angular/core';
 
 @Directive({
@@ -18,16 +18,12 @@ export class ClickOutsideDirective {
 
   @HostListener('document:click', ['$event', '$event.target'])
   public onClick(event: MouseEvent, targetElement: EventTarget | null): void {
-    if (!targetElement) {
-      return;
-    }
+    if (!targetElement) return;
 
     const clickedInside = this._elementRef.nativeElement.contains(
       targetElement as HTMLElement,
     );
 
-    if (!clickedInside) {
-      this.clickOutside.emit(event);
-    }
+    if (!clickedInside) this.clickOutside.emit(event);
   }
 }

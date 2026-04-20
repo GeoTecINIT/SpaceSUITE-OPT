@@ -4,35 +4,18 @@
     var(--secondary-color) 15%,
     rgba(255, 255, 255, 0.7) 85%
   );
-  --p-select-option-selected-focus-background: color-mix(
-    in srgb,
-    var(--secondary-color) 15%,
-    rgba(255, 255, 255, 0.7) 85%
-  );
-  --p-select-option-selected-background: color-mix(
-    in srgb,
-    var(--secondary-color) 15%,
-    rgba(255, 255, 255, 0.7) 85%
-  );
-  --p-select-option-focus-background: color-mix(
-    in srgb,
-    #334155 8%,
-    rgba(255, 255, 255, 0.7) 92%
-  );
-  --p-select-option-selected-focus-color: #334155;
-  --p-select-hover-border-color: var(--hover-color);
-  --p-select-focus-border-color: var(--hover-color);
+  --p-paginator-nav-button-selected-color: var(--primary-color);
+}
+.floating-container {
+  position: fixed;
+  z-index: 1;
+  right: 2rem;
 }
 
-.custom-toast {
-  --p-toast-info-background: color-mix(
-    in srgb,
-    var(--secondary-color) 10%,
-    rgba(255, 255, 255, 0.9) 90%
-  );
-  --p-toast-info-border-color: var(--secondary-color);
-  --p-toast-info-color: var(--secondary-color);
-  --p-toast-info-detail-color: var(--primary-color);
+.floating-button {
+  border-radius: var(--p-button-border-radius);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  transition: box-shadow 0.3s ease;
 }
 
 ::ng-deep .p-confirmdialog {
@@ -66,48 +49,4 @@
     var(--danger-color) 80%,
     black 20%
   );
-}
-
-.floating-container {
-  position: fixed;
-  z-index: 1;
-  right: 2rem;
-}
-
-.floating-button {
-  border-radius: var(--p-button-border-radius);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-  transition: box-shadow 0.3s ease;
-}
-
-.custom-button {
-  --p-button-primary-background: var(--secondary-color);
-  --p-button-primary-border-color: var(--secondary-color);
-  --p-button-primary-hover-background: var(--hover-color);
-  --p-button-primary-hover-border-color: var(--hover-color);
-  --p-button-primary-focus-ring-color: var(--secondary-color);
-  --p-button-primary-active-background: color-mix(
-    in srgb,
-    var(--hover-color) 80%,
-    black 20%
-  );
-  --p-button-primary-active-border-color: color-mix(
-    in srgb,
-    var(--hover-color) 80%,
-    black 20%
-  );
-}
-
-.custom-secondary-button {
-  --p-button-secondary-color: color-mix(
-    in srgb,
-    var(--primary-color) 80%,
-    white 20%
-  );
-  --p-button-secondary-hover-color: color-mix(
-    in srgb,
-    var(--primary-color) 90%,
-    white 10%
-  );
-  --p-button-secondary-active-color: var(--primary-color);
 }

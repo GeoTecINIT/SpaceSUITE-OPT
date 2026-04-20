@@ -11,6 +11,10 @@
     <router-outlet></router-outlet>
   </div>
 
-  <footer (openReleaseNotes)="releaseNotes = !releaseNotes" (openUserManual)="openPdf()" class="mt-auto"></footer>
+  <footer
+    class="mt-auto"
+    (openReleaseNotes)="releaseNotes = !releaseNotes"
+    (openUserManual)="openPdf()"
+  ></footer>
   <release-notes [(visible)]="releaseNotes"></release-notes>
 </div>
