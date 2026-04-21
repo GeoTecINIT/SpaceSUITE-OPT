@@ -10,6 +10,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { MenuItem } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
+import { CheckboxModule } from 'primeng/checkbox';
 import { DividerModule } from 'primeng/divider';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
@@ -39,6 +40,7 @@ import { BokModalComponent } from '../bokModal/bokModal.component';
     MenuModule,
     ButtonModule,
     BokModalComponent,
+    CheckboxModule,
   ],
 })
 export class FiltersComponent implements OnChanges {
@@ -48,6 +50,7 @@ export class FiltersComponent implements OnChanges {
   @Input() multiSelectOptions: Filter[] = [];
   @Input() searchOption: string = 'Title';
   @Input() searchValue: string = '';
+  @Input() showPrivate: boolean = false;
   @Input() visibilityFilter: string = 'all';
 
   @Output() bokConceptsChange: EventEmitter<string[]> = new EventEmitter();
@@ -55,6 +58,7 @@ export class FiltersComponent implements OnChanges {
     new EventEmitter();
   @Output() searchOptionChange: EventEmitter<string> = new EventEmitter();
   @Output() searchValueChange: EventEmitter<string> = new EventEmitter();
+  @Output() showPrivateChange: EventEmitter<boolean> = new EventEmitter();
   @Output() visibilityFilterChange: EventEmitter<string> = new EventEmitter();
 
   searchOptions: MenuItem[] = [
@@ -83,6 +87,7 @@ export class FiltersComponent implements OnChanges {
       changes['logged'].currentValue === false
     ) {
       this.visibilityFilterChange.emit('all');
+      this.showPrivateChange.emit(false);
     }
   }
 
@@ -106,6 +111,10 @@ export class FiltersComponent implements OnChanges {
 
   updateSelectOptions(): void {
     this.multiSelectOptionsChange.emit(this.multiSelectOptions);
+  }
+
+  updateShowPrivate(): void {
+    this.showPrivateChange.emit(this.showPrivate);
   }
 
   updateVisibilityFilter(newVisibility: string): void {

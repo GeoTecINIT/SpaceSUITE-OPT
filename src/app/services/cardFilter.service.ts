@@ -14,6 +14,7 @@ export class CardFilterService {
   paginatorState: PaginatorState = {};
   searchOption: string = 'Title';
   searchValue: string = '';
+  showPrivate: boolean = false;
   visibilityFilter: string = 'all';
 
   private filtersSubject: ReplaySubject<Filter[]> = new ReplaySubject<Filter[]>(

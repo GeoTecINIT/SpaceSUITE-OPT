@@ -113,11 +113,11 @@ export class AppComponent {
   ) {}
 
   redirectToProfile(): void {
-    this.router.navigate(['userProfile'], { replaceUrl: true });
+    this.router.navigate(['userProfile']);
   }
 
   redirectToOrganizations(): void {
-    this.router.navigate(['organizations'], { replaceUrl: true });
+    this.router.navigate(['organizations']);
   }
 
   openPdf() {

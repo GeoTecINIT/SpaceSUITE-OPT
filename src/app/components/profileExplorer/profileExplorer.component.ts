@@ -62,6 +62,7 @@ export class ProfileExplorerComponent
   filterOptions: Filter[] = [];
   searchOption: string = 'Title';
   searchValue: string = '';
+  showPrivate: boolean = false;
   visibilityFilter: string = 'all';
   filteredProfiles: OccupationalProfile[] = [];
 
@@ -112,8 +113,12 @@ export class ProfileExplorerComponent
       if (!this.isLogged()) {
         this.visibilityFilter = 'all';
         this.filterService.visibilityFilter = 'all';
+
+        this.showPrivate = false;
+        this.filterService.showPrivate = false;
       } else {
         this.visibilityFilter = this.filterService.visibilityFilter;
+        this.showPrivate = this.filterService.showPrivate;
       }
 
       this.filterPipeline();
@@ -212,10 +217,18 @@ export class ProfileExplorerComponent
     });
   }
 
+  setPrivateFilter(filter: boolean): void {
+    this.showPrivate = filter;
+    this.filterService.showPrivate = filter;
+
+    this.filterPipeline();
+  }
+
   filterPipeline(): void {
     this.first = 0;
 
-    const sorted = this.sortProfiles(this.profiles);
+    const changed = this.handlePrivateProfiles(this.profiles);
+    const sorted = this.sortProfiles(changed);
     const searched = this.searchProfiles(sorted);
     const filtered = this.filterProfiles(searched);
     this.filteredProfiles = this.filterByBoKConcept(filtered);
@@ -226,10 +239,16 @@ export class ProfileExplorerComponent
     });
   }
 
-  createOccupationalProfile() {
+  createOccupationalProfile(): void {
     this.router.navigate(['profile/new'], {
       queryParams: { origin: 'explorer' },
     });
+  }
+
+  scrollToTop(): void {
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 0);
   }
 
   private updateButtonPosition = () => {
@@ -247,6 +266,14 @@ export class ProfileExplorerComponent
       this.first,
       this.first + this.rows,
     );
+  }
+
+  private handlePrivateProfiles(
+    profiles: OccupationalProfile[],
+  ): OccupationalProfile[] {
+    return this.showPrivate
+      ? profiles
+      : profiles.filter((profile) => profile.isPublic === true);
   }
 
   private sortProfiles(profiles: OccupationalProfile[]): OccupationalProfile[] {

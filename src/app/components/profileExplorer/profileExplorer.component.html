@@ -11,11 +11,13 @@
     [multiSelectOptions]="filterOptions"
     [searchOption]="searchOption"
     [searchValue]="searchValue"
+    [showPrivate]="showPrivate"
     [visibilityFilter]="visibilityFilter"
     (bokConceptsChange)="setBoKConcepts($event)"
     (multiSelectOptionsChange)="filterPipeline()"
     (searchOptionChange)="setSearchOption($event)"
     (searchValueChange)="setSearchValue($event)"
+    (showPrivateChange)="setPrivateFilter($event)"
     (visibilityFilterChange)="setVisibilityFilter($event)"
   />
 
@@ -85,7 +87,7 @@
           [first]="first"
           [rows]="rows"
           [totalRecords]="filteredProfiles.length"
-          (onPageChange)="onPageChange($event)"
+          (onPageChange)="onPageChange($event); scrollToTop()"
         />
       </div>
     }

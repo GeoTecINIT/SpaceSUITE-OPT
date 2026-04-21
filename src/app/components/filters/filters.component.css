@@ -1,3 +1,11 @@
+.custom-checkbox {
+  --p-checkbox-hover-border-color: var(--hover-color);
+  --p-checkbox-checked-border-color: var(--primary-color);
+  --p-checkbox-checked-background: var(--primary-color);
+  --p-checkbox-checked-hover-border-color: var(--hover-color);
+  --p-checkbox-checked-hover-background: var(--hover-color);
+}
+
 .custom-multiselect {
   --p-multiselect-focus-border-color: var(--hover-color);
   --p-multiselect-hover-border-color: var(--hover-color);
