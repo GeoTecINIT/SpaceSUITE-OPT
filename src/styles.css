@@ -180,3 +180,15 @@ body {
 ::ng-deep .p-toast-close-button .p-button-label {
   font-size: 0;
 }
+
+@keyframes bounce-scale {
+  10% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  95% {
+    transform: scale(1);
+  }
+}

@@ -17,15 +17,3 @@
   --p-treeselect-border-color: var(--danger-color);
   --p-treeselect-dropdown-color: var(--danger-color);
 }
-
-@keyframes bounce-scale {
-  10% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  95% {
-    transform: scale(1);
-  }
-}

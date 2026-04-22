@@ -25,15 +25,3 @@
   --p-chip-remove-icon-color: var(--primary-color);
   --p-chip-remove-icon-focus-ring-color: var(--primary-color);
 }
-
-@keyframes bounce-scale {
-  10% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  95% {
-    transform: scale(1);
-  }
-}
