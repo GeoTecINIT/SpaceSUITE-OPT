@@ -430,6 +430,24 @@ export class ProfilePageComponent implements OnInit, AfterViewInit, OnDestroy {
     document.body.style.cursor = '';
   }
 
+  downloadJSON(op: Popover) {
+    op.hide();
+
+    const fileName = (this.profile?.title || 'default_name')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, '_')
+      .replace(/[^\w_-]/g, '')
+      .toLowerCase();
+
+    const plainProfile = this.profile?.toPlain();
+    const jsonStr = JSON.stringify(plainProfile, null, 2);
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const url = window.URL.createObjectURL(blob);
+
+    this.downloadURI(url, fileName + '_profile.json');
+  }
+
   private downloadURI(uri: string, name: string): void {
     const link = document.createElement('a');
     link.download = name;
