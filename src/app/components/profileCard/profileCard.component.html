@@ -1,7 +1,7 @@
 <p-card class="custom-card">
-  <div class="flex justify-content-between align-items-center gap-6">
-    <div class="flex flex-column">
-      <div class="flex align-items-baseline gap-3">
+  <div #card class="flex justify-content-between align-items-center gap-6">
+    <div class="flex flex-column flex-1">
+      <div>
         <a
           class="p-card-title card-title"
           href="profile/{{ occupationalProfile._id }}"
@@ -11,22 +11,23 @@
           {{ occupationalProfile.title }}
         </a>
 
-        <span class="p-card-subtitle text-sm">
+        <span class="p-card-subtitle text-sm ml-2">
           {{ occupationalProfile.orgName }}
-          <ng-container *ngIf="occupationalProfile.division !== ''">
+
+          @if (occupationalProfile.division !== "") {
             - {{ occupationalProfile.division }}
-          </ng-container>
+          }
         </span>
       </div>
 
       <div class="flex flex-column gap-2">
-        <div class="flex align-items-center gap-2 text-sm">
-          <span>
+        <div class="flex flex-wrap align-items-center gap-2 text-sm">
+          <span class="white-space-nowrap">
             <strong>Knowledge:</strong>
             {{ occupationalProfile.knowledge.length }}
           </span>
           |
-          <span>
+          <span class="white-space-nowrap">
             <strong>Skills:</strong>
             {{
               occupationalProfile.skills.length +
@@ -34,7 +35,7 @@
             }}
           </span>
           |
-          <span>
+          <span class="white-space-nowrap">
             <strong>Transversal Skills:</strong>
             {{
               occupationalProfile.competences.length +
@@ -42,17 +43,19 @@
             }}
           </span>
           |
-          <span>
+          <span class="white-space-nowrap">
             <strong>EQF level:</strong>
             {{ occupationalProfile.eqf }}
           </span>
           |
-          <ng-container *ngIf="!occupationalProfile.isPublic">
+
+          @if (!occupationalProfile.isPublic) {
             <i class="pi pi-eye-slash"></i>
             <strong>Private</strong>
             |
-          </ng-container>
-          <span>
+          }
+
+          <span class="white-space-nowrap">
             <strong>Last updated:</strong>
             {{ occupationalProfile.updatedAt?.toDate().toLocaleDateString() }}
           </span>
@@ -62,68 +65,100 @@
           {{ occupationalProfile.description }}
         </div>
 
-        <div class="flex flex-wrap gap-2">
-          <ng-container *ngFor="let concept of concepts">
-            <p-tag
-              class="custom-tag cursor-pointer text-xs"
-              [value]="concept"
-              [rounded]="true"
-              [style.background]="selectedConceptsColor.get(concept)"
-              (click)="onClickConcept(concept)"
-              [pTooltip]="selectedConceptsTooltip.get(concept)"
-              tooltipPosition="top"
-              [tooltipStyleClass]="
-                selectedConceptsTooltip.get(concept) === 'Deprecated concept'
-                  ? 'danger-tooltip'
-                  : ''
-              "
-            />
-          </ng-container>
-        </div>
+        @if (showSkeleton) {
+          <div class="mt-2 h-4rem overflow-hidden">
+            <div class="flex align-items-center gap-2 flex-wrap">
+              @for (i of skeletonElements; track $index) {
+                <p-skeleton
+                  height="1.5rem"
+                  width="8rem"
+                  class="mb-2"
+                  borderRadius="16px"
+                />
+              }
+            </div>
+          </div>
+        } @else {
+          <div
+            #container
+            class="mt-2 {{
+              limitTagsHeight ? 'max-h-8rem' : ''
+            }} overflow-hidden"
+          >
+            <div #subjects class="flex align-items-center">
+              <skill-tags
+                [tags]="concepts"
+                [compactThreshold]="
+                  overflow ? maxOverflowWidth : minOverflowWidth
+                "
+                (layoutUpdated)="compactConceptsChanged()"
+                class="min-w-full"
+              >
+                @if (compactConcepts) {
+                  <i
+                    class="pi pi-info-circle more-tag align-self-center"
+                    (click)="conceptsOp.toggle($event)"
+                  ></i>
+                }
+              </skill-tags>
+            </div>
+          </div>
+        }
       </div>
     </div>
 
-    <div class="flex gap-2">
+    <div class="hidden xl:flex gap-2">
       <p-button
-        class="custom-button"
+        class="custom-option"
         icon="pi pi-share-alt"
         [rounded]="true"
         variant="text"
         pTooltip="Share"
         tooltipPosition="top"
-        (onClick)="op.toggle($event)"
+        (onClick)="copyLink()"
       />
 
-      <p-popover #op>
-        <div style="color: var(--primary-color)">
-          <div class="font-medium block mb-2">
-            <strong>Options</strong>
-          </div>
+      <div>
+        <p-button
+          class="custom-option"
+          icon="pi pi-download"
+          [rounded]="true"
+          variant="text"
+          pTooltip="Download"
+          tooltipPosition="top"
+          (onClick)="op.toggle($event)"
+        />
 
-          <div class="flex gap-5">
-            <i
-              class="pi pi-link popover-element"
-              pTooltip="Copy link"
-              tooltipPosition="top"
-              (click)="copyLink()"
-            ></i>
-            <i
-              class="pi pi-file-pdf popover-element"
-              pTooltip="Download PDF"
-              tooltipPosition="top"
-              (click)="downloadPortfolioPdf()"
-            ></i>
-            <i
-              class="pi pi-code popover-element"
-              pTooltip="Under development"
-              tooltipPosition="top"
-            ></i>
+        <p-popover #op>
+          <div style="color: var(--primary-color)">
+            <strong>Choose Format</strong>
+
+            <ul class="flex flex-column p-0 m-0">
+              <li class="flex p-2 popover-element" (click)="downloadPDF()">
+                PDF
+              </li>
+              <li class="flex p-2 popover-element" (click)="downloadJSON()">
+                JSON
+              </li>
+              <li
+                class="flex p-2 popover-element"
+                (click)="downloadRDF('rdfa')"
+              >
+                RDFa
+              </li>
+              <li class="flex p-2 popover-element" (click)="downloadRDF('xml')">
+                RDF/XML
+              </li>
+              <li class="flex p-2 popover-element" (click)="downloadRDF('ttl')">
+                Turtle
+              </li>
+            </ul>
           </div>
-        </div>
-      </p-popover>
+        </p-popover>
+      </div>
 
       <p-button
-        class="custom-button"
+        class="custom-option"
         icon="pi pi-clone"
         [rounded]="true"
         variant="text"
@@ -134,7 +169,7 @@
       />
 
       <p-button
-        class="custom-button"
+        class="custom-option"
         icon="pi pi-pencil"
         [rounded]="true"
         variant="text"
@@ -151,7 +186,7 @@
       />
 
       <p-button
-        class="custom-button-danger"
+        class="custom-option-danger"
         icon="pi pi-trash"
         [rounded]="true"
         variant="text"
@@ -170,3 +205,9 @@
     </div>
   </div>
 </p-card>
+
+<p-popover #conceptsOp>
+  <div class="flex align-items-center gap-2 my-2 flex-wrap max-w-19rem">
+    <skill-tags [tags]="concepts" [compactBoKTags]="false"></skill-tags>
+  </div>
+</p-popover>

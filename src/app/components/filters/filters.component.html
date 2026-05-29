@@ -5,29 +5,43 @@
     <p-divider class="m-0" />
   </div>
 
-  <ng-container *ngIf="logged">
-    <div class="flex">
-      <p-selectbutton
-        class="custom-togglebutton"
-        [(ngModel)]="visibilityFilter"
-        [options]="visibilityFilterOptions"
-        [allowEmpty]="false"
-        optionLabel="label"
-        optionValue="value"
-        (ngModelChange)="updateVisibilityFilter()"
-        [disabled]="loading"
-        size="small"
-      >
-        <ng-template #item let-item>
-          <div class="flex flex-column">
-            <i [class]="item.icon"></i>
+  <div class="flex">
+    <p-selectbutton
+      class="custom-togglebutton"
+      [ngModel]="logged ? visibilityFilter : undefined"
+      [options]="
+        logged ? visibilityFilterOptions : [visibilityFilterOptions[2]]
+      "
+      [allowEmpty]="!logged"
+      optionLabel="label"
+      optionValue="value"
+      (ngModelChange)="updateVisibilityFilter($event)"
+      [disabled]="!logged"
+      size="small"
+      [pTooltip]="!logged ? 'You must be logged in to use this field.' : ''"
+      tooltipPosition="top"
+    >
+      <ng-template #item let-item>
+        <div class="flex flex-column">
+          <i [class]="item.icon"></i>
 
-            {{ item.label }}
-          </div>
-        </ng-template>
-      </p-selectbutton>
+          {{ item.label }}
+        </div>
+      </ng-template>
+    </p-selectbutton>
+  </div>
+
+  @if (logged) {
+    <div class="flex align-items-center gap-3">
+      Show private profiles?
+      <p-checkbox
+        class="flex custom-checkbox"
+        [(ngModel)]="showPrivate"
+        (ngModelChange)="updateShowPrivate()"
+        [binary]="true"
+      />
     </div>
-  </ng-container>
+  }
 
   <div class="flex flex-column">
     Search by {{ searchOption }}
@@ -73,27 +87,26 @@
     </p-menu>
   </div>
 
-  <ng-container
-    *ngFor="let option of multiSelectOptions; trackBy: trackByLabel"
-  >
-    <div>
+  @for (option of multiSelectOptions; track option.label) {
+    <div class="flex flex-column">
       <div class="flex align-items-center">
         {{ option.label }}
 
-        <i
-          *ngIf="option.tooltip"
-          [pTooltip]="option.tooltip"
-          tooltipPosition="right"
-          class="ml-2 pi pi-info-circle"
-        ></i>
+        @if (option.tooltip) {
+          <i
+            class="ml-2 pi pi-info-circle"
+            [pTooltip]="option.tooltip"
+            tooltipPosition="right"
+          ></i>
+        }
       </div>
 
       <p-multiselect
+        class="mt-1 w-20rem custom-multiselect"
         [options]="getMultiselectOptions(option)"
         [(ngModel)]="option.selection"
         (ngModelChange)="updateSelectOptions()"
         placeholder="Select {{ option.label }}"
-        class="mt-1 w-20rem custom-multiselect"
         panelStyleClass="max-w-20rem"
         [disabled]="loading"
         [showClear]="true"
@@ -103,7 +116,7 @@
         optionLabel="id"
       />
     </div>
-  </ng-container>
+  }
 
   <div class="max-w-20rem">
     <bokModal

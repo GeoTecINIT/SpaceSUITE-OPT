@@ -1,18 +1,20 @@
+import { CommonModule } from '@angular/common';
 import {
   Component,
   EventEmitter,
   Input,
+  OnChanges,
+  OnInit,
   Output,
   SimpleChanges,
 } from '@angular/core';
-import { FloatLabelModule } from 'primeng/floatlabel';
 import { FormsModule } from '@angular/forms';
-import { IconFieldModule } from 'primeng/iconfield';
+import { TreeNode } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ChipModule } from 'primeng/chip';
-import { CommonModule } from '@angular/common';
-import { TreeSelectModule, TreeSelect } from 'primeng/treeselect';
-import { TreeNode } from 'primeng/api';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { IconFieldModule } from 'primeng/iconfield';
+import { TreeSelectModule } from 'primeng/treeselect';
 
 @Component({
   standalone: true,
@@ -29,18 +31,16 @@ import { TreeNode } from 'primeng/api';
     TreeSelectModule,
   ],
 })
-export class TreeselectChipsComponent {
+export class TreeselectChipsComponent implements OnInit, OnChanges {
   @Input() chips: string[] = [];
+  @Input() error: boolean = false;
+  @Input() fieldName: string = 'Field Name';
+  @Input() treeNodes: TreeNode[] = [];
+
   @Output() chipsChange: EventEmitter<string[]> = new EventEmitter();
 
-  treeSelection: TreeNode[] = [];
-  @Input() treeselectOptions: TreeNode[] = [];
-
-  @Input() fieldName: string = 'Field Name';
-
-  @Input() error: boolean = false;
-
   chipAnimations: Record<string, boolean> = {};
+  treeSelection: TreeNode[] = [];
 
   ngOnInit() {
     this.chips.forEach((chip) => {
@@ -49,42 +49,46 @@ export class TreeselectChipsComponent {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['treeselectOptions']) {
-      const currentValue: TreeNode[] =
-        changes['treeselectOptions'].currentValue;
-      this.treeSelection = this.getNodesMatchingChips(currentValue, this.chips);
+    if (changes['treeNodes']?.currentValue?.length) {
+      this.treeSelection = this.getTreeSelection(
+        changes['treeNodes'].currentValue,
+        this.chips,
+      );
     }
   }
 
-  private getNodesMatchingChips(
-    nodes: TreeNode[],
-    chips: string[]
-  ): TreeNode[] {
-    let matched: TreeNode[] = [];
-    for (const node of nodes) {
-      if (chips.includes(node.label!)) {
-        matched.push(node);
-      }
-      if (node.children) {
-        matched = matched.concat(
-          this.getNodesMatchingChips(node.children, chips)
-        );
+  addChip(chip: string): void {
+    if (!this.chips.includes(chip)) {
+      this.chips.push(chip);
+      this.chipsChange.emit(this.chips);
+
+      const duplicates = this.getTreeSelection(this.treeNodes, [chip]).filter(
+        (n) => n.key !== this.treeSelection[this.treeSelection.length - 1].key,
+      );
+
+      if (duplicates.length) {
+        this.treeSelection = this.treeSelection.concat(duplicates);
       }
     }
-    return matched;
   }
 
-  deleteElement(element: string) {
-    this.treeSelection = this.treeSelection.filter(
-      (value) => value.label !== element
-    );
-    this.chipsChange.emit(this.chips.filter((value) => value !== element));
-  }
-
-  treeselectChange(values: TreeNode[]) {
-    this.treeSelection = values || [];
-    const selectedValues = this.treeSelection.map((node) => node.label!);
-    this.chips = selectedValues;
+  deleteChip(chip: string): void {
+    this.chips = this.chips.filter((c) => c !== chip);
     this.chipsChange.emit(this.chips);
+    this.treeSelection = this.treeSelection.filter((n) => n.label !== chip);
+  }
+
+  clear(): void {
+    this.chips = [];
+    this.chipsChange.emit(this.chips);
+  }
+
+  private getTreeSelection(nodes: TreeNode[], chips: string[]): TreeNode[] {
+    return nodes.reduce<TreeNode[]>((acc, n) => {
+      if (chips.includes(n.label!)) acc.push(n);
+      if (n.children) acc.push(...this.getTreeSelection(n.children, chips));
+
+      return acc;
+    }, []);
   }
 }

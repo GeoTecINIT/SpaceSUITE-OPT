@@ -18,19 +18,15 @@ import { FirebaseService } from './firebase.service';
   providedIn: 'root',
 })
 export class OccupationalProfileService {
-  private profilesMap: BehaviorSubject<
+  private profilesSubject: BehaviorSubject<
     Map<string, OccupationalProfile> | undefined
   > = new BehaviorSubject<Map<string, OccupationalProfile> | undefined>(
-    undefined
+    undefined,
   );
-  private profiles$: Observable<Map<string, OccupationalProfile>> =
-    this.profilesMap.pipe(
-      filter((m): m is Map<string, OccupationalProfile> => m !== undefined)
-    );
 
   constructor(
     private firebaseService: FirebaseService,
-    private bokInfoService: BokInformationService
+    private bokInfoService: BokInformationService,
   ) {
     this.firebaseService
       .getOccupationalProfiles()
@@ -38,36 +34,39 @@ export class OccupationalProfileService {
         tap((profiles) => {
           const formattedProfiles = this.formatOccupationalProfiles(profiles);
           const map = new Map(formattedProfiles.map((p) => [p._id, p]));
-          this.profilesMap.next(map);
-        })
+          this.profilesSubject.next(map);
+        }),
       )
       .subscribe();
   }
 
-  getOccupationalProfiles(): Observable<OccupationalProfile[]> {
-    return this.profiles$.pipe(map((map) => Array.from(map.values())));
+  getOccupationalProfiles(): Observable<OccupationalProfile[] | undefined> {
+    return this.profilesSubject
+      .asObservable()
+      .pipe(map((map) => (map ? Array.from(map.values()) : undefined)));
   }
 
   getOccupationalProfile(
-    id: string
+    id: string,
   ): Observable<OccupationalProfile | undefined> {
-    return this.profiles$.pipe(map((map) => map.get(id)));
+    return this.profilesSubject.asObservable().pipe(
+      filter((map) => map !== undefined),
+      map((map) => map.get(id)),
+    );
   }
 
-  getProfilesOrganizations(): Observable<string[]> {
-    return this.profiles$.pipe(
-      map((map) => [
-        ...new Set(
-          Array.from(map.values())
-            .filter((p) => !!p.orgName)
-            .map((p) => p.orgName!)
-        ),
-      ])
+  getOrganizations(): Observable<string[]> {
+    return this.profilesSubject.asObservable().pipe(
+      map((map) => {
+        if (map === undefined || map.size === 0) return [];
+
+        return [...new Set(Array.from(map.values()).map((p) => p.orgName))];
+      }),
     );
   }
 
   validateOccupationalProfile(
-    profile: OccupationalProfile
+    profile: OccupationalProfile,
   ): Map<string, string | undefined> {
     const errors: Map<string, string | undefined> = new Map();
 
@@ -79,23 +78,23 @@ export class OccupationalProfileService {
     setError(
       'description',
       !profile.description.trim(),
-      'Description is required.'
+      'Description is required.',
     );
     setError('eqf', !profile.eqf.trim(), 'EQF level is required.');
     setError(
       'organization',
       !profile.orgId?.trim(),
-      'Organization is required.'
+      'Organization is required.',
     );
     setError(
       'knowledge',
       profile.knowledge.length === 0,
-      'At least one concept is required.'
+      'At least one concept is required.',
     );
     setError(
       'skills',
       profile.skills.length === 0 && profile.customSkills.length === 0,
-      'At least one skill is required.'
+      'At least one skill is required.',
     );
 
     return errors;
@@ -103,7 +102,7 @@ export class OccupationalProfileService {
 
   submitOccupationalProfile(
     profile: OccupationalProfile,
-    update: boolean = false
+    update: boolean = false,
   ): Observable<string> {
     const newProfile = new OccupationalProfile(profile);
     newProfile.eqf = newProfile.eqf.replace('EQF', '').trim();
@@ -114,9 +113,9 @@ export class OccupationalProfileService {
             newProfile.knowledge.map((concept) =>
               this.bokInfoService.getConceptName(concept).pipe(
                 take(1),
-                map((conceptName) => `[${concept}] ${conceptName}`)
-              )
-            )
+                map((conceptName) => `[${concept}] ${conceptName}`),
+              ),
+            ),
           )
         : of([]);
     return conceptObservables.pipe(
@@ -125,7 +124,7 @@ export class OccupationalProfileService {
         if (update)
           return this.firebaseService.updateOccupationalProfile(newProfile);
         return this.firebaseService.setOccupationalProfile(newProfile);
-      })
+      }),
     );
   }
 
@@ -134,11 +133,19 @@ export class OccupationalProfileService {
   }
 
   private formatOccupationalProfiles(
-    profiles: OccupationalProfile[]
+    profiles: OccupationalProfile[],
   ): OccupationalProfile[] {
     return profiles.map((profile) => {
       const newProfile = new OccupationalProfile(profile);
+
       newProfile.knowledge = this.formatFirestoreConcepts(newProfile.knowledge);
+      newProfile.customSkills = newProfile.customSkills.filter((s) => s !== '');
+      newProfile.skills = newProfile.skills.filter(
+        (s) => s !== '' && newProfile.customSkills.every((c) => s !== c),
+      );
+      newProfile.customCompetences = newProfile.customCompetences.filter(
+        (c) => c !== '',
+      );
 
       return newProfile;
     });

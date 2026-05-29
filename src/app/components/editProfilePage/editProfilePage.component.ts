@@ -1,8 +1,7 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal, WritableSignal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ExitWithoutSavingService } from '@eo4geo/ngx-bok-utils';
-import { concatMap, EMPTY } from 'rxjs';
+import { concatMap, EMPTY, tap } from 'rxjs';
 import { OccupationalProfile } from '../../models/occupationalProfile';
 import { FirebaseService } from '../../services/firebase.service';
 import { OccupationalProfileService } from '../../services/occupationalProfile.service';
@@ -12,52 +11,43 @@ import { ProfileFormComponent } from '../profileForm/profileForm.component';
   standalone: true,
   selector: 'edit-profile-page',
   templateUrl: './editProfilePage.component.html',
-  imports: [ProfileFormComponent, CommonModule],
+  imports: [ProfileFormComponent],
 })
 export class EditProfilePageComponent implements OnInit {
-  profile?: OccupationalProfile;
-  isDuplicate: boolean = false;
+  isDuplicateSignal: WritableSignal<boolean> = signal(false);
+  profileSignal: WritableSignal<OccupationalProfile | undefined> =
+    signal(undefined);
 
   constructor(
     private occupationalProfileService: OccupationalProfileService,
     private route: ActivatedRoute,
     private router: Router,
     private firebaseService: FirebaseService,
-    private exitWithoutSavingService: ExitWithoutSavingService
+    private exitWithoutSavingService: ExitWithoutSavingService,
   ) {}
 
   ngOnInit() {
-    this.isDuplicate = this.router.url.includes('/profile/new/');
-    const profileId = this.route.snapshot.paramMap.get('profileId') || '';
+    this.isDuplicateSignal.set(this.router.url.includes('/profile/new/'));
+    const profileId = this.route.snapshot.paramMap.get('profileId');
+
+    if (!profileId) {
+      this.notFound();
+      return;
+    }
 
     this.occupationalProfileService
       .getOccupationalProfile(profileId)
       .pipe(
-        concatMap((profile?: OccupationalProfile) => {
+        concatMap((profile) => {
           if (!profile) {
             this.notFound();
-
             return EMPTY;
           }
 
-          return this.firebaseService.getUserOrganizationList().pipe(
-            concatMap((orgsList) => {
-              if (this.isDuplicate) {
-                this.duplicateProfile(profile, orgsList);
-              } else {
-                this.loadProfile(profile);
-
-                if (!this.canEditProfile(orgsList)) {
-                  this.notFound();
-
-                  return EMPTY;
-                }
-              }
-
-              return EMPTY;
-            })
-          );
-        })
+          return this.firebaseService
+            .getUserOrganizationList()
+            .pipe(tap((orgs) => this.handleProfile(profile, orgs)));
+        }),
       )
       .subscribe();
   }
@@ -67,35 +57,63 @@ export class EditProfilePageComponent implements OnInit {
     this.router.navigate(['/not_found']);
   }
 
-  private duplicateProfile(
-    originalProfile: OccupationalProfile,
-    userOrgs: { _id: string; name: string }[]
+  private handleProfile(
+    profile: OccupationalProfile,
+    organizations: { _id: string; name: string }[],
   ): void {
-    this.profile = new OccupationalProfile(originalProfile);
-    this.profile._id = '';
-    this.profile.createdAt = undefined;
-    this.profile.eqf = 'EQF ' + this.profile.eqf;
-    this.profile.lastModified = '';
-    this.profile.updatedAt = undefined;
-    this.profile.userId = '';
-
-    if (!userOrgs.some((o) => o._id === this.profile?.orgId)) {
-      this.profile.orgId = '';
-      this.profile.orgName = '';
-      this.profile.division = '';
+    if (this.isDuplicateSignal()) {
+      this.duplicateProfile(profile, organizations);
+    } else {
+      if (this.canEditProfile(profile, organizations)) {
+        this.loadProfile(profile);
+      } else {
+        this.notFound();
+      }
     }
   }
 
-  private loadProfile(originalProfile: OccupationalProfile): void {
-    this.profile = new OccupationalProfile(originalProfile);
-    this.profile.eqf = 'EQF ' + this.profile.eqf;
+  private duplicateProfile(
+    originalProfile: OccupationalProfile,
+    organizations: { _id: string; name: string }[],
+  ): void {
+    const profile = new OccupationalProfile(originalProfile);
+    profile._id = '';
+    profile.createdAt = undefined;
+
+    if (!profile.eqf.startsWith('EQF ')) {
+      profile.eqf = `EQF ${profile.eqf}`;
+    }
+
+    profile.lastModified = '';
+    profile.updatedAt = undefined;
+    profile.userId = '';
+
+    if (!organizations.some((o) => o._id === profile.orgId)) {
+      profile.orgId = '';
+      profile.orgName = '';
+      profile.division = '';
+    }
+
+    this.profileSignal.set(profile);
   }
 
-  private canEditProfile(orgsList: { _id: string; name: string }[]): boolean {
-    const belongsToOrg = orgsList.some((o) => o._id === this.profile?.orgId);
+  private loadProfile(originalProfile: OccupationalProfile): void {
+    const profile = new OccupationalProfile(originalProfile);
+
+    if (!profile.eqf.startsWith('EQF ')) {
+      profile.eqf = `EQF ${profile.eqf}`;
+    }
+
+    this.profileSignal.set(profile);
+  }
+
+  private canEditProfile(
+    profile: OccupationalProfile,
+    organizations: { _id: string; name: string }[],
+  ): boolean {
+    const belongsToOrg = organizations.some((o) => o._id === profile.orgId);
     const userData = this.firebaseService.getUserData();
-    const isCreator =
-      userData !== null && this.profile?.userId === userData.uid;
+    const isCreator = userData !== null && profile.userId === userData.uid;
 
     return belongsToOrg || isCreator;
   }

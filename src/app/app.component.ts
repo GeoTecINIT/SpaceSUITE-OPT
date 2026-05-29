@@ -1,14 +1,21 @@
 import { Component } from '@angular/core';
-import { HeaderComponent, FooterComponent } from '@eo4geo/ngx-bok-utils';
-import { MenuItem } from 'primeng/api';
 import { Router, RouterOutlet } from '@angular/router';
+import { FooterComponent, HeaderComponent } from '@eo4geo/ngx-bok-utils';
+import { MenuItem } from 'primeng/api';
+import { ReleaseNotesComponent } from './components/releaseNotes/releaseNotes.component';
+import { PdfService } from './services/pdf.service';
 
 @Component({
   standalone: true,
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  imports: [RouterOutlet, HeaderComponent, FooterComponent],
+  imports: [
+    RouterOutlet,
+    HeaderComponent,
+    FooterComponent,
+    ReleaseNotesComponent,
+  ],
 })
 export class AppComponent {
   headerItems: MenuItem[] = [
@@ -41,9 +48,15 @@ export class AppComponent {
           target: '_blank',
         },
         {
-          label: 'Training Catalogue Tool',
+          label: 'Training Catalogue',
           icon: 'pi pi-graduation-cap',
           url: 'https://spacesuite-project-tct.web.app/',
+          target: '_blank',
+        },
+        {
+          label: 'Skill Portfolio',
+          icon: 'pi pi-user',
+          url: 'https://spacesuite-project-spt.web.app',
           target: '_blank',
         },
         {
@@ -92,13 +105,25 @@ export class AppComponent {
     },
   ];
 
-  constructor(private router: Router) {}
+  releaseNotes: boolean = false;
+
+  constructor(
+    private router: Router,
+    private pdfService: PdfService,
+  ) {}
 
   redirectToProfile(): void {
-    this.router.navigate(['userProfile'], { replaceUrl: true });
+    this.router.navigate(['userProfile']);
   }
 
   redirectToOrganizations(): void {
-    this.router.navigate(['organizations'], { replaceUrl: true });
+    this.router.navigate(['organizations']);
+  }
+
+  openPdf() {
+    this.pdfService.getUserGuidePdf().subscribe((pdfBlob) => {
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      window.open(pdfUrl, '_blank');
+    });
   }
 }

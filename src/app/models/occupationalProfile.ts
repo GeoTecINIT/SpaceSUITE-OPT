@@ -28,7 +28,7 @@ export class OccupationalProfile {
     this.division = data.division ?? '';
     this.eqf = data.eqf ?? '';
     this.fields = data.fields ?? [];
-    this.isPublic = data.isPublic ?? true;
+    this.isPublic = data.isPublic ?? false;
     this.knowledge = data.knowledge ?? [];
     this.lastModified = data.lastModified ?? '';
     this.orgId = data.orgId ?? '';

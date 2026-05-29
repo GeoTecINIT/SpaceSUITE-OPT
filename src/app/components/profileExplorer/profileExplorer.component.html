@@ -2,69 +2,108 @@
 
 <p-confirmdialog />
 
-<div #container class="flex gap-4 m-2">
+<div #container class="flex flex-column xl:flex-row gap-4 m-2">
   <filters
+    class="flex justify-content-center"
     [bokConcepts]="bokConcepts"
     [loading]="loading"
     [logged]="isLogged()"
     [multiSelectOptions]="filterOptions"
     [searchOption]="searchOption"
     [searchValue]="searchValue"
+    [showPrivate]="showPrivate"
     [visibilityFilter]="visibilityFilter"
     (bokConceptsChange)="setBoKConcepts($event)"
     (multiSelectOptionsChange)="filterPipeline()"
     (searchOptionChange)="setSearchOption($event)"
     (searchValueChange)="setSearchValue($event)"
+    (showPrivateChange)="setPrivateFilter($event)"
     (visibilityFilterChange)="setVisibilityFilter($event)"
   />
 
-  <p-divider layout="vertical" />
+  <p-divider layout="vertical" class="hidden xl:flex" />
+  <p-divider class="flex xl:hidden" />
 
-  <ng-container *ngIf="filteredProfiles.length !== 0 || loading">
-    <div class="flex flex-column gap-4 w-full">
+  <div class="flex flex-column w-full">
+    <p-buttongroup class="ml-auto mt-2 align-self-center">
+      <p-button
+        class="custom-secondary-button"
+        severity="secondary"
+        size="small"
+        [icon]="sortAsc ? 'pi pi-sort-amount-up' : 'pi pi-sort-amount-down'"
+        [label]="'Order By ' + sortOption"
+        (click)="switchSortOrientation()"
+      />
+
+      <p-button
+        class="flex custom-secondary-button"
+        severity="secondary"
+        size="small"
+        icon="pi pi-chevron-down"
+        (click)="menu.toggle($event)"
+      />
+    </p-buttongroup>
+
+    <p-menu #menu [model]="sortOptions" popup styleClass="!min-w-fit">
+      <ng-template #item let-item>
+        <a
+          pRipple
+          class="flex items-center p-menu-item-link"
+          (click)="setSortOption(item.label)"
+        >
+          <i
+            class="w-1rem"
+            [ngClass]="item.label == sortOption ? 'pi pi-check' : ''"
+          ></i>
+
+          <span class="ml-2">{{ item.label }}</span>
+        </a>
+      </ng-template>
+    </p-menu>
+
+    <p-divider />
+
+    @if (loading) {
       <div class="flex flex-column gap-3">
-        <ng-container *ngIf="!loading; else cardSkeleton">
-          <ng-container
-            *ngFor="let profile of paginatedProfiles; trackBy: trackById"
-          >
+        @for (item of skeletonElements; track $index) {
+          <p-skeleton width="100%" height="11rem" borderRadius="12px" />
+        }
+      </div>
+    } @else if (filteredProfiles.length === 0) {
+      <p class="font-italic mx-auto">No profiles found</p>
+    } @else {
+      <div class="flex flex-column gap-4">
+        <div class="flex flex-column gap-3">
+          @for (profile of paginatedProfiles; track profile._id) {
             <profile-card
               [occupationalProfile]="profile"
               [logged]="isLogged()"
             />
-          </ng-container>
-        </ng-container>
+          }
+        </div>
+
+        <p-paginator
+          class="custom-paginator"
+          [first]="first"
+          [rows]="rows"
+          [totalRecords]="filteredProfiles.length"
+          (onPageChange)="onPageChange($event); scrollToTop()"
+        />
       </div>
-
-      <p-paginator
-        class="custom-paginator"
-        [first]="first"
-        [rows]="rows"
-        [totalRecords]="filteredProfiles.length"
-        (onPageChange)="onPageChange($event)"
-      />
-    </div>
-  </ng-container>
-
-  <ng-container *ngIf="filteredProfiles.length === 0 && !loading">
-    <p class="font-italic mx-auto">No profiles found</p>
-  </ng-container>
+    }
+  </div>
 </div>
 
-<div
-  class="floating-container flex flex-column gap-2 align-items-end"
-  [ngStyle]="{ bottom: buttonBottom + 'px' }"
->
-  <p-button
-    *ngIf="isLogged()"
-    (click)="createOccupationalProfile()"
-    icon="pi pi-plus"
-    label="Add Profile"
-    class="custom-button floating-button"
-  />
-</div>
-
-<ng-template #cardSkeleton>
-  <ng-container *ngFor="let i of skeletonElements">
-    <p-skeleton width="100%" height="10rem" borderRadius="12px" />
-  </ng-container>
-</ng-template>
+@if (isLogged()) {
+  <div
+    class="floating-container flex flex-column gap-2 align-items-end"
+    [ngStyle]="{ bottom: buttonBottom + 'px' }"
+  >
+    <p-button
+      class="custom-button floating-button"
+      icon="pi pi-plus"
+      label="Add Profile"
+      (click)="createOccupationalProfile()"
+    />
+  </div>
+}

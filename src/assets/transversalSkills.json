@@ -5763,10 +5763,7 @@
                 "uri": "http://data.europa.eu/esco/skill/0dc7aa1b-b5af-4f4b-81ce-ee22ed8b6926",
                 "label": "assess ICT knowledge",
                 "description": "Evaluate the implicit mastery of skilled experts in an ICT system to make it explicit for further analysis and usage.",
-                "altLabels": [
-                  "capture IT knowledge",
-                  "capture ICT knowledge"
-                ],
+                "altLabels": ["capture IT knowledge", "capture ICT knowledge"],
                 "reuseLevel": "sector specific skills and competences",
                 "skillType": "skill",
                 "children": []
@@ -9767,10 +9764,7 @@
                 "uri": "http://data.europa.eu/esco/skill/906e5de0-f86d-4a10-a89b-30cee6a09adf",
                 "label": "hoshin kanri strategic planning",
                 "description": "Hoshin Kanri is a 7-step process used in strategic planning in which strategic goals are communicated throughout the company and then put into action.",
-                "altLabels": [
-                  "visual strategy planning",
-                  "hoshin kanri"
-                ],
+                "altLabels": ["visual strategy planning", "hoshin kanri"],
                 "reuseLevel": "cross-sector skills and competences",
                 "skillType": "knowledge",
                 "children": []
@@ -10160,10 +10154,7 @@
                     "uri": "http://data.europa.eu/esco/skill/96f80c78-c021-4e15-8f94-784f2961a355",
                     "label": "formulate game rules",
                     "description": "Compose a series of rules as to how to play a game.",
-                    "altLabels": [
-                      "create rules of game",
-                      "create game rules"
-                    ],
+                    "altLabels": ["create rules of game", "create game rules"],
                     "reuseLevel": "sector specific skills and competences",
                     "skillType": "skill",
                     "children": [
@@ -10517,9 +10508,7 @@
                         "uri": "http://data.europa.eu/esco/skill/e23e81f5-18db-49aa-ad9b-b3d0fdcad1d2",
                         "label": "troubleshoot website",
                         "description": "Detect the flaws and malfunctions of a website. Apply troubleshooting techniques on content, structure, interface and interactions in order to find the causes and solve the malfunctions.",
-                        "altLabels": [
-                          "website troubleshooting"
-                        ],
+                        "altLabels": ["website troubleshooting"],
                         "reuseLevel": "occupation specific skills and competences",
                         "skillType": "skill",
                         "children": []
@@ -10561,9 +10550,7 @@
                         "uri": "http://data.europa.eu/esco/skill/f4a85869-1855-45d5-a43c-7ee8cd451996",
                         "label": "perform ICT security testing",
                         "description": "Execute types of security testing, such as network penetration testing, wireless testing, code reviews, wireless and/or firewall assessments in accordance with industry-accepted methods and protocols to identify and analyse potential vulnerabilities.",
-                        "altLabels": [
-                          "prepare and apply security test plans"
-                        ],
+                        "altLabels": ["prepare and apply security test plans"],
                         "reuseLevel": "sector specific skills and competences",
                         "skillType": "skill",
                         "children": [
@@ -10641,9 +10628,7 @@
                                 "uri": "http://data.europa.eu/esco/skill/557e9247-1a2d-4497-aa7f-0cded7768da1",
                                 "label": "Aircrack (penetration testing tool)",
                                 "description": "The computer program Aircrack is a cracking program which recovers 802.11 WEP and WPA-PSK keys by making several network attacks such as FMS, KoreK and PTW attacks.",
-                                "altLabels": [
-                                  "Aircrack"
-                                ],
+                                "altLabels": ["Aircrack"],
                                 "reuseLevel": "sector specific skills and competences",
                                 "skillType": "knowledge",
                                 "children": []
@@ -10669,9 +10654,7 @@
                                 "uri": "http://data.europa.eu/esco/skill/f0010b93-5552-45cb-ad26-168c8168f319",
                                 "label": "Nexpose",
                                 "description": "The computer program Nexpose is a specialised ICT tool which tests security weaknesses of the system for potentially unauthorised access to system information, developed by the software company Rapid7.",
-                                "altLabels": [
-                                  "Rapid7 Nexpose"
-                                ],
+                                "altLabels": ["Rapid7 Nexpose"],
                                 "reuseLevel": "sector specific skills and competences",
                                 "skillType": "knowledge",
                                 "children": []
@@ -10681,9 +10664,7 @@
                                 "uri": "http://data.europa.eu/esco/skill/2891f0dc-4426-4a9a-8fbb-db4fb0a66f91",
                                 "label": "Nessus",
                                 "description": "The computer program Nessus is a specialised ICT tool which tests security weaknesses of the system for potentially unauthorised access to system information, developed by the software company Tenable Network Security.",
-                                "altLabels": [
-                                  "Nessus Vulnerability Scanner"
-                                ],
+                                "altLabels": ["Nessus Vulnerability Scanner"],
                                 "reuseLevel": "sector specific skills and competences",
                                 "skillType": "knowledge",
                                 "children": []
@@ -10703,9 +10684,7 @@
                                 "uri": "http://data.europa.eu/esco/skill/7bf4539a-3f2e-4485-876b-1c9306b181af",
                                 "label": "John The Ripper (penetration testing tool)",
                                 "description": "The tool John the Ripper is a password recovery tool which tests security weaknesses of the systems for potentially unauthorised access to system information. The key features of this tool are the strength-checking code and password hash code.",
-                                "altLabels": [
-                                  "John The Ripper"
-                                ],
+                                "altLabels": ["John The Ripper"],
                                 "reuseLevel": "sector specific skills and competences",
                                 "skillType": "knowledge",
                                 "children": []
@@ -10758,9 +10737,7 @@
                                 "uri": "http://data.europa.eu/esco/skill/58783f72-5098-4807-b1d1-954ec2ae94c4",
                                 "label": "Backbox (penetration testing tool)",
                                 "description": "The software BackBox is a Linux distribution which tests security weaknesses of the system for potentially unauthorised access to system information by information gathering, forensic, wireless and VoIP analysis, exploitation and reverse engineering.",
-                                "altLabels": [
-                                  "Backbox"
-                                ],
+                                "altLabels": ["Backbox"],
                                 "reuseLevel": "sector specific skills and competences",
                                 "skillType": "knowledge",
                                 "children": []
@@ -13537,9 +13514,7 @@
         "uri": "http://data.europa.eu/esco/skill/fe5eabaa-63f6-4c44-b405-fc3ded8d56cb",
         "label": "leading others",
         "description": "Guide, direct and motivate others.",
-        "altLabels": [
-          "demonstrating leadership"
-        ],
+        "altLabels": ["demonstrating leadership"],
         "reuseLevel": "",
         "skillType": "",
         "children": [
@@ -13965,10 +13940,7 @@
                         "uri": "http://data.europa.eu/esco/skill/8ab0d202-a908-4442-b562-32b1c684908d",
                         "label": "inspect cables",
                         "description": "Examine cables and lines to detect possible breakage or damage.",
-                        "altLabels": [
-                          "inspect wires",
-                          "inspect lines"
-                        ],
+                        "altLabels": ["inspect wires", "inspect lines"],
                         "reuseLevel": "cross-sector skills and competences",
                         "skillType": "skill",
                         "children": [
@@ -16437,9 +16409,7 @@
                 "uri": "http://data.europa.eu/esco/skill/a3df9f73-7d84-4f3b-8581-fcdc5b02db3f",
                 "label": "coordinate activities in audio recording studio",
                 "description": "Monitor the daily operations in a audio recording studio. Make sure that persons involved in recording studio activities can produce the desired quality of sound according to customer specifications. Ensure the material is maintained and available.",
-                "altLabels": [
-                  "give direction in audio recording studio"
-                ],
+                "altLabels": ["give direction in audio recording studio"],
                 "reuseLevel": "cross-sector skills and competences",
                 "skillType": "skill",
                 "children": []
@@ -19998,9 +19968,7 @@
                 "uri": "http://data.europa.eu/esco/skill/af607e5e-4ba1-4e5f-a2a6-dc05806567c7",
                 "label": "coordinate technological activities",
                 "description": "Give instructions to colleagues and other cooperating parties in order to reach the desired outcome of a technological project or achieve set goals within an organisation dealing with technology.",
-                "altLabels": [
-                  "coordinate IT activities"
-                ],
+                "altLabels": ["coordinate IT activities"],
                 "reuseLevel": "sector specific skills and competences",
                 "skillType": "skill",
                 "children": []
@@ -20968,9 +20936,7 @@
                 "uri": "http://data.europa.eu/esco/skill/93a2f730-d5f6-4604-a25e-a2ee206ea468",
                 "label": "provide training on e-learning",
                 "description": "Give technical training including how to use an e-learning platform, training applications and standards such as SCORM, as well as e-teaching methods to the teacher or trainer.",
-                "altLabels": [
-                  "train the e-trainer"
-                ],
+                "altLabels": ["train the e-trainer"],
                 "reuseLevel": "occupation specific skills and competences",
                 "skillType": "skill",
                 "children": []
@@ -21075,9 +21041,7 @@
                     "uri": "http://data.europa.eu/esco/skill/ddfe79e2-c2e3-4ba7-9bdf-3820b4f75b54",
                     "label": "identify ICT user needs",
                     "description": "Determine the needs and requirements of ICT users of a specific system by applying analytical methods, such as target group analysis.",
-                    "altLabels": [
-                      "ICT user needs identification techniques"
-                    ],
+                    "altLabels": ["ICT user needs identification techniques"],
                     "reuseLevel": "sector specific skills and competences",
                     "skillType": "skill",
                     "children": [
@@ -22053,9 +22017,7 @@
                     "uri": "http://data.europa.eu/esco/skill/754c460b-0c3e-4cc5-b56b-f9006828dcbe",
                     "label": "teach windsurfing",
                     "description": "Instruct students of theoretical, technical, and tactical techniques of windsurfing. It involves training them in the interaction between the rig and the wind, safe sailing, sailing across the wind, various positions, and methods of self-rescue.",
-                    "altLabels": [
-                      "train in windsurfing"
-                    ],
+                    "altLabels": ["train in windsurfing"],
                     "reuseLevel": "occupation specific skills and competences",
                     "skillType": "skill",
                     "children": []
@@ -22162,9 +22124,7 @@
                     "uri": "http://data.europa.eu/esco/skill/93a2f730-d5f6-4604-a25e-a2ee206ea468",
                     "label": "provide training on e-learning",
                     "description": "Give technical training including how to use an e-learning platform, training applications and standards such as SCORM, as well as e-teaching methods to the teacher or trainer.",
-                    "altLabels": [
-                      "train the e-trainer"
-                    ],
+                    "altLabels": ["train the e-trainer"],
                     "reuseLevel": "occupation specific skills and competences",
                     "skillType": "skill",
                     "children": []
@@ -35379,9 +35339,7 @@
                 "uri": "http://data.europa.eu/esco/skill/c544a9f3-5945-4b54-afed-de0697852817",
                 "label": "report analysis results",
                 "description": "Produce research documents or give presentations to report the results of a conducted research and analysis project, indicating the analysis procedures and methods which led to the results, as well as potential interpretations of the results.",
-                "altLabels": [
-                  "use data reporting"
-                ],
+                "altLabels": ["use data reporting"],
                 "reuseLevel": "cross-sector skills and competences",
                 "skillType": "skill",
                 "children": [
@@ -36199,11 +36157,7 @@
                 "uri": "http://data.europa.eu/esco/skill/04e6474d-f6fd-4e60-9191-24faae8ba0bb",
                 "label": "perform live",
                 "description": "Perform in front of live audiences.",
-                "altLabels": [
-                  "play live",
-                  "performing live",
-                  "appear live"
-                ],
+                "altLabels": ["play live", "performing live", "appear live"],
                 "reuseLevel": "sector specific skills and competences",
                 "skillType": "skill",
                 "children": [
@@ -36611,9 +36565,7 @@
     "uri": "http://data.europa.eu/esco/skill/b94686e3-cce5-47a2-a8d8-402a0d0ed44e",
     "label": "core skills and competences",
     "description": "Skills and competences representing the foundation for interacting with others and for developing and learning as an individual. They comprise the ability to understand, speak, read and write language(s), to work with numbers and measures and to use digital devices and applications.",
-    "altLabels": [
-      "basic skills and competences"
-    ],
+    "altLabels": ["basic skills and competences"],
     "reuseLevel": "",
     "skillType": "",
     "children": [
@@ -37463,9 +37415,7 @@
                 "uri": "http://data.europa.eu/esco/skill/7ce196c4-65c5-4aa0-88a2-9ab08eb9fd49",
                 "label": "academic English",
                 "description": "The English language that is used in academic research and universities courses.",
-                "altLabels": [
-                  "academic English language"
-                ],
+                "altLabels": ["academic English language"],
                 "reuseLevel": "cross-sector skills and competences",
                 "skillType": "knowledge",
                 "children": []
@@ -37803,9 +37753,7 @@
             "uri": "http://data.europa.eu/esco/skill/14ee9f76-3524-43d5-8a1a-5ba8283f8bd7",
             "label": "Spanish",
             "description": "The Spanish language. Spanish is an official and working language of the EU.",
-            "altLabels": [
-              "Castilian"
-            ],
+            "altLabels": ["Castilian"],
             "reuseLevel": "transversal skills and competences",
             "skillType": "knowledge",
             "children": [
@@ -38122,10 +38070,7 @@
             "uri": "http://data.europa.eu/esco/skill/cad4f44b-28a8-4448-86e5-7389e5ebf3eb",
             "label": "Dutch",
             "description": "The Dutch language. Dutch is an official and working language of the EU.",
-            "altLabels": [
-              "from the Netherlands",
-              "from Holland"
-            ],
+            "altLabels": ["from the Netherlands", "from Holland"],
             "reuseLevel": "transversal skills and competences",
             "skillType": "knowledge",
             "children": [
@@ -42493,9 +42438,7 @@
             "uri": "http://data.europa.eu/esco/skill/bc0b0b5d-f6be-405a-b224-b6902a4dbe97",
             "label": "manage digital identity",
             "description": "Create and manage one or multiple digital identities, be able to protect one's own reputation, deal with the data that one produces through several digital tools, environments and services.",
-            "altLabels": [
-              "protecting privacy and identity on the Internet"
-            ],
+            "altLabels": ["protecting privacy and identity on the Internet"],
             "reuseLevel": "cross-sector skills and competences",
             "skillType": "skill",
             "children": [
@@ -42527,9 +42470,7 @@
                     "uri": "http://data.europa.eu/esco/skill/f4a85869-1855-45d5-a43c-7ee8cd451996",
                     "label": "perform ICT security testing",
                     "description": "Execute types of security testing, such as network penetration testing, wireless testing, code reviews, wireless and/or firewall assessments in accordance with industry-accepted methods and protocols to identify and analyse potential vulnerabilities.",
-                    "altLabels": [
-                      "prepare and apply security test plans"
-                    ],
+                    "altLabels": ["prepare and apply security test plans"],
                     "reuseLevel": "sector specific skills and competences",
                     "skillType": "skill",
                     "children": [
@@ -42587,9 +42528,7 @@
                             "uri": "http://data.europa.eu/esco/skill/557e9247-1a2d-4497-aa7f-0cded7768da1",
                             "label": "Aircrack (penetration testing tool)",
                             "description": "The computer program Aircrack is a cracking program which recovers 802.11 WEP and WPA-PSK keys by making several network attacks such as FMS, KoreK and PTW attacks.",
-                            "altLabels": [
-                              "Aircrack"
-                            ],
+                            "altLabels": ["Aircrack"],
                             "reuseLevel": "sector specific skills and competences",
                             "skillType": "knowledge",
                             "children": []
@@ -42599,9 +42538,7 @@
                             "uri": "http://data.europa.eu/esco/skill/2891f0dc-4426-4a9a-8fbb-db4fb0a66f91",
                             "label": "Nessus",
                             "description": "The computer program Nessus is a specialised ICT tool which tests security weaknesses of the system for potentially unauthorised access to system information, developed by the software company Tenable Network Security.",
-                            "altLabels": [
-                              "Nessus Vulnerability Scanner"
-                            ],
+                            "altLabels": ["Nessus Vulnerability Scanner"],
                             "reuseLevel": "sector specific skills and competences",
                             "skillType": "knowledge",
                             "children": []
@@ -42611,9 +42548,7 @@
                             "uri": "http://data.europa.eu/esco/skill/7bf4539a-3f2e-4485-876b-1c9306b181af",
                             "label": "John The Ripper (penetration testing tool)",
                             "description": "The tool John the Ripper is a password recovery tool which tests security weaknesses of the systems for potentially unauthorised access to system information. The key features of this tool are the strength-checking code and password hash code.",
-                            "altLabels": [
-                              "John The Ripper"
-                            ],
+                            "altLabels": ["John The Ripper"],
                             "reuseLevel": "sector specific skills and competences",
                             "skillType": "knowledge",
                             "children": []
@@ -42726,9 +42661,7 @@
                             "uri": "http://data.europa.eu/esco/skill/f0010b93-5552-45cb-ad26-168c8168f319",
                             "label": "Nexpose",
                             "description": "The computer program Nexpose is a specialised ICT tool which tests security weaknesses of the system for potentially unauthorised access to system information, developed by the software company Rapid7.",
-                            "altLabels": [
-                              "Rapid7 Nexpose"
-                            ],
+                            "altLabels": ["Rapid7 Nexpose"],
                             "reuseLevel": "sector specific skills and competences",
                             "skillType": "knowledge",
                             "children": []
@@ -42748,9 +42681,7 @@
                             "uri": "http://data.europa.eu/esco/skill/58783f72-5098-4807-b1d1-954ec2ae94c4",
                             "label": "Backbox (penetration testing tool)",
                             "description": "The software BackBox is a Linux distribution which tests security weaknesses of the system for potentially unauthorised access to system information by information gathering, forensic, wireless and VoIP analysis, exploitation and reverse engineering.",
-                            "altLabels": [
-                              "Backbox"
-                            ],
+                            "altLabels": ["Backbox"],
                             "reuseLevel": "sector specific skills and competences",
                             "skillType": "knowledge",
                             "children": []
@@ -42766,9 +42697,7 @@
                 "uri": "http://data.europa.eu/esco/skill/3c4c3fa1-d638-42df-8e98-2a38021da6f9",
                 "label": "use software for data preservation",
                 "description": "Utilise specialised applications and software to collect and preserve digital information.",
-                "altLabels": [
-                  "preserve digital evidence"
-                ],
+                "altLabels": ["preserve digital evidence"],
                 "reuseLevel": "cross-sector skills and competences",
                 "skillType": "skill",
                 "children": []
@@ -43255,10 +43184,7 @@
                     "uri": "http://data.europa.eu/esco/skill/ef30e7f8-1ef0-4a6f-87ac-d6a701125305",
                     "label": "set theory",
                     "description": "The subdiscipline of mathematical logic that studies the properties of well-determined sets of objects, relevant to mathematics.",
-                    "altLabels": [
-                      "mathematical set theory",
-                      "theory of sets"
-                    ],
+                    "altLabels": ["mathematical set theory", "theory of sets"],
                     "reuseLevel": "sector specific skills and competences",
                     "skillType": "knowledge",
                     "children": []
@@ -43469,10 +43395,7 @@
             "uri": "http://data.europa.eu/esco/skill/19ba11f3-9c99-41fd-a7c9-f77e6a026186",
             "label": "carry out calculations",
             "description": "Solve mathematical problems to achieve work-related goals.",
-            "altLabels": [
-              "carry out work-related calculation",
-              "use numbers"
-            ],
+            "altLabels": ["carry out work-related calculation", "use numbers"],
             "reuseLevel": "transversal skills and competences",
             "skillType": "skill",
             "children": [
@@ -45112,9 +45035,7 @@
                 "uri": "http://data.europa.eu/esco/skill/382c11ed-20d5-4ae7-b60e-15fec527fa6c",
                 "label": "apply statistical analysis techniques",
                 "description": "Use models (descriptive or inferential statistics) and techniques (data mining or machine learning) for statistical analysis and ICT tools to analyse data, uncover correlations and forecast trends.",
-                "altLabels": [
-                  "apply numerical analysis to data"
-                ],
+                "altLabels": ["apply numerical analysis to data"],
                 "reuseLevel": "cross-sector skills and competences",
                 "skillType": "skill",
                 "children": [
@@ -45606,9 +45527,7 @@
     "uri": "http://data.europa.eu/esco/skill/4ef78abc-e983-4cc7-84a1-52532a0159dc",
     "label": "life skills and competences",
     "description": "Skills and competences relating to the ability to process and use knowledge and information which has transversal significance and facilitates active citizenship. They comprise the areas of health, environment, civic engagement, culture, finance and the application of general knowledge.",
-    "altLabels": [
-      "active citizenship"
-    ],
+    "altLabels": ["active citizenship"],
     "reuseLevel": "",
     "skillType": "",
     "children": [
@@ -45617,9 +45536,7 @@
         "uri": "http://data.europa.eu/esco/skill/3d54fec5-d9cb-45a0-bf8d-ffaf3790a5bb",
         "label": "applying health-related skills and competences",
         "description": "Care for own and others’ mental and physical well-being and apply basic health standards, including hygiene. Obtain and use health information, and identify and access services and agencies that offer healthcare and guidance. Manage the negative effects of chronic health conditions.",
-        "altLabels": [
-          "maintaining safety, health and welfare"
-        ],
+        "altLabels": ["maintaining safety, health and welfare"],
         "reuseLevel": "",
         "skillType": "",
         "children": [
@@ -50039,9 +49956,7 @@
         "uri": "http://data.europa.eu/esco/skill/80cf002a-6586-4db7-9c9a-88325a9a5e1b",
         "label": "applying environmental skills and competences",
         "description": "Reflect on the short and long-term impact of individual behaviours on the physical and social environment and adopt a sustainable work and lifestyle. Recognize the individual and collective responsibility for the protection and restoration of the local and global environment and inspire others. ",
-        "altLabels": [
-          "adopting environmentally-friendly practices"
-        ],
+        "altLabels": ["adopting environmentally-friendly practices"],
         "reuseLevel": "",
         "skillType": "",
         "children": [
@@ -52589,9 +52504,7 @@
                 "uri": "http://data.europa.eu/esco/skill/9c652a9b-a773-4afa-becf-1186f9861fb9",
                 "label": "philanthropy",
                 "description": "The private activities supporting social causes on a large scale, often by donating large sums of money. These donations are usually made by wealthy individuals to a range of organisations to help them in their activities. Philanthropy aims at finding and tackling root causes of social problems rather than responding to consequences on the short term.",
-                "altLabels": [
-                  "charity activities"
-                ],
+                "altLabels": ["charity activities"],
                 "reuseLevel": "cross-sector skills and competences",
                 "skillType": "knowledge",
                 "children": []
@@ -53189,11 +53102,7 @@
                 "uri": "http://data.europa.eu/esco/skill/e50a68c5-2a5d-4815-8bd1-e4334aed7683",
                 "label": "sing",
                 "description": "Use the voice to produce musical sounds, marked by tone and rhythm.",
-                "altLabels": [
-                  "chant",
-                  "singing",
-                  "croon"
-                ],
+                "altLabels": ["chant", "singing", "croon"],
                 "reuseLevel": "sector specific skills and competences",
                 "skillType": "skill",
                 "children": []
@@ -53343,9 +53252,7 @@
                 "uri": "http://data.europa.eu/esco/skill/57cf23b0-b644-41b9-985c-9af4d06dd34e",
                 "label": "history of hair styles",
                 "description": "The various styles and techniques of doing hair throughout history.",
-                "altLabels": [
-                  "hair style history"
-                ],
+                "altLabels": ["hair style history"],
                 "reuseLevel": "occupation specific skills and competences",
                 "skillType": "knowledge",
                 "children": []
@@ -53404,10 +53311,7 @@
         "uri": "http://data.europa.eu/esco/skill/44ff6716-7d71-4a16-821b-61d10e9e290d",
         "label": "applying general knowledge",
         "description": "Access and apply basic knowledge related to science, technology and engineering, to social sciences and humanities and to philosophy, ethics and religion.",
-        "altLabels": [
-          "general knoweldge",
-          "general education"
-        ],
+        "altLabels": ["general knoweldge", "general education"],
         "reuseLevel": "",
         "skillType": "",
         "children": [
@@ -55105,10 +55009,7 @@
                 "uri": "http://data.europa.eu/esco/skill/cef5c0f8-1e40-4c09-b6a7-aa7811849e5d",
                 "label": "ethics",
                 "description": "The philosophical study that deals with solving questions of human morality; it defines and systemises concepts such as right, wrong, and crime.",
-                "altLabels": [
-                  "the study of moral principles",
-                  "moral studies"
-                ],
+                "altLabels": ["the study of moral principles", "moral studies"],
                 "reuseLevel": "cross-sector skills and competences",
                 "skillType": "knowledge",
                 "children": [
@@ -55169,9 +55070,7 @@
                     "uri": "http://data.europa.eu/esco/skill/e9575f7f-053a-439e-8074-f93df3334e92",
                     "label": "data ethics",
                     "description": "The subfield of ethics that assess whether data practices are considerable ethical. It assesses processes such as collecting, analysing and disseminating structured and unstructured data that might negatively impact the society.",
-                    "altLabels": [
-                      "principles of data ethics"
-                    ],
+                    "altLabels": ["principles of data ethics"],
                     "reuseLevel": "cross-sector skills and competences",
                     "skillType": "knowledge",
                     "children": []
@@ -55358,9 +55257,7 @@
                         "uri": "http://data.europa.eu/esco/skill/e9575f7f-053a-439e-8074-f93df3334e92",
                         "label": "data ethics",
                         "description": "The subfield of ethics that assess whether data practices are considerable ethical. It assesses processes such as collecting, analysing and disseminating structured and unstructured data that might negatively impact the society.",
-                        "altLabels": [
-                          "principles of data ethics"
-                        ],
+                        "altLabels": ["principles of data ethics"],
                         "reuseLevel": "cross-sector skills and competences",
                         "skillType": "knowledge",
                         "children": []
@@ -55395,9 +55292,7 @@
         "uri": "http://data.europa.eu/esco/skill/6c6957bf-cf1f-4483-9c7e-1655f251b01a",
         "label": "applying entrepreneurial and financial skills and competences",
         "description": "Manage own and others finances and resources. Demonstrate perseverance, openness to opportunity and risks, the ability to mobilize resources and willingness to learn from experience.",
-        "altLabels": [
-          "financial and entrepreneurial literacy"
-        ],
+        "altLabels": ["financial and entrepreneurial literacy"],
         "reuseLevel": "",
         "skillType": "",
         "children": [
@@ -56074,9 +55969,7 @@
                 "uri": "http://data.europa.eu/esco/skill/e207163b-7963-4c3e-9494-7a4bb000211b",
                 "label": "estimate duration of work",
                 "description": "Produce accurate calculations on time necessary to fulfil future technical tasks based on past and present information and observations or plan the estimated duration of individual tasks in a given project.",
-                "altLabels": [
-                  "time estimation of work"
-                ],
+                "altLabels": ["time estimation of work"],
                 "reuseLevel": "cross-sector skills and competences",
                 "skillType": "skill",
                 "children": [
@@ -63562,9 +63455,7 @@
         "uri": "http://data.europa.eu/esco/skill/f5c9eef3-0495-4747-9519-d71a58d252bd",
         "label": "demonstrating willingness to learn",
         "description": "Show a positive attitude towards new and challenging demands and take steps to learn from difficulties.",
-        "altLabels": [
-          "demonstrating self-management and self-reflection"
-        ],
+        "altLabels": ["demonstrating self-management and self-reflection"],
         "reuseLevel": "",
         "skillType": "",
         "children": [
@@ -64731,9 +64622,7 @@
                 "uri": "http://data.europa.eu/esco/skill/20c920d4-7ff7-4676-ba61-3f04490d9416",
                 "label": "keep up with the latest information systems solutions",
                 "description": "Gather the latest information on existing information systems solutions which integrate software and hardware, as well as network components.",
-                "altLabels": [
-                  "keep up with the latest information systems"
-                ],
+                "altLabels": ["keep up with the latest information systems"],
                 "reuseLevel": "sector specific skills and competences",
                 "skillType": "skill",
                 "children": []

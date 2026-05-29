@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { Injectable } from '@angular/core';
 import { TreeNode } from 'primeng/api';
+import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -14,12 +14,12 @@ export class ESCOService {
 
   private cacheTransversalSkills$?: Observable<string[]>;
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   getAllTransversalSkills(
     lang: string = 'en',
     offset = 0,
-    limit = 200
+    limit = 200,
   ): Observable<string[]> {
     if (!this.cacheTransversalSkills$) {
       const params = new HttpParams()
@@ -40,7 +40,7 @@ export class ESCOService {
           catchError((err) => {
             console.error('Error fetching transversal skills', err);
             return of([]);
-          })
+          }),
         );
     }
     return this.cacheTransversalSkills$;
@@ -48,7 +48,7 @@ export class ESCOService {
 
   searchTransversalSkills(
     query: string,
-    lang: string = 'en'
+    lang: string = 'en',
   ): Observable<string[]> {
     const params = new HttpParams()
       .set('text', query)
@@ -67,14 +67,12 @@ export class ESCOService {
         catchError((err) => {
           console.error('Error fetching transversal skills', err);
           return of([]);
-        })
+        }),
       );
     return similarTransversalSkills$;
   }
 
   getTransversalSkillsFromJson(): Observable<TreeNode[]> {
-    return this.http
-      .get('assets/transversalSkills.json')
-      .pipe(map((data) => data as TreeNode<any>[]));
+    return this.http.get<TreeNode[]>('assets/transversalSkills.json');
   }
 }

@@ -7,7 +7,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService, ExitWithoutSavingService } from '@eo4geo/ngx-bok-utils';
 import { ConfirmationService, MessageService, TreeNode } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -29,7 +29,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
 import { catchError, finalize, of, Subscription, take } from 'rxjs';
-import { FilterOption } from '../../models/filterOption';
+import { Filter } from '../../models/filter';
 import { FormType } from '../../models/formType';
 import {
   Competence,
@@ -92,7 +92,7 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
     selection: [],
   };
 
-  divisionSelector: FilterOption = {
+  divisionSelector: Filter = {
     label: 'Division',
     values: [],
     selection: [],
@@ -106,9 +106,9 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
   ];
 
   fieldNames: string[] = [];
+  competenceLabels: string[] = [];
 
-  competenceTree: TreeNode<any>[] = [];
-  competences: string[] = [];
+  competenceTree: TreeNode[] = [];
   customCompetences: string[] = [];
 
   showCustomCompetences: boolean = false;
@@ -117,9 +117,12 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
   private userOrgsSubscription!: Subscription;
 
   private fields: Field[] = [];
-  private allCompetences: Competence[] = [];
+  private competences: Competence[] = [];
 
   private formType: FormType = FormType.Create;
+
+  private origin: string = '';
+  private profileId: string = '';
 
   constructor(
     private exitWithoutSavingService: ExitWithoutSavingService,
@@ -130,13 +133,19 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private confirmationService: ConfirmationService,
     private authService: AuthService,
     private fieldsService: FieldsService,
-    private escoService: ESCOService
+    private escoService: ESCOService,
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit() {
+    this.origin = this.route.snapshot.queryParamMap.get('origin') || '';
+    this.profileId = this.route.snapshot.paramMap.get('profileId') || '';
+
     this.formType = this.detectFormType(this.inputProfile);
 
-    this.initializeProfile();
+    this.profile = new OccupationalProfile(
+      this.formType === FormType.Create ? undefined : this.inputProfile,
+    );
 
     this.authSubscription = this.authService
       .getUserState()
@@ -163,30 +172,25 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
         }));
       });
 
-    this.fieldsService.getFields().subscribe((fields) => {
-      this.fields = fields;
+    this.fieldsService
+      .getFields()
+      .subscribe((fields) => (this.fields = fields));
+
+    this.escoService.getTransversalSkillsFromJson().subscribe((tree) => {
+      this.competenceTree = tree;
+      this.competences = this.extractCompetencesFromTree(tree);
+
+      this.manageProfileCompetences();
+
+      if (this.profile.orgId) {
+        this.firebaseService
+          .getOrganizationDivisions(this.profile.orgId)
+          .pipe(take(1))
+          .subscribe((divisions) => (this.divisionSelector.values = divisions));
+      }
+
+      this.fieldNames = this.profile.fields.map((field) => field.name);
     });
-
-    this.escoService
-      .getTransversalSkillsFromJson()
-      .pipe(take(1))
-      .subscribe((tree) => {
-        this.competenceTree = tree;
-        this.allCompetences = this.extractCompetencesFromTree(tree);
-
-        this.manageProfileCompetences();
-
-        if (this.profile.orgId) {
-          this.firebaseService
-            .getOrganizationDivisions(this.profile.orgId)
-            .pipe(take(1))
-            .subscribe(
-              (divisions) => (this.divisionSelector.values = divisions)
-            );
-        }
-
-        this.fieldNames = this.getFieldNames(this.profile.fields);
-      });
 
     this.exitWithoutSavingService.showModalSubject.subscribe((value) => {
       if (value) this.confirmExitWithoutSaving();
@@ -223,7 +227,7 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onDeletedConcept(skills: string[]): void {
     const matchedSkills = skills.filter((skill) =>
-      this.profile.skills.includes(skill)
+      this.profile.skills.includes(skill),
     );
 
     if (matchedSkills.length > 0) {
@@ -232,24 +236,30 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   returnToHomepage(): void {
-    if (this.inputProfile !== undefined) {
-      this.router.navigate(['profile/' + this.inputProfile._id]);
-    } else {
+    if (this.origin === 'details') {
+      this.router.navigate([`profile/${this.profileId}`]);
+    } else if (this.origin === 'explorer') {
       this.router.navigate(['profile']);
+    } else {
+      this.router.navigate(['not_found']);
     }
   }
 
   submitProfile(): void {
-    this.profile.competences = this.getCompetences(this.competences);
+    this.profile.competences = this.competences.filter((c) =>
+      this.competenceLabels.includes(c.preferredLabel),
+    );
     this.profile.customCompetences = this.customCompetences;
 
-    this.profile.fields = this.getFields(this.fieldNames);
+    this.profile.fields = this.fields.filter((field) =>
+      this.fieldNames.includes(field.name),
+    );
 
     this.errorMap = this.occupationalProfileService.validateOccupationalProfile(
-      this.profile
+      this.profile,
     );
     const allValid: boolean = Array.from(this.errorMap.values()).every(
-      (value) => value === undefined
+      (value) => value === undefined,
     );
 
     if (allValid) {
@@ -282,7 +292,7 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
                 },
               });
             }
-          })
+          }),
         )
         .subscribe((actionId) => {
           this.profile._id = actionId || '';
@@ -307,38 +317,28 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
     return FormType.Edit;
   }
 
-  private initializeProfile(): void {
-    switch (this.formType) {
-      case FormType.Create:
-        this.profile = new OccupationalProfile();
+  private extractCompetencesFromTree(
+    tree: any[],
+    seen = new Set<string>(),
+  ): Competence[] {
+    return tree.reduce((acc: Competence[], node) => {
+      const label = node.label ?? '';
 
-        break;
+      if (!seen.has(label)) {
+        seen.add(label);
 
-      case FormType.Edit:
-        this.profile = JSON.parse(JSON.stringify(this.inputProfile));
-
-        break;
-
-      case FormType.Duplicate:
-        this.profile = new OccupationalProfile(this.inputProfile);
-
-        break;
-    }
-  }
-
-  private extractCompetencesFromTree(nodes: any[]): Competence[] {
-    return nodes.reduce((acc: Competence[], node) => {
-      acc.push({
-        preferredLabel: node.label ?? '',
-        altLabels: node.altLabels ?? [],
-        description: node.description ?? '',
-        reuseLevel: node.reuseLevel ?? '',
-        skillType: node.skillType ?? '',
-        uri: node.uri ?? '',
-      });
+        acc.push({
+          preferredLabel: label,
+          altLabels: node.altLabels ?? [],
+          description: node.description ?? '',
+          reuseLevel: node.reuseLevel ?? '',
+          skillType: node.skillType ?? '',
+          uri: node.uri ?? '',
+        });
+      }
 
       if (node.children?.length) {
-        acc.push(...this.extractCompetencesFromTree(node.children));
+        acc.push(...this.extractCompetencesFromTree(node.children, seen));
       }
 
       return acc;
@@ -348,50 +348,26 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
   private manageProfileCompetences(): void {
     if (!this.inputProfile) return;
 
-    const competenceLabels = this.extractLabelsFromTree(this.competenceTree);
-    const legacyCompetences: string[] = [];
+    const labels = this.competences.map((c) => c.preferredLabel);
 
-    this.profile.competences.forEach((c) => {
-      if (!competenceLabels.includes(c.preferredLabel)) {
-        legacyCompetences.push(c.preferredLabel);
-      }
-    });
+    const legacyLabels = this.profile.competences
+      .filter((c) => !labels.includes(c.preferredLabel))
+      .map((c) => c.preferredLabel);
 
     this.profile.competences = this.profile.competences.filter((c) =>
-      competenceLabels.includes(c.preferredLabel)
+      labels.includes(c.preferredLabel),
     );
 
-    legacyCompetences.forEach((c) => {
-      if (!this.profile.customCompetences.includes(c)) {
-        this.customCompetences.push(c);
-      }
-    });
+    this.customCompetences = legacyLabels.filter(
+      (c) => !this.profile.customCompetences.includes(c),
+    );
 
-    this.competences = this.profile.competences.map((c) => c.preferredLabel);
+    this.competenceLabels = this.profile.competences.map(
+      (c) => c.preferredLabel,
+    );
+
     this.customCompetences.push(...this.profile.customCompetences);
     this.showCustomCompetences = this.customCompetences.length > 0;
-  }
-
-  private extractLabelsFromTree(nodes: TreeNode<any>[]): string[] {
-    return nodes.reduce((acc: string[], node) => {
-      if (node.label) acc.push(node.label);
-
-      if (node.children?.length) {
-        acc.push(...this.extractLabelsFromTree(node.children));
-      }
-
-      return acc;
-    }, []);
-  }
-
-  private getFieldNames(fields: Field[]): string[] {
-    let list: string[] = [];
-
-    fields.forEach((field) => {
-      list.push(field.name);
-    });
-
-    return list;
   }
 
   private confirmExitWithoutSaving(): void {
@@ -435,33 +411,9 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
       },
       accept: () =>
         (this.profile.skills = this.profile.skills.filter(
-          (skill) => !skills.includes(skill)
+          (skill) => !skills.includes(skill),
         )),
       reject: () => {},
     });
-  }
-
-  private getCompetences(labels: string[]): Competence[] {
-    let list: Competence[] = [];
-
-    this.allCompetences.forEach((competence) => {
-      if (labels.includes(competence.preferredLabel)) {
-        list.push(competence);
-      }
-    });
-
-    return list;
-  }
-
-  private getFields(names: string[]): Field[] {
-    let list: Field[] = [];
-
-    this.fields.forEach((field) => {
-      if (names.includes(field.name)) {
-        list.push(field);
-      }
-    });
-
-    return list;
   }
 }

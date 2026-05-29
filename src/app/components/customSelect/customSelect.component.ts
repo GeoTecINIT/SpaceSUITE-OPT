@@ -50,31 +50,27 @@ export class CustomSelectComponent {
   constructor(private filterService: CardFilterService) {}
 
   ngOnInit() {
-    this.filterService
-      .getOptionByLabel(this.optionsName)
-      .subscribe((filterOption) => {
-        this.selectOptions = filterOption.values
-          .filter((value) => value !== 'Other')
-          .map((x) => ({ id: x, value: x }));
-        if (
-          this.selection &&
-          this.selection !== '' &&
-          !this.selectOptions
-            .map((value) => value.value)
-            .includes(this.selection)
-        ) {
-          this.selectOptions = this.selectOptions.concat({
-            id: this.selection,
-            value: this.selection,
-          });
-        }
-      });
+    this.filterService.getFilter(this.optionsName).subscribe((filterOption) => {
+      this.selectOptions = filterOption.values
+        .filter((value) => value !== 'Other')
+        .map((x) => ({ id: x, value: x }));
+      if (
+        this.selection &&
+        this.selection !== '' &&
+        !this.selectOptions.map((value) => value.value).includes(this.selection)
+      ) {
+        this.selectOptions = this.selectOptions.concat({
+          id: this.selection,
+          value: this.selection,
+        });
+      }
+    });
   }
 
   onDropdownOpen() {
     setTimeout(() => {
       const input = document.querySelector(
-        '.p-select-filter'
+        '.p-select-filter',
       ) as HTMLInputElement | null;
       if (input) {
         const keyHandler = (event: KeyboardEvent) => {

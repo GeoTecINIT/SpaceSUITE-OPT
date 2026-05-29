@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, ReplaySubject, take } from 'rxjs';
+import { Observable, ReplaySubject } from 'rxjs';
 import { Field } from '../models/occupationalProfile';
 
 @Injectable({
@@ -10,12 +10,7 @@ export class FieldsService {
   private fieldsSubject: ReplaySubject<Field[]> = new ReplaySubject<Field[]>(1);
 
   constructor(private readonly http: HttpClient) {
-    this.http
-      .get<Field[]>('/assets/fields.json')
-      .pipe(take(1))
-      .subscribe((fields) => {
-        this.fieldsSubject.next(fields);
-      });
+    this.http.get<Field[]>('/assets/fields.json').subscribe(this.fieldsSubject);
   }
 
   getFields(): Observable<Field[]> {

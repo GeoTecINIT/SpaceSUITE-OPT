@@ -1,10 +1,3 @@
-.custom-card {
-  --p-card-color: var(--primary-color);
-  --p-card-body-padding: 0.75rem;
-  --p-card-title-font-weight: 700;
-  --p-card-subtitle-color: var(--secondary-color);
-}
-
 .card-title {
   color: var(--primary-color);
   cursor: pointer;
@@ -15,37 +8,14 @@
   color: var(--hover-color);
 }
 
-.text-truncate {
-  display: -webkit-box;
-  line-clamp: 2;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+.custom-card {
+  --p-card-color: var(--primary-color);
+  --p-card-body-padding: 0.75rem;
+  --p-card-title-font-weight: 700;
+  --p-card-subtitle-color: var(--secondary-color);
 }
 
-.custom-tag {
-  --p-tag-primary-color: var(--primary-color);
-}
-
-.custom-tag:hover {
-  --p-tag-primary-color: white;
-}
-
-.custom-button {
-  --p-button-text-primary-color: var(--secondary-color);
-  --p-button-text-primary-hover-background: color-mix(
-    in srgb,
-    var(--secondary-color) 10%,
-    rgba(255, 255, 255, 0) 90%
-  );
-  --p-button-text-primary-active-background: color-mix(
-    in srgb,
-    var(--secondary-color) 20%,
-    rgba(255, 255, 255, 0) 80%
-  );
-}
-
-.custom-button-danger {
+.custom-option-danger {
   --p-button-text-primary-color: var(--danger-color);
   --p-button-text-primary-hover-background: color-mix(
     in srgb,
@@ -59,9 +29,36 @@
   );
 }
 
+.custom-tag {
+  --p-tag-primary-color: var(--primary-color);
+}
+
+.custom-tag:hover {
+  --p-tag-primary-color: white;
+}
+
+.more-tag {
+  font-size: 1.1rem;
+  color: var(--primary-color);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.more-tag:hover {
+  color: var(--hover-color);
+}
+
 .popover-element:hover {
   color: var(--hover-color);
   cursor: pointer;
+}
+
+.text-truncate {
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 ::ng-deep .p-card {

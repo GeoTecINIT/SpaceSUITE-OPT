@@ -1,4 +1,4 @@
-export interface FilterOption {
+export interface Filter {
   label: string;
   tags?: string[];
   values: string[];

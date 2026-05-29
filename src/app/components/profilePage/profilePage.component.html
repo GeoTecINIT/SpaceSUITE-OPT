@@ -2,49 +2,49 @@
 
 <p-confirmdialog />
 
-<ng-container *ngIf="profile; else spinner">
+@if (profile) {
   <div class="flex flex-column gap-2">
     <h1 class="mb-0">{{ profile.title }}</h1>
 
-    <div class="flex gap-2 text-sm">
-      <span>
+    <div class="flex flex-wrap gap-2 text-sm">
+      <span class="white-space-nowrap">
         <strong>Last updated: </strong>
         {{ profile.updatedAt?.toDate().toLocaleDateString() }}
       </span>
       |
-      <span>
+      <span class="white-space-nowrap">
         <strong>Visibility: </strong>
         {{ profile.isPublic ? "Public" : "Private" }}
       </span>
       |
-      <span>
+      <span class="white-space-nowrap">
         <strong>EQF Level: </strong>
         {{ profile.eqf }}
       </span>
       |
-      <span>
+      <span class="white-space-nowrap">
         <strong>Organization: </strong>
         {{ profile.orgName }}
       </span>
       |
-      <span>
+      <span class="white-space-nowrap">
         <strong>Division: </strong>
         {{ profile.division || "-" }}
       </span>
     </div>
 
-    <div class="flex gap-4">
-      <div class="w-9 text-justify">
+    <div [class]="applicationDomains.length > 4 ? 'flex flex-column gap-3' : 'flex flex-column xl:flex-row gap-3 xl:gap-4'">
+      <div [class]="applicationDomains.length > 4 ? 'text-justify' : 'xl:w-9 text-justify'">
         {{ profile.description }}
       </div>
 
-      <div class="w-3">
+      <div [class]="applicationDomains.length > 4 ? '' : 'xl:w-3'">
         <strong>Application domain(s):</strong>
 
         <ul class="m-0">
-          <li *ngFor="let domain of applicationDomains">
-            {{ domain }}
-          </li>
+          @for (domain of applicationDomains; track $index) {
+            <li>{{ domain }}</li>
+          }
         </ul>
       </div>
     </div>
@@ -53,7 +53,7 @@
       <p-panel
         #conceptsPanel
         class="my-2 custom-panel"
-        [header]="'Knowledge (' + concepts.length + ')'"
+        [header]="`Knowledge (${concepts.length})`"
         [toggleable]="true"
         [collapsed]="overTagLimit(concepts.length)"
       >
@@ -69,93 +69,31 @@
           />
         </ng-template>
 
-        <div class="flex w-full gap-1">
-          <div
-            class="flex flex-wrap gap-2 align-items-center"
-            style="flex: 3"
-            [class.flex-column]="overTagLimit(concepts.length)"
-            [class.align-items-start]="overTagLimit(concepts.length)"
-          >
-            <ng-container *ngFor="let concept of concepts">
-              <p-tag
-                class="tag bok-tag cursor-pointer"
-                [value]="'[' + concept + '] ' + conceptsTooltip.get(concept)"
-                [rounded]="true"
-                [style.background]="conceptsColor.get(concept)"
-                (click)="onClickConcept(concept)"
-              />
-            </ng-container>
-          </div>
+        <div class="flex flex-column xl:flex-row gap-3">
+          <skill-tags class="xl:w-9" [tags]="concepts" [compactBoKTags]="true"></skill-tags>
 
-          <div
-            class="flex flex-column gap-2 justify-content-center"
-            style="flex: 2; min-width: 0"
-          >
-            <ng-container *ngFor="let item of knowledgeDistributionArray">
-              <div class="flex gap-2 w-full align-items-center">
-                <span
-                  class="text-xs whitespace-nowrap"
-                  style="width: 400px; flex-shrink: 0"
-                >
-                  {{ item[0] }} - {{ conceptsTooltip.get(item[0]) }} :
-                  {{ item[1] }}%
-                </span>
+          <div class="flex flex-column xl:w-3">
+            @for (item of knowledgeDistributionArray; track $index) {
+              <span class="text-xs">
+                <strong>{{ item[1] }}%</strong> | {{ item[0].label }} -
+                {{ item[0].tooltip }}
+              </span>
 
-                <p-progressbar
-                  class="custom-bar flex-1 min-w-0"
-                  [value]="item[1]"
-                  [showValue]="false"
-                  [color]="conceptsColor.get(item[0])"
-                ></p-progressbar>
-              </div>
-            </ng-container>
+              <p-progressbar
+                class="custom-bar mb-2"
+                [value]="item[1]"
+                [showValue]="false"
+                [color]="item[0].color"
+              ></p-progressbar>
+            }
           </div>
         </div>
       </p-panel>
 
-      <ng-container *ngIf="deprecatedConcepts.length > 0">
-        <p-panel
-          #deprecatedConceptsPanel
-          class="my-2 custom-panel"
-          [header]="'Deprecated Knowledge (' + deprecatedConcepts.length + ')'"
-          [toggleable]="true"
-          [collapsed]="overTagLimit(deprecatedConcepts.length)"
-        >
-          <ng-template #headericons>
-            <p-button
-              [icon]="
-                deprecatedConceptsPanel.collapsed
-                  ? 'pi pi-chevron-down'
-                  : 'pi pi-chevron-up'
-              "
-              severity="secondary"
-              text
-            />
-          </ng-template>
-
-          <p class="danger-text text-xs mt-0">
-            *These are obsolete concepts, so they are not present in the current
-            version of the Bok.
-          </p>
-
-          <div class="flex flex-wrap gap-2">
-            <ng-container *ngFor="let deprecatedConcept of deprecatedConcepts">
-              <p-tag
-                class="tag bok-tag cursor-pointer"
-                [value]="deprecatedConcept"
-                [rounded]="true"
-                [style.background]="conceptsColor.get(deprecatedConcept)"
-                (click)="onClickConcept(deprecatedConcept)"
-              />
-            </ng-container>
-          </div>
-        </p-panel>
-      </ng-container>
-
       <p-panel
         #skillsPanel
         class="my-2 custom-panel"
-        [header]="'Skills (' + allSkills.length + ')'"
+        [header]="`Skills (${allSkills.length})`"
         [toggleable]="true"
         [collapsed]="overTagLimit(allSkills.length)"
       >
@@ -176,16 +114,16 @@
               : 'flex flex-wrap gap-2'
           "
         >
-          <ng-container *ngFor="let skill of allSkills">
+          @for (skill of allSkills; track $index) {
             <p-tag class="tag skill-tag" [value]="skill" [rounded]="true" />
-          </ng-container>
+          }
         </div>
       </p-panel>
 
       <p-panel
         #transversalSkillsPanel
         class="my-2 custom-panel"
-        [header]="'Transversal Skills (' + transversalSkills.length + ')'"
+        [header]="`Transversal Skills (${transversalSkills.length})`"
         [toggleable]="true"
         [collapsed]="overTagLimit(transversalSkills.length)"
       >
@@ -208,7 +146,7 @@
               : 'flex flex-wrap gap-2'
           "
         >
-          <ng-container *ngFor="let transversalSkill of transversalSkills">
+          @for (transversalSkill of transversalSkills; track $index) {
             <p-tag
               [class]="
                 transversalSkill.uri
@@ -221,79 +159,93 @@
                 transversalSkill.uri && onClickSkill(transversalSkill.uri)
               "
             />
-          </ng-container>
+          }
         </div>
       </p-panel>
 
-      <p-button
-        class="md:hidden flex justify-content-center custom-button my-2"
-        label="Share Profile"
-        icon="pi pi-share-alt"
-        (onClick)="op1.toggle($event)"
-      />
-
-      <p-popover #op1>
-        <div style="color: var(--primary-color)">
-          <div class="font-medium block mb-2">
-            <strong>Options</strong>
-          </div>
-
-          <div class="flex gap-5">
-            <i
-              class="pi pi-link popover-element"
-              pTooltip="Copy link"
-              tooltipPosition="top"
-              (click)="copyLink()"
-            ></i>
-            <i
-              class="pi pi-file-pdf popover-element"
-              pTooltip="Under development"
-              tooltipPosition="top"
-            ></i>
-            <i
-              class="pi pi-code popover-element"
-              pTooltip="Under development"
-              tooltipPosition="top"
-            ></i>
-          </div>
-        </div>
-      </p-popover>
-
-      <ng-container *ngIf="isLogged()">
+      <div class="xl:hidden flex flex-column gap-2 mb-2">
         <p-button
-          class="md:hidden flex justify-content-center custom-button my-2"
-          label="Duplicate Profile"
-          icon="pi pi-clone"
-          (onClick)="duplicateProfile()"
+          class="flex justify-content-center custom-button"
+          label="Share Profile"
+          icon="pi pi-share-alt"
+          (onClick)="copyLink()"
         />
 
-        <ng-container *ngIf="checkUser()">
+        <div class="flex justify-content-center">
           <p-button
-            class="md:hidden flex justify-content-center custom-button my-2"
-            label="Edit Profile"
-            icon="pi pi-pencil"
-            (onClick)="editProfile()"
+            class="custom-button"
+            label="Download Profile"
+            icon="pi pi-download"
+            (onClick)="op1.toggle($event)"
           />
 
-          <p-button
-            class="flex md:hidden justify-content-center delete-button my-2"
-            label="Delete Profile"
-            icon="pi pi-trash"
-            (onClick)="deleteModal($event)"
-          />
-        </ng-container>
-      </ng-container>
+          <p-popover #op1>
+            <div style="color: var(--primary-color)">
+              <strong>Choose Format</strong>
 
-      <p-button
-        class="flex md:hidden justify-content-center custom-secondary-button my-2"
-        label="Return to Homepage"
-        severity="secondary"
-        icon="pi pi-arrow-left"
-        (onClick)="goToMainPage()"
-      />
+              <ul class="flex flex-column p-0 m-0">
+                <li class="flex p-2 popover-element" (click)="downloadPDF(op1)">
+                  PDF
+                </li>
+                <li
+                  class="flex p-2 popover-element"
+                  (click)="downloadRDF('rdfa', op1)"
+                >
+                  RDFa
+                </li>
+                <li
+                  class="flex p-2 popover-element"
+                  (click)="downloadRDF('xml', op1)"
+                >
+                  RDF/XML
+                </li>
+                <li
+                  class="flex p-2 popover-element"
+                  (click)="downloadRDF('ttl', op1)"
+                >
+                  Turtle
+                </li>
+              </ul>
+            </div>
+          </p-popover>
+        </div>
+
+        @if (isLogged()) {
+          <p-button
+            class="flex justify-content-center custom-button"
+            label="Duplicate Profile"
+            icon="pi pi-clone"
+            (onClick)="duplicateProfile()"
+          />
+
+          @if (checkUser()) {
+            <p-button
+              class="flex justify-content-center custom-button"
+              label="Edit Profile"
+              icon="pi pi-pencil"
+              (onClick)="editProfile()"
+            />
+
+            <p-button
+              class="flex justify-content-center delete-button"
+              label="Delete Profile"
+              icon="pi pi-trash"
+              (onClick)="deleteModal($event)"
+            />
+          }
+        }
+
+        <p-button
+          class="flex justify-content-center custom-secondary-button"
+          label="Return to Homepage"
+          severity="secondary"
+          icon="pi pi-arrow-left"
+          (onClick)="goToMainPage()"
+        />
+      </div>
     </div>
 
-    <div class="hidden md:flex justify-content-between mb-2 mt-auto">
+    <div class="hidden xl:flex justify-content-between mb-2">
       <p-button
         class="custom-secondary-button"
         label="Return to Homepage"
@@ -307,37 +259,52 @@
           class="custom-button"
           label="Share Profile"
           icon="pi pi-share-alt"
-          (onClick)="op2.toggle($event)"
+          (onClick)="copyLink()"
         />
 
-        <p-popover #op2>
-          <div style="color: var(--primary-color)">
-            <div class="font-medium block mb-2">
-              <strong>Options</strong>
-            </div>
+        <div>
+          <p-button
+            class="custom-button"
+            label="Download Profile"
+            icon="pi pi-download"
+            (onClick)="op2.toggle($event)"
+          />
 
-            <div class="flex gap-5">
-              <i
-                class="pi pi-link popover-element"
-                pTooltip="Copy link"
-                tooltipPosition="top"
-                (click)="copyLink()"
-              ></i>
-              <i
-                class="pi pi-file-pdf popover-element"
-                pTooltip="Under development"
-                tooltipPosition="top"
-              ></i>
-              <i
-                class="pi pi-code popover-element"
-                pTooltip="Under development"
-                tooltipPosition="top"
-              ></i>
-            </div>
-          </div>
-        </p-popover>
+          <p-popover #op2>
+            <div style="color: var(--primary-color)">
+              <strong>Choose Format</strong>
 
-        <ng-container *ngIf="isLogged()">
+              <ul class="flex flex-column p-0 m-0">
+                <li class="flex p-2 popover-element" (click)="downloadPDF(op2)">
+                  PDF
+                </li>
+                <li class="flex p-2 popover-element" (click)="downloadJSON(op2)">
+                  JSON
+                </li>
+                <li
+                  class="flex p-2 popover-element"
+                  (click)="downloadRDF('rdfa', op2)"
+                >
+                  RDFa
+                </li>
+                <li
+                  class="flex p-2 popover-element"
+                  (click)="downloadRDF('xml', op2)"
+                >
+                  RDF/XML
+                </li>
+                <li
+                  class="flex p-2 popover-element"
+                  (click)="downloadRDF('ttl', op2)"
+                >
+                  Turtle
+                </li>
+              </ul>
+            </div>
+          </p-popover>
+        </div>
+
+        @if (isLogged()) {
           <p-button
             class="custom-button"
             label="Duplicate Profile"
@@ -345,7 +312,7 @@
             (onClick)="duplicateProfile()"
           />
 
-          <ng-container *ngIf="checkUser()">
+          @if (checkUser()) {
             <p-button
               class="custom-button"
               label="Edit Profile"
@@ -359,15 +326,13 @@
               icon="pi pi-trash"
               (onClick)="deleteModal($event)"
             />
-          </ng-container>
-        </ng-container>
+          }
+        }
       </div>
     </div>
   </div>
-</ng-container>
-
-<ng-template #spinner>
+} @else {
   <div class="flex justify-content-center align-items-center h-screen">
     <p-progress-spinner strokeWidth="3" ariaLabel="loading" />
   </div>
-</ng-template>
+}

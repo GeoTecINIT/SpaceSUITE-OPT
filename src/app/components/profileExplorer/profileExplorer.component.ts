@@ -9,17 +9,20 @@ import {
   ViewChild,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
+import { ButtonGroupModule } from 'primeng/buttongroup';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DividerModule } from 'primeng/divider';
+import { MenuModule } from 'primeng/menu';
 import { PaginatorModule, PaginatorState } from 'primeng/paginator';
 import { SkeletonModule } from 'primeng/skeleton';
 import { ToastModule } from 'primeng/toast';
-import { combineLatest, filter, Subscription, take } from 'rxjs';
-import { FilterOption } from '../../models/filterOption';
+import { combineLatest, filter, map, Subscription, take } from 'rxjs';
+import { Filter } from '../../models/filter';
 import { OccupationalProfile } from '../../models/occupationalProfile';
 import { CardFilterService } from '../../services/cardFilter.service';
+import { CardSortingService } from '../../services/cardSorting.service';
 import { FirebaseService } from '../../services/firebase.service';
 import { OccupationalProfileService } from '../../services/occupationalProfile.service';
 import { FiltersComponent } from '../filters/filters.component';
@@ -40,6 +43,8 @@ import { ProfileCardComponent } from '../profileCard/profileCard.component';
     ToastModule,
     ConfirmDialogModule,
     ButtonModule,
+    ButtonGroupModule,
+    MenuModule,
   ],
   providers: [ConfirmationService, MessageService],
 })
@@ -54,14 +59,19 @@ export class ProfileExplorerComponent
   paginatedProfiles: OccupationalProfile[] = [];
 
   bokConcepts: string[] = [];
-  filterOptions: FilterOption[] = [];
+  filterOptions: Filter[] = [];
   searchOption: string = 'Title';
   searchValue: string = '';
+  showPrivate: boolean = false;
   visibilityFilter: string = 'all';
   filteredProfiles: OccupationalProfile[] = [];
 
   @ViewChild('container') containerRef!: ElementRef;
   buttonBottom = 32;
+
+  sortOptions: MenuItem[] = [{ label: 'Title' }, { label: 'Last updated' }];
+  sortOption: string = 'Title';
+  sortAsc: boolean = false;
 
   private profiles: OccupationalProfile[] = [];
   private organizations: string[] = [];
@@ -75,34 +85,48 @@ export class ProfileExplorerComponent
     private route: ActivatedRoute,
     private messageService: MessageService,
     private router: Router,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private sortingService: CardSortingService,
   ) {
     this.skeletonElements = Array(this.rows);
   }
 
   ngOnInit() {
-    const profiles$ = this.occupationalProfileService
-      .getOccupationalProfiles()
-      .pipe(filter((p) => !!p));
     this.occupationalProfilesSubscription = combineLatest([
-      this.firebaseService.getUserOrganizationList(),
-      this.filterService.getFilterOptions(),
-      profiles$,
+      this.firebaseService
+        .getUserOrganizationList()
+        .pipe(map((orgs) => orgs.map((o) => o._id))),
+      this.filterService.getFilters(),
+      this.occupationalProfileService
+        .getOccupationalProfiles()
+        .pipe(filter((p) => p !== undefined)),
     ]).subscribe(([orgs, filters, profiles]) => {
-      this.organizations = orgs.map((o) => o._id);
+      this.organizations = orgs;
       this.filterOptions = filters;
       this.profiles = profiles;
 
       this.searchOption = this.filterService.searchOption;
       this.searchValue = this.filterService.searchValue;
+      this.bokConcepts = this.filterService.bokConcepts;
+      this.sortAsc = this.sortingService.sortAsc;
+      this.sortOption = this.sortingService.sortOption;
       if (!this.isLogged()) {
         this.visibilityFilter = 'all';
         this.filterService.visibilityFilter = 'all';
+
+        this.showPrivate = false;
+        this.filterService.showPrivate = false;
       } else {
         this.visibilityFilter = this.filterService.visibilityFilter;
+        this.showPrivate = this.filterService.showPrivate;
       }
 
       this.filterPipeline();
+
+      if (this.filterService.paginatorState) {
+        this.onPageChange(this.filterService.paginatorState);
+      }
+
       this.loading = false;
     });
   }
@@ -140,16 +164,26 @@ export class ProfileExplorerComponent
     return this.firebaseService.getUserData() !== null;
   }
 
-  trackById(index: number, item: any): string | number {
-    return item._id ?? item.id ?? index;
-  }
-
   onPageChange(event: PaginatorState): void {
     this.first = event.first ?? 0;
     this.rows = event.rows ?? 6;
     this.filterService.paginatorState = event;
 
     this.updatePaginatedProfiles();
+  }
+
+  switchSortOrientation(): void {
+    this.sortAsc = !this.sortAsc;
+    this.sortingService.sortAsc = this.sortAsc;
+
+    this.filterPipeline();
+  }
+
+  setSortOption(option: string): void {
+    this.sortOption = option;
+    this.sortingService.sortOption = option;
+
+    this.filterPipeline();
   }
 
   setBoKConcepts(concepts: string[]): void {
@@ -177,15 +211,25 @@ export class ProfileExplorerComponent
     setTimeout(() => {
       this.visibilityFilter = filter;
       this.filterService.visibilityFilter = filter;
+      this.filterService.paginatorState.first = 0;
 
       this.filterPipeline();
     });
   }
 
+  setPrivateFilter(filter: boolean): void {
+    this.showPrivate = filter;
+    this.filterService.showPrivate = filter;
+
+    this.filterPipeline();
+  }
+
   filterPipeline(): void {
     this.first = 0;
 
-    const searched = this.searchProfiles(this.profiles);
+    const changed = this.handlePrivateProfiles(this.profiles);
+    const sorted = this.sortProfiles(changed);
+    const searched = this.searchProfiles(sorted);
     const filtered = this.filterProfiles(searched);
     this.filteredProfiles = this.filterByBoKConcept(filtered);
 
@@ -195,8 +239,16 @@ export class ProfileExplorerComponent
     });
   }
 
-  createOccupationalProfile() {
-    this.router.navigate(['profile/new']);
+  createOccupationalProfile(): void {
+    this.router.navigate(['profile/new'], {
+      queryParams: { origin: 'explorer' },
+    });
+  }
+
+  scrollToTop(): void {
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 0);
   }
 
   private updateButtonPosition = () => {
@@ -212,12 +264,24 @@ export class ProfileExplorerComponent
   private updatePaginatedProfiles(): void {
     this.paginatedProfiles = this.filteredProfiles.slice(
       this.first,
-      this.first + this.rows
+      this.first + this.rows,
     );
   }
 
+  private handlePrivateProfiles(
+    profiles: OccupationalProfile[],
+  ): OccupationalProfile[] {
+    return this.showPrivate
+      ? profiles
+      : profiles.filter((profile) => profile.isPublic === true);
+  }
+
+  private sortProfiles(profiles: OccupationalProfile[]): OccupationalProfile[] {
+    return this.sortingService.sortProfiles(profiles);
+  }
+
   private searchProfiles(
-    profiles: OccupationalProfile[]
+    profiles: OccupationalProfile[],
   ): OccupationalProfile[] {
     const searchedProfiles: OccupationalProfile[] = [];
     const value = this.searchValue.trim().toLowerCase();
@@ -240,13 +304,18 @@ export class ProfileExplorerComponent
         break;
 
       case 'Skills':
+        if (value === '') {
+          searchedProfiles.push(...profiles);
+          break;
+        }
+
         profiles.forEach((profile) => {
           if (
             profile.skills.some((skill) =>
-              skill.trim().toLowerCase().includes(value)
+              skill.trim().toLowerCase().includes(value),
             ) ||
             profile.customSkills.some((skill) =>
-              skill.trim().toLowerCase().includes(value)
+              skill.trim().toLowerCase().includes(value),
             )
           )
             searchedProfiles.push(profile);
@@ -255,13 +324,18 @@ export class ProfileExplorerComponent
         break;
 
       case 'Transversal Skills':
+        if (value === '') {
+          searchedProfiles.push(...profiles);
+          break;
+        }
+
         profiles.forEach((profile) => {
           if (
             profile.competences.some((competence) =>
-              competence.preferredLabel.trim().toLowerCase().includes(value)
+              competence.preferredLabel.trim().toLowerCase().includes(value),
             ) ||
             profile.customCompetences.some((competence) =>
-              competence.trim().toLowerCase().includes(value)
+              competence.trim().toLowerCase().includes(value),
             )
           )
             searchedProfiles.push(profile);
@@ -277,7 +351,7 @@ export class ProfileExplorerComponent
   }
 
   private filterProfiles(
-    profiles: OccupationalProfile[]
+    profiles: OccupationalProfile[],
   ): OccupationalProfile[] {
     const userId = this.firebaseService.getUserData()?.uid;
 
@@ -306,20 +380,20 @@ export class ProfileExplorerComponent
         (filter) =>
           !filter.selection ||
           filter.selection.length === 0 ||
-          this.filterService.checkProfile(profile, filter)
-      )
+          this.filterService.checkProfile(profile, filter),
+      ),
     );
 
     return filteredProfiles;
   }
 
   private filterByBoKConcept(
-    profiles: OccupationalProfile[]
+    profiles: OccupationalProfile[],
   ): OccupationalProfile[] {
     if (this.bokConcepts.length === 0) return profiles;
 
     return profiles.filter((profile) =>
-      this.bokConcepts.some((concept) => profile.knowledge.includes(concept))
+      this.bokConcepts.some((concept) => profile.knowledge.includes(concept)),
     );
   }
 }

@@ -10,6 +10,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { MenuItem } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
+import { CheckboxModule } from 'primeng/checkbox';
 import { DividerModule } from 'primeng/divider';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
@@ -18,7 +19,7 @@ import { MenuModule } from 'primeng/menu';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { TooltipModule } from 'primeng/tooltip';
-import { FilterOption } from '../../models/filterOption';
+import { Filter } from '../../models/filter';
 import { BokModalComponent } from '../bokModal/bokModal.component';
 
 @Component({
@@ -39,22 +40,25 @@ import { BokModalComponent } from '../bokModal/bokModal.component';
     MenuModule,
     ButtonModule,
     BokModalComponent,
+    CheckboxModule,
   ],
 })
 export class FiltersComponent implements OnChanges {
   @Input() bokConcepts: string[] = [];
   @Input() loading: boolean = false;
   @Input() logged: boolean = false;
-  @Input() multiSelectOptions: FilterOption[] = [];
+  @Input() multiSelectOptions: Filter[] = [];
   @Input() searchOption: string = 'Title';
   @Input() searchValue: string = '';
+  @Input() showPrivate: boolean = false;
   @Input() visibilityFilter: string = 'all';
 
   @Output() bokConceptsChange: EventEmitter<string[]> = new EventEmitter();
-  @Output() multiSelectOptionsChange: EventEmitter<FilterOption[]> =
+  @Output() multiSelectOptionsChange: EventEmitter<Filter[]> =
     new EventEmitter();
   @Output() searchOptionChange: EventEmitter<string> = new EventEmitter();
   @Output() searchValueChange: EventEmitter<string> = new EventEmitter();
+  @Output() showPrivateChange: EventEmitter<boolean> = new EventEmitter();
   @Output() visibilityFilterChange: EventEmitter<string> = new EventEmitter();
 
   searchOptions: MenuItem[] = [
@@ -83,12 +87,13 @@ export class FiltersComponent implements OnChanges {
       changes['logged'].currentValue === false
     ) {
       this.visibilityFilterChange.emit('all');
+      this.showPrivateChange.emit(false);
     }
   }
 
   clearOptions(label: string): void {
     const currentOption = this.multiSelectOptions.find(
-      (option) => option.label === label
+      (option) => option.label === label,
     );
 
     if (currentOption) currentOption.selection = [];
@@ -108,20 +113,19 @@ export class FiltersComponent implements OnChanges {
     this.multiSelectOptionsChange.emit(this.multiSelectOptions);
   }
 
-  updateVisibilityFilter(): void {
+  updateShowPrivate(): void {
+    this.showPrivateChange.emit(this.showPrivate);
+  }
+
+  updateVisibilityFilter(newVisibility: string): void {
+    this.visibilityFilter = newVisibility;
     this.visibilityFilterChange.emit(this.visibilityFilter);
   }
 
-  getMultiselectOptions(
-    filterOption: FilterOption
-  ): { id: string; value: string }[] {
+  getMultiselectOptions(filterOption: Filter): { id: string; value: string }[] {
     return filterOption.values.map((x, i) => ({
       id: filterOption.tags ? filterOption.tags[i] : x,
       value: x,
     }));
-  }
-
-  trackByLabel(index: number, item: FilterOption): string | number {
-    return item.label ?? index;
   }
 }
