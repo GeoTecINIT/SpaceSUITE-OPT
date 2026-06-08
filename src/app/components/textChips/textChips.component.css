@@ -19,9 +19,3 @@
 .custom-textarea:focus {
   border-color: var(--hover-color) !important;
 }
-
-.custom-chip {
-  --p-chip-color: var(--primary-color);
-  --p-chip-remove-icon-color: var(--primary-color);
-  --p-chip-remove-icon-focus-ring-color: var(--primary-color);
-}

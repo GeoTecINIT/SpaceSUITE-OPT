@@ -61,7 +61,7 @@ export class BokModalComponent implements OnInit {
 
   @Output() selectedConceptsChange = new EventEmitter<string[]>();
   @Output() selectedSkillsChange = new EventEmitter<string[]>();
-  @Output() deletedConcept = new EventEmitter<string[]>();
+  @Output() deletedConcept = new EventEmitter<string>();
 
   @ViewChild('dynamicContainer', { read: ViewContainerRef })
   container!: ViewContainerRef;
@@ -95,7 +95,7 @@ export class BokModalComponent implements OnInit {
 
     this.selectedConceptsChange.emit(this._selectedConcepts);
 
-    this.deletedConcept.emit(this.getSkills(label));
+    this.deletedConcept.emit(label);
     this.cdr.detectChanges();
   }
 

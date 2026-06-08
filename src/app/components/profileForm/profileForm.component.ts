@@ -225,14 +225,12 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.profile.skills = skills;
   }
 
-  onDeletedConcept(skills: string[]): void {
-    const matchedSkills = skills.filter((skill) =>
-      this.profile.skills.includes(skill),
+  onDeletedConcept(label: string): void {
+    const matchedSkills = this.profile.skills.filter((skill) =>
+      skill.startsWith(`[${label}]`),
     );
 
-    if (matchedSkills.length > 0) {
-      this.confirmDeleteConcept(matchedSkills);
-    }
+    if (matchedSkills.length > 0) this.confirmDeleteConcept(matchedSkills);
   }
 
   returnToHomepage(): void {

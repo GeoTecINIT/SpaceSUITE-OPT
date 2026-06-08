@@ -441,6 +441,11 @@ export class ProfilePageComponent implements OnInit, AfterViewInit, OnDestroy {
       .toLowerCase();
 
     const plainProfile = this.profile?.toPlain();
+    if (plainProfile) {
+      delete plainProfile['_id'];
+      delete plainProfile['userId'];
+      delete plainProfile['orgId'];
+    }
     const jsonStr = JSON.stringify(plainProfile, null, 2);
     const blob = new Blob([jsonStr], { type: 'application/json' });
     const url = window.URL.createObjectURL(blob);
