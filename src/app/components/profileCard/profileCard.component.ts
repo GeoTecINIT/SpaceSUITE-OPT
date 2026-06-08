@@ -268,6 +268,9 @@ export class ProfileCardComponent implements OnInit {
       .toLowerCase();
 
     const plainProfile = this.occupationalProfile.toPlain();
+    delete plainProfile['_id'];
+    delete plainProfile['userId'];
+    delete plainProfile['orgId'];
     const jsonStr = JSON.stringify(plainProfile, null, 2);
     const blob = new Blob([jsonStr], { type: 'application/json' });
     const url = window.URL.createObjectURL(blob);
