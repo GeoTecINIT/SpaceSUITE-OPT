@@ -62,7 +62,7 @@ export class ProfileExplorerComponent
   filterOptions: Filter[] = [];
   searchOption: string = 'Title';
   searchValue: string = '';
-  showPrivate: boolean = false;
+  hidePrivate: boolean = true;
   visibilityFilter: string = 'all';
   filteredProfiles: OccupationalProfile[] = [];
 
@@ -114,11 +114,10 @@ export class ProfileExplorerComponent
         this.visibilityFilter = 'all';
         this.filterService.visibilityFilter = 'all';
 
-        this.showPrivate = false;
-        this.filterService.showPrivate = false;
+        this.hidePrivate = true;
       } else {
         this.visibilityFilter = this.filterService.visibilityFilter;
-        this.showPrivate = this.filterService.showPrivate;
+        this.hidePrivate = this.filterService.hidePrivate;
       }
 
       this.filterPipeline();
@@ -218,8 +217,8 @@ export class ProfileExplorerComponent
   }
 
   setPrivateFilter(filter: boolean): void {
-    this.showPrivate = filter;
-    this.filterService.showPrivate = filter;
+    this.hidePrivate = filter;
+    if (this.isLogged()) this.filterService.hidePrivate = filter;
 
     this.filterPipeline();
   }
@@ -271,9 +270,9 @@ export class ProfileExplorerComponent
   private handlePrivateProfiles(
     profiles: OccupationalProfile[],
   ): OccupationalProfile[] {
-    return this.showPrivate
-      ? profiles
-      : profiles.filter((profile) => profile.isPublic === true);
+    return this.hidePrivate
+      ? profiles.filter((profile) => profile.isPublic === true)
+      : profiles;
   }
 
   private sortProfiles(profiles: OccupationalProfile[]): OccupationalProfile[] {

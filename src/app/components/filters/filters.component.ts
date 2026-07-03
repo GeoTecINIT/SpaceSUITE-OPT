@@ -50,7 +50,7 @@ export class FiltersComponent implements OnChanges {
   @Input() multiSelectOptions: Filter[] = [];
   @Input() searchOption: string = 'Title';
   @Input() searchValue: string = '';
-  @Input() showPrivate: boolean = false;
+  @Input() hidePrivate: boolean = true;
   @Input() visibilityFilter: string = 'all';
 
   @Output() bokConceptsChange: EventEmitter<string[]> = new EventEmitter();
@@ -58,7 +58,7 @@ export class FiltersComponent implements OnChanges {
     new EventEmitter();
   @Output() searchOptionChange: EventEmitter<string> = new EventEmitter();
   @Output() searchValueChange: EventEmitter<string> = new EventEmitter();
-  @Output() showPrivateChange: EventEmitter<boolean> = new EventEmitter();
+  @Output() hidePrivateChange: EventEmitter<boolean> = new EventEmitter();
   @Output() visibilityFilterChange: EventEmitter<string> = new EventEmitter();
 
   searchOptions: MenuItem[] = [
@@ -87,7 +87,7 @@ export class FiltersComponent implements OnChanges {
       changes['logged'].currentValue === false
     ) {
       this.visibilityFilterChange.emit('all');
-      this.showPrivateChange.emit(false);
+      this.hidePrivateChange.emit(true);
     }
   }
 
@@ -113,8 +113,8 @@ export class FiltersComponent implements OnChanges {
     this.multiSelectOptionsChange.emit(this.multiSelectOptions);
   }
 
-  updateShowPrivate(): void {
-    this.showPrivateChange.emit(this.showPrivate);
+  updateHidePrivate(): void {
+    this.hidePrivateChange.emit(this.hidePrivate);
   }
 
   updateVisibilityFilter(newVisibility: string): void {
