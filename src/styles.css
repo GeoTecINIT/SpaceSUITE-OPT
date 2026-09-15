@@ -177,6 +177,15 @@ body {
   --p-select-dropdown-color: var(--danger-color);
 }
 
+.p-selectbutton {
+  flex: auto;
+  --p-togglebutton-background: #e2e8f0;
+  --p-togglebutton-hover-background: #e2e8f0;
+  --p-togglebutton-checked-background: #e2e8f0;
+  --p-togglebutton-checked-border-color: #e2e8f0;
+  --p-togglebutton-border-color: #e2e8f0;
+}
+
 ::ng-deep .p-toast-close-button .p-button-label {
   font-size: 0;
 }

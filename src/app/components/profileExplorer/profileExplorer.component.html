@@ -11,13 +11,13 @@
     [multiSelectOptions]="filterOptions"
     [searchOption]="searchOption"
     [searchValue]="searchValue"
-    [showPrivate]="showPrivate"
+    [hidePrivate]="hidePrivate"
     [visibilityFilter]="visibilityFilter"
     (bokConceptsChange)="setBoKConcepts($event)"
     (multiSelectOptionsChange)="filterPipeline()"
     (searchOptionChange)="setSearchOption($event)"
     (searchValueChange)="setSearchValue($event)"
-    (showPrivateChange)="setPrivateFilter($event)"
+    (hidePrivateChange)="setPrivateFilter($event)"
     (visibilityFilterChange)="setVisibilityFilter($event)"
   />
 

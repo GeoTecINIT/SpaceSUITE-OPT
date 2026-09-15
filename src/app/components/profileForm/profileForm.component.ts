@@ -5,10 +5,12 @@ import {
   Input,
   OnDestroy,
   OnInit,
+  signal,
+  WritableSignal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthService, ExitWithoutSavingService } from '@eo4geo/ngx-bok-utils';
+import { AuthService, ExitWithoutSavingService, PermissionService } from '@eo4geo/ngx-bok-utils';
 import { ConfirmationService, MessageService, TreeNode } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialog } from 'primeng/confirmdialog';
@@ -113,6 +115,8 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   showCustomCompetences: boolean = false;
 
+  selectedOrgCanPublish: WritableSignal<boolean> = signal(false);
+
   private authSubscription!: Subscription;
   private userOrgsSubscription!: Subscription;
 
@@ -135,6 +139,7 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private fieldsService: FieldsService,
     private escoService: ESCOService,
     private route: ActivatedRoute,
+    private permissionService: PermissionService
   ) {}
 
   ngOnInit() {
@@ -187,6 +192,7 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
           .getOrganizationDivisions(this.profile.orgId)
           .pipe(take(1))
           .subscribe((divisions) => (this.divisionSelector.values = divisions));
+        this.permissionService.organizationHasPermission(this.profile.orgId, 'opt').pipe(take(1)).subscribe(hasPermission => this.selectedOrgCanPublish.set(hasPermission));
       }
 
       this.fieldNames = this.profile.fields.map((field) => field.name);
@@ -215,6 +221,12 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.firebaseService
       .getOrganizationDivisions(this.profile.orgId!)
       .subscribe((divisions) => (this.divisionSelector.values = divisions));
+    this.permissionService.organizationHasPermission(this.profile.orgId, 'opt').pipe(take(1)).subscribe(hasPermission => {
+      this.selectedOrgCanPublish.set(hasPermission);
+      if (!hasPermission) {
+        this.profile.isPublic = false;
+      }
+    });
   }
 
   onConceptsChange(concepts: string[]): void {

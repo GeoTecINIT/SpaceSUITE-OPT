@@ -85,6 +85,10 @@
   text-align: center;
 }
 
+::ng-deep .danger-tooltip {
+  --p-tooltip-background: var(--danger-color) !important;
+}
+
 ::ng-deep .p-confirmdialog {
   color: var(--primary-color) !important;
 }
@@ -116,10 +120,6 @@
     var(--danger-color) 80%,
     black 20%
   );
-}
-
-::ng-deep .p-selectbutton {
-  flex: auto;
 }
 
 ::ng-deep p-togglebutton {
