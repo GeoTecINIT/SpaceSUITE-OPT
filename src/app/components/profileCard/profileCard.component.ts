@@ -82,7 +82,7 @@ export class ProfileCardComponent implements OnInit {
 
   ngOnInit() {
     this.firebaseService.getUserOrganizationList().subscribe((orgs) => {
-      orgs.forEach((org) => this.organizations.push(org._id));
+      this.organizations = orgs.map((org) => org._id);
     });
 
     this.utilsService
