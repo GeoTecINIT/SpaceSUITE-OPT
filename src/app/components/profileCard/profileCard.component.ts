@@ -284,4 +284,8 @@ export class ProfileCardComponent implements OnInit {
     link.href = uri;
     link.click();
   }
+
+  public get disableAddButton() {
+    return this.organizations.length == 0;
+  }
 }

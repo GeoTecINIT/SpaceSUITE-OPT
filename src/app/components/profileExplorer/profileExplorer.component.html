@@ -104,6 +104,9 @@
       icon="pi pi-plus"
       label="Add Profile"
       (click)="createOccupationalProfile()"
+      [disabled]="disableAddButton" 
+      [pTooltip]="disableAddButton ? 'You must be part of an organization to create a profile' : ''"
+      tooltipPosition="top"
     />
   </div>
 }

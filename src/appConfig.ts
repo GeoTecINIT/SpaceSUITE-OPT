@@ -20,6 +20,7 @@ import { ProfileExplorerComponent } from './app/components/profileExplorer/profi
 import { ProfileFormComponent } from './app/components/profileForm/profileForm.component';
 import { ProfilePageComponent } from './app/components/profilePage/profilePage.component';
 import { environment } from './environments/environment';
+import { UserOrgsGuard } from './app/guards/userOrgs.guard';
 
 const routes: Routes = [
   { path: '', component: ProfileExplorerComponent },
@@ -37,19 +38,19 @@ const routes: Routes = [
   {
     path: 'profile/new',
     component: ProfileFormComponent,
-    canMatch: [AuthGuard],
+    canMatch: [AuthGuard, UserOrgsGuard],
     canDeactivate: [exitWithoutSavingGuard],
   },
   {
     path: 'profile/new/:profileId',
     component: EditProfilePageComponent,
-    canMatch: [AuthGuard],
+    canMatch: [AuthGuard, UserOrgsGuard],
     canDeactivate: [exitWithoutSavingGuard],
   },
   {
     path: 'profile/edit/:profileId',
     component: EditProfilePageComponent,
-    canMatch: [AuthGuard],
+    canMatch: [AuthGuard, UserOrgsGuard],
     canDeactivate: [exitWithoutSavingGuard],
   },
   { path: 'profile/:profileId', component: ProfilePageComponent },

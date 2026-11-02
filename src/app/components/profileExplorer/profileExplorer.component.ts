@@ -27,6 +27,7 @@ import { FirebaseService } from '../../services/firebase.service';
 import { OccupationalProfileService } from '../../services/occupationalProfile.service';
 import { FiltersComponent } from '../filters/filters.component';
 import { ProfileCardComponent } from '../profileCard/profileCard.component';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   standalone: true,
@@ -45,6 +46,7 @@ import { ProfileCardComponent } from '../profileCard/profileCard.component';
     ButtonModule,
     ButtonGroupModule,
     MenuModule,
+    TooltipModule
   ],
   providers: [ConfirmationService, MessageService],
 })
@@ -394,5 +396,9 @@ export class ProfileExplorerComponent
     return profiles.filter((profile) =>
       this.bokConcepts.some((concept) => profile.knowledge.includes(concept)),
     );
+  }
+
+  public get disableAddButton() {
+    return this.organizations.length == 0;
   }
 }

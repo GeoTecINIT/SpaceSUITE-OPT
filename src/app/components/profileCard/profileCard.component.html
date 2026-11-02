@@ -162,9 +162,9 @@
         icon="pi pi-clone"
         [rounded]="true"
         variant="text"
-        [pTooltip]="logged ? 'Duplicate' : 'Login to be able to duplicate.'"
+        [pTooltip]="logged ? (disableAddButton ? 'You must be part of an organization to duplicate a profile' : 'Duplicate') : 'Login to be able to duplicate.'"
         tooltipPosition="top"
-        [disabled]="!logged"
+        [disabled]="!logged || disableAddButton"
         (onClick)="duplicateProfile()"
       />
 
