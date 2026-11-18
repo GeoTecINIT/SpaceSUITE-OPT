@@ -177,7 +177,7 @@ export class BokModalComponent implements OnInit {
     const list: string[] = [];
 
     this.bokInfo.getConceptSkills(concept).subscribe((skills) => {
-      skills.forEach((skill) => list.push(`[${concept}] ${skill}`));
+      skills.forEach((skill) => list.push(`[${concept}] ${skill.name}`));
       this.cdr.detectChanges();
     });
 
