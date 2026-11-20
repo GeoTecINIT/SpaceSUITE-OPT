@@ -25,7 +25,7 @@
     <label for="{{ fieldName }}">{{ fieldName }}</label>
   </p-floatlabel>
   <div class="flex mt-3 flex-wrap gap-2">
-    <ng-content *ngFor="let chip of allChips">
+    <ng-content *ngFor="let chip of chips">
       <p-chip
         [label]="chip"
         [removable]="true"

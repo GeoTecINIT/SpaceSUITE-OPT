@@ -4,6 +4,7 @@ import {
   Field,
   OccupationalProfile,
 } from '../models/occupationalProfile';
+import { BloomSkill } from '../models/bloomSkill';
 
 @Injectable({
   providedIn: 'root',
@@ -81,7 +82,14 @@ export class RdfService {
 
     if (model.skills.length != 0 || model.customSkills.length != 0) {
       model.skills
-        .concat(model.customSkills)
+        .forEach((skill: BloomSkill, index: number) => {
+          ttl += `  esco:relatedEssentialSkill _:SKILL${index};\n`;
+          additionalObjects += `_:SKILL${index}\n`;
+          additionalObjects += `  rdf:type esco:Skill ;\n`;
+          additionalObjects += `  dcterms:title "${this.escape(skill.label)}" .\n\n`;
+        });
+
+      model.customSkills
         .forEach((skill: string, index: number) => {
           ttl += `  esco:relatedEssentialSkill _:SKILL${index};\n`;
           additionalObjects += `_:SKILL${index}\n`;
@@ -178,7 +186,15 @@ export class RdfService {
     }
 
     if (model.skills.length || model.customSkills.length) {
-      model.skills.concat(model.customSkills).forEach((skill: string) => {
+      model.skills.forEach((skill: BloomSkill) => {
+        xml += `    <esco:relatedEssentialSkill>\n`;
+        xml += `      <rdf:Description>\n`;
+        xml += `        <rdf:type rdf:resource="${NS.esco}Skill"/>\n`;
+        xml += `        <dcterms:title>${this.escapeXml(skill.label)}</dcterms:title>\n`;
+        xml += `      </rdf:Description>\n`;
+        xml += `    </esco:relatedEssentialSkill>\n`;
+      });
+      model.customSkills.forEach((skill: string) => {
         xml += `    <esco:relatedEssentialSkill>\n`;
         xml += `      <rdf:Description>\n`;
         xml += `        <rdf:type rdf:resource="${NS.esco}Skill"/>\n`;
@@ -271,7 +287,14 @@ export class RdfService {
     }
 
     if (model.skills.length || model.customSkills.length) {
-      model.skills.concat(model.customSkills).forEach((skill: string) => {
+      model.skills.forEach((skill: BloomSkill) => {
+        html += `
+    <div property="esco:relatedEssentialSkill" typeof="esco:Skill">
+      <span property="title">${escape(skill.label)}</span>
+    </div>
+  `;
+      });
+      model.customSkills.forEach((skill: string) => {
         html += `
     <div property="esco:relatedEssentialSkill" typeof="esco:Skill">
       <span property="title">${escape(skill)}</span>

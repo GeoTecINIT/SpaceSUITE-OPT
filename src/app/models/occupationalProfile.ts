@@ -1,3 +1,5 @@
+import { BloomSkill } from "./bloomSkill";
+
 export class OccupationalProfile {
   _id: string;
   competences: Competence[];
@@ -13,7 +15,7 @@ export class OccupationalProfile {
   lastModified: string;
   orgId: string;
   orgName: string;
-  skills: string[];
+  skills: BloomSkill[];
   title: string;
   updatedAt?: any;
   userId: string;

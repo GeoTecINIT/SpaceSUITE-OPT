@@ -140,9 +140,6 @@ export class OccupationalProfileService {
 
       newProfile.knowledge = this.formatFirestoreConcepts(newProfile.knowledge);
       newProfile.customSkills = newProfile.customSkills.filter((s) => s !== '');
-      newProfile.skills = newProfile.skills.filter(
-        (s) => s !== '' && newProfile.customSkills.every((c) => s !== c),
-      );
       newProfile.customCompetences = newProfile.customCompetences.filter(
         (c) => c !== '',
       );

@@ -1,0 +1,115 @@
+::ng-deep .custom-treeselect {
+    --p-treeselect-focus-border-color: var(--hover-color);
+    --p-treeselect-hover-border-color: var(--hover-color);
+
+    --p-checkbox-checked-background: var(--secondary-color);
+    --p-checkbox-checked-border-color: var(--secondary-color);
+    --p-checkbox-checked-hover-background: var(--hover-color);
+    --p-checkbox-checked-hover-border-color: var(--hover-color);
+    --p-checkbox-checked-focus-border-color: var(--secondary-color);  
+    --p-checkbox-focus-ring-color: var(--secondary-color);
+
+    --p-inputtext-focus-border-color: var(--hover-color);
+    --p-inputtext-hover-border-color: var(--hover-color);
+}
+
+.invalid-treeselect {
+    --p-treeselect-border-color: var(--danger-color);
+    --p-treeselect-dropdown-color: var(--danger-color);
+}
+
+.custom-chip {
+    --p-chip-color: var(--primary-color);
+    --p-chip-remove-icon-color:var(--primary-color);
+    --p-chip-remove-icon-focus-ring-color: var(--primary-color);
+}
+
+.popover-responsive {
+  max-width: 20rem;
+  width: calc(100vw - 2rem);
+}
+
+@media screen and (min-width: 576px) {
+  .popover-responsive {
+    max-width: 30rem;
+    width: max-content;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  .popover-responsive {
+    max-width: 50rem;
+    width: max-content;
+  }
+}
+
+:host ::ng-deep .addongroup-element .p-treeselect {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+::ng-deep .p-tree-node {
+  height: 100% !important;
+}
+
+::ng-deep .p-tree-node-checkbox.p-disabled {
+    display: none !important;
+}
+
+.custom-border {
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(18, 18, 23, 0.05) 0px 1px 2px 0px;
+    transition: border-color 0.2s;
+}
+
+.custom-border:hover {
+    border-color: var(--hover-color);
+}
+
+.custom-border-error {
+    border-color: var(--danger-color);
+}
+
+.custom-header {
+  color: var(--secondary-color);
+}
+
+.custom-header:hover {
+  color: var(--hover-color);
+  cursor: pointer;
+}
+
+.dropdown-button {
+  --p-button-icon-only-width: 1.75rem;
+}
+
+.custom-floatlabel {
+    --p-floatlabel-focus-color: var(--hover-color);
+}
+
+.invalid-floatlabel {
+    --p-floatlabel-color: var(--danger-color);
+    --p-floatlabel-active-color: var(--danger-color);
+}
+
+.custom-input {
+    --p-inputtext-focus-border-color: var(--hover-color);
+    --p-inputtext-hover-border-color: var(--hover-color);
+    --p-inputtext-invalid-placeholder-color: var(--danger-color);
+    --p-inputtext-invalid-border-color: var(--danger-color);
+}
+
+.custom-panel {
+    --p-panel-header-color: var(--primary-color);
+    --p-panel-color: var(--primary-color);
+}
+
+.custom-concept-link {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+.custom-concept-link:hover {
+  color: white;
+}

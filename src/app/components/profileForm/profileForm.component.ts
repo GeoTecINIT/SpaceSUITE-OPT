@@ -30,7 +30,7 @@ import { StepperModule } from 'primeng/stepper';
 import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
-import { catchError, finalize, of, Subscription, take } from 'rxjs';
+import { catchError, finalize, of, Subscription, switchMap, take } from 'rxjs';
 import { Filter } from '../../models/filter';
 import { FormType } from '../../models/formType';
 import {
@@ -47,6 +47,9 @@ import { CustomSelectComponent } from '../customSelect/customSelect.component';
 import { MultiselectChipsComponent } from '../multiselectChips/multiselectChips.component';
 import { TextChipsComponent } from '../textChips/textChips.component';
 import { TreeselectChipsComponent } from '../treeselectChips/treeselectChips.component';
+import { LearningOutcomesSelectComponent } from '../learningOutcomesSelect/learningOutcomesSelect.component';
+import { BokInformationService } from '@eo4geo/ngx-bok-visualization';
+import { BloomSkill } from '../../models/bloomSkill';
 
 @Component({
   standalone: true,
@@ -79,7 +82,8 @@ import { TreeselectChipsComponent } from '../treeselectChips/treeselectChips.com
     SelectButton,
     IftaLabelModule,
     TreeselectChipsComponent,
-  ],
+    LearningOutcomesSelectComponent
+],
   providers: [MessageService, ConfirmationService],
 })
 export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
@@ -114,8 +118,12 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
   customCompetences: string[] = [];
 
   showCustomCompetences: boolean = false;
+  showCustomSkills: boolean = false;
 
   selectedOrgCanPublish: WritableSignal<boolean> = signal(false);
+  skillOptions: WritableSignal<TreeNode[]> = signal([]);
+  
+  skillSelection: WritableSignal<TreeNode[]> = signal([]);
 
   private authSubscription!: Subscription;
   private userOrgsSubscription!: Subscription;
@@ -139,7 +147,8 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private fieldsService: FieldsService,
     private escoService: ESCOService,
     private route: ActivatedRoute,
-    private permissionService: PermissionService
+    private permissionService: PermissionService,
+    private bokInfoService: BokInformationService
   ) {}
 
   ngOnInit() {
@@ -204,6 +213,8 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
       this.fieldNames = this.profile.fields.map((field) => field.name);
     });
 
+    this.buildSkillOptions();
+
     this.exitWithoutSavingService.showModalSubject.subscribe((value) => {
       if (value) this.confirmExitWithoutSaving();
     });
@@ -237,16 +248,13 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onConceptsChange(concepts: string[]): void {
     this.profile.knowledge = concepts;
-  }
-
-  onSkillsChange(skills: string[]): void {
-    this.profile.skills = skills;
+    this.buildSkillOptions();
   }
 
   onDeletedConcept(label: string): void {
     const matchedSkills = this.profile.skills.filter((skill) =>
-      skill.startsWith(`[${label}]`),
-    );
+      skill.concept == label
+   );
 
     if (matchedSkills.length > 0) this.confirmDeleteConcept(matchedSkills);
   }
@@ -404,7 +412,7 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  private confirmDeleteConcept(skills: string[]): void {
+  private confirmDeleteConcept(skills: BloomSkill[]): void {
     const isSingle = skills.length === 1;
 
     const message = isSingle
@@ -432,4 +440,102 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
       reject: () => {},
     });
   }
+
+  private buildSkillOptions() {
+    const tempTree: TreeNode[] = []
+    // TODO - fill with selectd skills from unselected concepts
+    this.profile.knowledge.forEach(concept => {
+      const conceptTree: TreeNode[] = [
+        {
+          label: "Level 1: Remember",
+          key: concept + '-1',
+          expanded: false,
+          leaf: false
+        },
+        {
+          label: "Level 2: Understand",
+          key: concept + '-2',
+          expanded: false,
+          leaf: false
+        },
+        {
+          label: "Level 3: Apply",
+          key: concept + '-3',
+          expanded: false,
+          leaf: false
+        },
+        {
+          label: "Level 4: Analyze",
+          key: concept + '-4',
+          expanded: false,
+          leaf: false
+        },
+        {
+          label: "Level 5: Evaluate",
+          key: concept + '-5',
+          expanded: false,
+          leaf: false
+        },
+        {
+          label: "Level 6: Create",
+          key: concept + '-6',
+          expanded: false,
+          leaf: false
+        },
+        {
+          label: "Unclassified",
+          key: concept + '-0',
+          expanded: false,
+          leaf: false
+        }
+      ]
+      this.bokInfoService.getConceptSkills(concept).pipe(
+        switchMap(skills => {
+          skills.forEach(skill => {
+            const levelNode: TreeNode | undefined = conceptTree.at(skill.bloomLevel - 1);
+            if (!levelNode) return
+            levelNode.children ??= [];
+            levelNode.children.push({
+              key: `${skill.bloomLevel}-${concept}-${skill.bloomVerb}-${levelNode.children.length}`,
+              label: skill.name,
+              children: [],
+              leaf: true,
+              expanded: false,
+              type: 'leaf',
+              data: { 
+                level: skill.bloomLevel,
+                verb: skill.bloomVerb, 
+                label: skill.name,
+                concept: concept
+              } as BloomSkill
+            })
+          })
+          return this.bokInfoService.getConceptName(concept)
+        })
+      ).subscribe(conceptName => {
+        tempTree.push({
+          label: `[${concept}] ${conceptName}`,
+          key: concept,
+          expanded: true,
+          leaf: false,
+          children: conceptTree,
+          selectable: false
+        })
+      });
+    })
+    tempTree.forEach(levelNode => {
+      levelNode.children = this.getSortedArray(levelNode.children ?? []);
+    })
+    this.skillOptions.set(tempTree);
+  }
+  
+  private getSortedArray(values: TreeNode[]) {
+    if (values.length > 0) {
+      return [...values].sort((a, b) =>
+        (a.label || '').localeCompare(b.label || '')
+      );
+    }
+    return values;
+  }
+
 }

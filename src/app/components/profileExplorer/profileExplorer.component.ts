@@ -313,7 +313,7 @@ export class ProfileExplorerComponent
         profiles.forEach((profile) => {
           if (
             profile.skills.some((skill) =>
-              skill.trim().toLowerCase().includes(value),
+              skill.label.trim().toLowerCase().includes(value),
             ) ||
             profile.customSkills.some((skill) =>
               skill.trim().toLowerCase().includes(value),

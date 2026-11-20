@@ -219,7 +219,7 @@ export class ProfilePageComponent implements OnInit, AfterViewInit, OnDestroy {
       });
 
     this.profile.skills.forEach((skill) => {
-      if (skill !== '') this.allSkills.push(skill);
+      this.allSkills.push(skill.label);
     });
 
     this.profile.customSkills.forEach((customSkill) => {

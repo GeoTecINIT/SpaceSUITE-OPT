@@ -39,7 +39,7 @@ import { UtilsService } from '../../services/utils.service';
   ],
   providers: [MessageService],
 })
-export class BokModalComponent implements OnInit {
+export class BokModalComponent {
   @Input() allowKnowledgeAreas: boolean = true;
   @Input() disabled: boolean = false;
   @Input() label: string = 'BoK Concepts';
@@ -57,10 +57,7 @@ export class BokModalComponent implements OnInit {
     return this._selectedConcepts;
   }
 
-  @Input() selectedSkills: string[] = [];
-
   @Output() selectedConceptsChange = new EventEmitter<string[]>();
-  @Output() selectedSkillsChange = new EventEmitter<string[]>();
   @Output() deletedConcept = new EventEmitter<string>();
 
   @ViewChild('dynamicContainer', { read: ViewContainerRef })
@@ -82,8 +79,6 @@ export class BokModalComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private messageService: MessageService,
   ) {}
-
-  ngOnInit() {}
 
   removeChip(label: string): void {
     this._selectedConcepts = this._selectedConcepts.filter(
@@ -163,7 +158,6 @@ export class BokModalComponent implements OnInit {
       this.selectedConceptsChange.emit(this._selectedConcepts);
 
       this.addMessage(`Concept "${concept}" annotated!`, 'info', 'Info');
-      this.addSkills(concept);
     } else {
       this.addMessage(
         `Concept "${concept}" is already annotated!`,
@@ -171,29 +165,6 @@ export class BokModalComponent implements OnInit {
         'Error',
       );
     }
-  }
-
-  private getSkills(concept: string): string[] {
-    const list: string[] = [];
-
-    this.bokInfo.getConceptSkills(concept).subscribe((skills) => {
-      skills.forEach((skill) => list.push(`[${concept}] ${skill.name}`));
-      this.cdr.detectChanges();
-    });
-
-    return list;
-  }
-
-  private addSkills(concept: string): void {
-    const skills = this.getSkills(concept);
-
-    skills.forEach((skill) => {
-      if (!this.selectedSkills.includes(skill)) {
-        this.selectedSkills.push(skill);
-      }
-    });
-
-    this.selectedSkillsChange.emit(this.selectedSkills);
   }
 
   private addMessage(message: string, severity: string, summary: string): void {

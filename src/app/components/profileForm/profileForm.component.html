@@ -199,9 +199,7 @@
         [allowKnowledgeAreas]="true"
         label="Knowledge *"
         [selectedConcepts]="profile.knowledge"
-        [selectedSkills]="profile.skills"
         (selectedConceptsChange)="onConceptsChange($event)"
-        (selectedSkillsChange)="onSkillsChange($event)"
         (deletedConcept)="onDeletedConcept($event)"
         [style.color]="
           errorMap.get('knowledge') != undefined ? 'var(--danger-color)' : ''
@@ -214,21 +212,45 @@
     }
   </div>
 
-  <div>
-    <text-chips
-      fieldName="Skills *"
-      [icon]="'pi pi-book'"
-      [(chips)]="profile.skills"
-      [(customChips)]="profile.customSkills"
-      [error]="errorMap.get('skills') !== undefined"
-      pTooltip="Skills associated with Body of Knowledge concepts of the profile. Custom values can be manually added."
-      tooltipPosition="top"
-      showDelay="200"
-      hideDelay="200"
-    ></text-chips>
+  <div class="flex flex-column gap-2">
+    <div>
+      <learningOutcomes-select
+        [treeSelection]="skillSelection()"
+        (treeSelectionChange)="skillSelection.set($event)"
+        [treeSelectOptions]="skillOptions()"
+        fieldName="Skills *"
+        [error]="errorMap.get('skills') !== undefined"
+        pTooltip="Skills associated with Body of Knowledge concepts of the profile."
+        tooltipPosition="top"
+        showDelay="200"
+        hideDelay="200"
+      ></learningOutcomes-select>
 
-    @if (errorMap.get("skills"); as error) {
-      <span class="danger text-xs font-italic">{{ error }}</span>
+      @if (errorMap.get("skills"); as error) {
+        <span class="danger text-xs font-italic">{{ error }}</span>
+      }
+    </div>
+
+    @if (!showCustomSkills) {
+      <p-button
+        [rounded]="true"
+        [text]="true"
+        size="small"
+        (onClick)="showCustomSkills = true"
+        class="text-button ml-auto mt-1 p-0 text-xs font-italic custom-option"
+      >
+        Add custom skills
+      </p-button>
+    } @else {
+      <text-chips
+        fieldName="Custom Skills *"
+        [icon]="'pi pi-book'"
+        [(chips)]="profile.customSkills"
+        pTooltip="Custom skills associated with the profile."
+        tooltipPosition="top"
+        showDelay="200"
+        hideDelay="200"
+      ></text-chips>
     }
   </div>
 
@@ -257,7 +279,7 @@
       <text-chips
         fieldName="Custom Transversal Skill"
         icon="pi pi-chart-bar"
-        [(customChips)]="customCompetences"
+        [(chips)]="customCompetences"
       ></text-chips>
     }
   </div>
