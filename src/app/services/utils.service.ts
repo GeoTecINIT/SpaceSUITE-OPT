@@ -7,9 +7,8 @@ import { combineLatest, forkJoin, map, Observable, of, take } from 'rxjs';
   providedIn: 'root',
 })
 export class UtilsService {
-
   constructor(private bokInfo: BokInformationService) {}
-  
+
   codeToKnowledgeArea: Map<string, string> = new Map([
     ['AM', 'Analytical Methods'],
     ['CF', 'Conceptual Foundations'],
@@ -59,19 +58,20 @@ export class UtilsService {
   }
 
   stringToTag(values: string[], variant?: Variant): Observable<Tag[]> {
-        if (variant !== 'bok') return of(values.map(skill => new Tag(skill, variant ?? undefined)))
-        else {
-            return forkJoin(
-                values.map(value =>
-                    combineLatest([
-                        this.bokInfo.getConceptName(value),
-                        this.bokInfo.getConceptColor(value),
-                    ]).pipe(
-                        take(1),
-                        map(([tooltip, color]) => new Tag(value, variant, tooltip, color))
-                    )
-                )
-            );
-        }
+    if (variant !== 'bok')
+      return of(values.map((skill) => new Tag(skill, variant ?? undefined)));
+    else {
+      return forkJoin(
+        values.map((value) =>
+          combineLatest([
+            this.bokInfo.getConceptName(value),
+            this.bokInfo.getConceptColor(value),
+          ]).pipe(
+            take(1),
+            map(([tooltip, color]) => new Tag(value, variant, tooltip, color)),
+          ),
+        ),
+      );
     }
+  }
 }

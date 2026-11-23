@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
+import { BloomSkill } from '../models/bloomSkill';
 import {
   Competence,
   Field,
   OccupationalProfile,
 } from '../models/occupationalProfile';
-import { BloomSkill } from '../models/bloomSkill';
 
 @Injectable({
   providedIn: 'root',
@@ -81,21 +81,19 @@ export class RdfService {
     }
 
     if (model.skills.length != 0 || model.customSkills.length != 0) {
-      model.skills
-        .forEach((skill: BloomSkill, index: number) => {
-          ttl += `  esco:relatedEssentialSkill _:SKILL${index};\n`;
-          additionalObjects += `_:SKILL${index}\n`;
-          additionalObjects += `  rdf:type esco:Skill ;\n`;
-          additionalObjects += `  dcterms:title "${this.escape(skill.label)}" .\n\n`;
-        });
+      model.skills.forEach((skill: BloomSkill, index: number) => {
+        ttl += `  esco:relatedEssentialSkill _:SKILL${index};\n`;
+        additionalObjects += `_:SKILL${index}\n`;
+        additionalObjects += `  rdf:type esco:Skill ;\n`;
+        additionalObjects += `  dcterms:title "${this.escape(skill.label)}" .\n\n`;
+      });
 
-      model.customSkills
-        .forEach((skill: string, index: number) => {
-          ttl += `  esco:relatedEssentialSkill _:SKILL${index};\n`;
-          additionalObjects += `_:SKILL${index}\n`;
-          additionalObjects += `  rdf:type esco:Skill ;\n`;
-          additionalObjects += `  dcterms:title "${this.escape(skill)}" .\n\n`;
-        });
+      model.customSkills.forEach((skill: string, index: number) => {
+        ttl += `  esco:relatedEssentialSkill _:SKILL${index};\n`;
+        additionalObjects += `_:SKILL${index}\n`;
+        additionalObjects += `  rdf:type esco:Skill ;\n`;
+        additionalObjects += `  dcterms:title "${this.escape(skill)}" .\n\n`;
+      });
     }
 
     if (model.competences.length != 0 || model.customCompetences.length != 0) {

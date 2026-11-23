@@ -33,8 +33,18 @@
       </span>
     </div>
 
-    <div [class]="applicationDomains.length > 4 ? 'flex flex-column gap-3' : 'flex flex-column xl:flex-row gap-3 xl:gap-4'">
-      <div [class]="applicationDomains.length > 4 ? 'text-justify' : 'xl:w-9 text-justify'">
+    <div
+      [class]="
+        applicationDomains.length > 4
+          ? 'flex flex-column gap-3'
+          : 'flex flex-column xl:flex-row gap-3 xl:gap-4'
+      "
+    >
+      <div
+        [class]="
+          applicationDomains.length > 4 ? 'text-justify' : 'xl:w-9 text-justify'
+        "
+      >
         {{ profile.description }}
       </div>
 
@@ -70,7 +80,11 @@
         </ng-template>
 
         <div class="flex flex-column xl:flex-row gap-3">
-          <skill-tags class="xl:w-9" [tags]="concepts" [compactBoKTags]="true"></skill-tags>
+          <skill-tags
+            class="xl:w-9"
+            [tags]="concepts"
+            [compactBoKTags]="true"
+          ></skill-tags>
 
           <div class="flex flex-column xl:w-3">
             @for (item of knowledgeDistributionArray; track $index) {
@@ -95,7 +109,6 @@
         class="my-2 custom-panel"
         [header]="`Skills (${allSkills.length})`"
         [toggleable]="true"
-        [collapsed]="overTagLimit(allSkills.length)"
       >
         <ng-template #headericons>
           <p-button
@@ -107,17 +120,10 @@
           />
         </ng-template>
 
-        <div
-          [class]="
-            overTagLimit(allSkills.length)
-              ? 'flex flex-column align-items-start gap-2'
-              : 'flex flex-wrap gap-2'
-          "
-        >
-          @for (skill of allSkills; track $index) {
-            <p-tag class="tag skill-tag" [value]="skill" [rounded]="true" />
-          }
-        </div>
+        <skillsTree
+          [array]="profile.skills"
+          [custom]="profile.customSkills"
+        ></skillsTree>
       </p-panel>
 
       <p-panel
@@ -278,7 +284,10 @@
                 <li class="flex p-2 popover-element" (click)="downloadPDF(op2)">
                   PDF
                 </li>
-                <li class="flex p-2 popover-element" (click)="downloadJSON(op2)">
+                <li
+                  class="flex p-2 popover-element"
+                  (click)="downloadJSON(op2)"
+                >
                   JSON
                 </li>
                 <li

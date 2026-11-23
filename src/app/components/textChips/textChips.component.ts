@@ -56,10 +56,7 @@ export class TextChipsComponent {
 
   clickButton() {
     const inputValue: string = this.currentText.trim();
-    if (
-      inputValue !== '' &&
-      !this.chips.includes(inputValue)
-    ) {
+    if (inputValue !== '' && !this.chips.includes(inputValue)) {
       this.chipsChange.emit(this.chips.concat(inputValue));
       this.chipAnimations[inputValue] = false;
     } else if (inputValue !== '') {
@@ -73,9 +70,7 @@ export class TextChipsComponent {
 
   deleteElement(element: string) {
     if (this.chips.includes(element)) {
-      this.chipsChange.emit(
-        this.chips.filter((value) => value !== element),
-      );
+      this.chipsChange.emit(this.chips.filter((value) => value !== element));
     }
 
     delete this.chipAnimations[element];

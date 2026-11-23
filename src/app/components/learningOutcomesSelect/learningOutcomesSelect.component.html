@@ -1,77 +1,128 @@
-<div [ngClass]="chips.length >0 ? 'p-2 custom-border' : ''" [class.custom-border-error]="error">
-    <p-inputgroup>
-        <p-floatlabel variant="on" class="custom-floatlabel" [class.invalid-floatlabel]="error">
-            <p-treeselect #treeSelect [options]="treeSelectOptions" [ngModel]="treeSelection" inputId="{{fieldName}}"
-                class="flex z-0 w-full custom-treeselect" (ngModelChange)="treeselectChange($event)" (onClear)="treeSelect.hide()"
-                [class.invalid-treeselect]="error" [filter]="true" resetFilterOnHide="true" [virtualScroll]="true" 
-                [virtualScrollItemSize]="40" [filterPlaceholder]="'Choose a ' + fieldName" [showClear]="true"
-                [metaKeySelection]="true" selectionMode="checkbox" filter showClear fluid [propagateSelectionDown]="true"
-                appendTo="body" panelStyleClass="custom-treeselect" [propagateSelectionUp]="true" [class.addongroup-element]="popoverUsingAddonGroup"
-                [virtualScrollOptions]="{ scrollHeight: '336px', appendOnly: true }" [loading]="treeSelectOptions.length == 0">
-                <ng-template #filtericon>
-                    <i class="pi pi-bookmark"></i>
-                </ng-template>
-                <ng-template #value>
-                    {{chips.length}} items selected
-                </ng-template>
-            </p-treeselect>
-            <label for="{{fieldName}}">{{fieldName}}</label>
-        </p-floatlabel>
-        @if (popoverUsingAddonGroup) {
-            <p-inputgroup-addon>
-                <p-button
-                    icon="pi pi-info-circle"
-                    severity="secondary"
-                    variant="text"
-                    (click)="popoverInfo.toggle($event)"
-                />
-            </p-inputgroup-addon>
+<div
+  [ngClass]="chips.length > 0 ? 'p-2 custom-border' : ''"
+  [class.custom-border-error]="error"
+>
+  <p-inputgroup>
+    <p-floatlabel
+      variant="on"
+      class="custom-floatlabel"
+      [class.invalid-floatlabel]="error"
+    >
+      <p-treeselect
+        #treeSelect
+        [options]="treeSelectOptions"
+        [ngModel]="treeSelection"
+        inputId="{{ fieldName }}"
+        class="flex z-0 w-full custom-treeselect"
+        (ngModelChange)="treeselectChange($event)"
+        (onClear)="treeSelect.hide()"
+        [class.invalid-treeselect]="error"
+        [filter]="true"
+        resetFilterOnHide="true"
+        [virtualScroll]="true"
+        [virtualScrollItemSize]="40"
+        [filterPlaceholder]="'Choose a ' + fieldName"
+        [showClear]="true"
+        [metaKeySelection]="true"
+        selectionMode="checkbox"
+        filter
+        showClear
+        fluid
+        [propagateSelectionDown]="true"
+        appendTo="body"
+        panelStyleClass="custom-treeselect"
+        [propagateSelectionUp]="true"
+        [class.addongroup-element]="popoverUsingAddonGroup"
+        [virtualScrollOptions]="{ scrollHeight: '336px', appendOnly: true }"
+      >
+        <ng-template #filtericon>
+          <i class="pi pi-bookmark"></i>
+        </ng-template>
+        <ng-template #value> {{ chips.length }} items selected </ng-template>
+      </p-treeselect>
+      <label for="{{ fieldName }}">{{ fieldName }}</label>
+    </p-floatlabel>
+    @if (popoverUsingAddonGroup) {
+      <p-inputgroup-addon>
+        <p-button
+          icon="pi pi-info-circle"
+          severity="secondary"
+          variant="text"
+          (click)="popoverInfo.toggle($event)"
+        />
+      </p-inputgroup-addon>
+    }
+  </p-inputgroup>
+  <p-popover #popoverInfo>
+    <ng-content></ng-content>
+  </p-popover>
+  <div class="m-1" [style.display]="chips.length == 0 ? 'none' : 'block'">
+    @for (level of chipsStructure; track level.key) {
+      @if (checkChipLevel(level.key)) {
+        <div class="my-3 max-w-max">
+          <p-button
+            class="dropdown-button"
+            text
+            rounded
+            severity="secondary"
+            [icon]="
+              level.expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'
+            "
+            (onClick)="level.expanded = !level.expanded"
+          ></p-button>
+          <div
+            class="custom-header inline ml-1"
+            (click)="level.expanded = !level.expanded"
+          >
+            {{ level.label }} ({{ getChipsByLevel(level.key).length }})
+          </div>
+        </div>
+        @if (level.expanded) {
+          @if (level.key == 0) {
+            <div class="flex ml-4 flex-wrap gap-2 align-items-center">
+              @for (chip of getChipsByLevel(level.key); track chip) {
+                <p-chip
+                  [removable]="true"
+                  (onRemove)="deleteElement(chip)"
+                  class="custom-chip"
+                >
+                  {{ chip.label }}
+                </p-chip>
+              }
+            </div>
+          } @else {
+            <div class="flex ml-4 flex-wrap gap-2 align-items-center">
+              @for (chip of getChipsByLevel(level.key); track chip) {
+                <p-chip
+                  [removable]="true"
+                  (onRemove)="deleteElement(chip)"
+                  class="custom-chip"
+                >
+                  @if (divideSkill(chip) | async; as parts) {
+                    <div>
+                      <b>{{ parts[0] }}</b>
+                      @if (parts[1] != "") {
+                        <div class="inline ml-1">{{ parts[1] }}</div>
+                      }
+                      <a
+                        class="custom-concept-link inline border-round-xl mx-1"
+                        target="_blank"
+                        [href]="'https://geospacebok.eu/' + chip.concept"
+                        [style.background]="
+                          getBackgroundColor(chip.concept) | async
+                        "
+                      >
+                        {{ parts[2] }}
+                      </a>
+                      {{ parts[3] }}
+                    </div>
+                  }
+                </p-chip>
+              }
+            </div>
+          }
         }
-    </p-inputgroup>
-    <p-popover #popoverInfo>
-        <ng-content></ng-content>
-    </p-popover>
-    <div class="m-1" [style.display]="chips.length == 0 ? 'none' : 'block'">
-        @for(level of chipsStructure; track level.key) {
-            @if (checkChipLevel(level.key)) {
-                <div class="my-3 max-w-max">
-                    <p-button class="dropdown-button" text rounded severity="secondary"
-                        [icon]="level.expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
-                        (onClick)="level.expanded = !level.expanded"></p-button>
-                    <div class="custom-header inline ml-1" (click)="level.expanded = !level.expanded">{{level.label}} ({{getChipsByLevel(level.key).length}})</div>
-                </div>
-                @if(level.expanded) {
-                    @if(level.key == 0) {
-                        <div class="flex ml-4 flex-wrap gap-2 align-items-center">
-                            @for (chip of getChipsByLevel(level.key); track chip) {
-                                <p-chip [removable]="true" (onRemove)="deleteElement(chip)" class="custom-chip">
-                                    {{chip.label}}
-                                </p-chip>
-                            }
-                        </div>
-                    }
-                    @else {
-                        <div class="flex ml-4 flex-wrap gap-2 align-items-center">
-                            @for (chip of getChipsByLevel(level.key); track chip) {
-                                <p-chip [removable]="true" (onRemove)="deleteElement(chip)" class="custom-chip">
-                                    @if(divideSkill(chip) | async; as parts) {
-                                        <div>
-                                            <b>{{parts[0]}}</b>
-                                            @if(parts[1] != '') {
-                                                <div class="inline ml-1">{{parts[1]}}</div>
-                                            }
-                                            <a class="custom-concept-link inline border-round-xl mx-1" target="_blank" [href]="'https://geospacebok.eu/' + chip.concept" [style.background]="getBackgroundColor(chip.concept) | async">
-                                                {{parts[2]}}
-                                            </a>
-                                            {{parts[3]}}
-                                        </div>
-                                    }
-                                </p-chip>
-                            }
-                        </div>
-                    }
-                }
-            }
-        }
-    </div>
+      }
+    }
+  </div>
 </div>

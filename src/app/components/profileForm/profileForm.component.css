@@ -74,6 +74,20 @@
   --p-datepicker-input-icon-color: var(--danger-color);
 }
 
+.text-button {
+  --p-button-text-primary-color: var(--secondary-color);
+  --p-button-text-primary-active-background: color-mix(
+    in srgb,
+    var(--secondary-color) 20%,
+    rgba(0, 0, 0, 0) 80%
+  );
+  --p-button-text-primary-hover-background: color-mix(
+    in srgb,
+    var(--secondary-color) 10%,
+    rgba(0, 0, 0, 0) 90%
+  );
+}
+
 ::ng-deep .p-toast-close-button .p-button-label {
   font-size: 0;
 }

@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
-import { PdfResult } from '../models/pdfResult';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Timestamp } from '@angular/fire/firestore';
+import { BokInformationService } from '@eo4geo/ngx-bok-visualization';
 import {
   BehaviorSubject,
   concatMap,
@@ -16,11 +17,10 @@ import {
   take,
   tap,
 } from 'rxjs';
-import { BokInformationService } from '@eo4geo/ngx-bok-visualization';
+import { OccupationalProfile } from '../models/occupationalProfile';
+import { PdfResult } from '../models/pdfResult';
 import { PdfWorkerPayload } from '../models/pdfWorkerPayload';
 import { PdfWorkerResult } from '../models/pdfWorkerResult';
-import { OccupationalProfile } from '../models/occupationalProfile';
-import { Timestamp } from '@angular/fire/firestore';
 
 @Injectable({ providedIn: 'root' })
 export class PdfService {

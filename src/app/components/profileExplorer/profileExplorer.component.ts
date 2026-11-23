@@ -18,6 +18,7 @@ import { MenuModule } from 'primeng/menu';
 import { PaginatorModule, PaginatorState } from 'primeng/paginator';
 import { SkeletonModule } from 'primeng/skeleton';
 import { ToastModule } from 'primeng/toast';
+import { TooltipModule } from 'primeng/tooltip';
 import { combineLatest, filter, map, Subscription, take } from 'rxjs';
 import { Filter } from '../../models/filter';
 import { OccupationalProfile } from '../../models/occupationalProfile';
@@ -27,7 +28,6 @@ import { FirebaseService } from '../../services/firebase.service';
 import { OccupationalProfileService } from '../../services/occupationalProfile.service';
 import { FiltersComponent } from '../filters/filters.component';
 import { ProfileCardComponent } from '../profileCard/profileCard.component';
-import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   standalone: true,
@@ -46,7 +46,7 @@ import { TooltipModule } from 'primeng/tooltip';
     ButtonModule,
     ButtonGroupModule,
     MenuModule,
-    TooltipModule
+    TooltipModule,
   ],
   providers: [ConfirmationService, MessageService],
 })

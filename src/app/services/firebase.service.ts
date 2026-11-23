@@ -13,7 +13,16 @@ import {
   setDoc,
   where,
 } from '@angular/fire/firestore';
-import { combineLatest, concatMap, from, map, Observable, of, shareReplay, switchMap } from 'rxjs';
+import {
+  combineLatest,
+  concatMap,
+  from,
+  map,
+  Observable,
+  of,
+  shareReplay,
+  switchMap,
+} from 'rxjs';
 import { OccupationalProfile } from '../models/occupationalProfile';
 
 @Injectable({
@@ -25,8 +34,7 @@ export class FirebaseService {
   private orgCollection: CollectionReference;
   private profileCollection: CollectionReference<OccupationalProfile>;
 
-  private userOrganizations$?: Observable<{ _id: string, name: string }[]>
-
+  private userOrganizations$?: Observable<{ _id: string; name: string }[]>;
 
   constructor(
     private auth: Auth = inject(Auth),
@@ -62,34 +70,38 @@ export class FirebaseService {
     return this.auth.currentUser;
   }
 
-  getUserOrganizationList(): Observable<{ _id: string, name: string }[]> {
+  getUserOrganizationList(): Observable<{ _id: string; name: string }[]> {
     if (!this.userOrganizations$) {
       this.userOrganizations$ = authState(this.auth).pipe(
-        switchMap(user => {
+        switchMap((user) => {
           if (!user) return of([]);
           const regularQuery = query(
             this.orgCollection,
-            where('regular', 'array-contains', user.uid)
+            where('regular', 'array-contains', user.uid),
           );
           const adminQuery = query(
             this.orgCollection,
-            where('admin', 'array-contains', user.uid)
+            where('admin', 'array-contains', user.uid),
           );
           return combineLatest([
-            collectionData(regularQuery) as Observable<{ _id: string, name: string }[]>,
-            collectionData(adminQuery) as Observable<{ _id: string, name: string }[]>,
+            collectionData(regularQuery) as Observable<
+              { _id: string; name: string }[]
+            >,
+            collectionData(adminQuery) as Observable<
+              { _id: string; name: string }[]
+            >,
           ]).pipe(
             map(([regular, admin]) => {
               const seen = new Set<string>();
-              return [...regular, ...admin].filter(org => {
+              return [...regular, ...admin].filter((org) => {
                 if (seen.has(org._id)) return false;
                 seen.add(org._id);
                 return true;
-              })
-            })
-          )
+              });
+            }),
+          );
         }),
-        shareReplay({bufferSize: 1, refCount: true})
+        shareReplay({ bufferSize: 1, refCount: true }),
       );
     }
     return this.userOrganizations$;

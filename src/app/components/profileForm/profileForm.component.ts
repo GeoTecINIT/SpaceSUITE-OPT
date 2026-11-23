@@ -10,7 +10,12 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthService, ExitWithoutSavingService, PermissionService } from '@eo4geo/ngx-bok-utils';
+import {
+  AuthService,
+  ExitWithoutSavingService,
+  PermissionService,
+} from '@eo4geo/ngx-bok-utils';
+import { BokInformationService } from '@eo4geo/ngx-bok-visualization';
 import { ConfirmationService, MessageService, TreeNode } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialog } from 'primeng/confirmdialog';
@@ -31,6 +36,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
 import { catchError, finalize, of, Subscription, switchMap, take } from 'rxjs';
+import { BloomSkill } from '../../models/bloomSkill';
 import { Filter } from '../../models/filter';
 import { FormType } from '../../models/formType';
 import {
@@ -44,12 +50,10 @@ import { FirebaseService } from '../../services/firebase.service';
 import { OccupationalProfileService } from '../../services/occupationalProfile.service';
 import { BokModalComponent } from '../bokModal/bokModal.component';
 import { CustomSelectComponent } from '../customSelect/customSelect.component';
+import { LearningOutcomesSelectComponent } from '../learningOutcomesSelect/learningOutcomesSelect.component';
 import { MultiselectChipsComponent } from '../multiselectChips/multiselectChips.component';
 import { TextChipsComponent } from '../textChips/textChips.component';
 import { TreeselectChipsComponent } from '../treeselectChips/treeselectChips.component';
-import { LearningOutcomesSelectComponent } from '../learningOutcomesSelect/learningOutcomesSelect.component';
-import { BokInformationService } from '@eo4geo/ngx-bok-visualization';
-import { BloomSkill } from '../../models/bloomSkill';
 
 @Component({
   standalone: true,
@@ -82,8 +86,8 @@ import { BloomSkill } from '../../models/bloomSkill';
     SelectButton,
     IftaLabelModule,
     TreeselectChipsComponent,
-    LearningOutcomesSelectComponent
-],
+    LearningOutcomesSelectComponent,
+  ],
   providers: [MessageService, ConfirmationService],
 })
 export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
@@ -121,8 +125,8 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
   showCustomSkills: boolean = false;
 
   selectedOrgCanPublish: WritableSignal<boolean> = signal(false);
+
   skillOptions: WritableSignal<TreeNode[]> = signal([]);
-  
   skillSelection: WritableSignal<TreeNode[]> = signal([]);
 
   private authSubscription!: Subscription;
@@ -148,7 +152,7 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private escoService: ESCOService,
     private route: ActivatedRoute,
     private permissionService: PermissionService,
-    private bokInfoService: BokInformationService
+    private bokInfoService: BokInformationService,
   ) {}
 
   ngOnInit() {
@@ -183,8 +187,7 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
         if (organizations.length == 0) {
           this.exitWithoutSavingService.bypassGuard.next(true);
           this.router.navigate(['profile']);
-        }
-        else {
+        } else {
           this.organizationSelector.values = organizations.map((org) => ({
             label: org.name,
             value: org._id,
@@ -207,11 +210,32 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
           .getOrganizationDivisions(this.profile.orgId)
           .pipe(take(1))
           .subscribe((divisions) => (this.divisionSelector.values = divisions));
-        this.permissionService.organizationHasPermission(this.profile.orgId, 'opt').pipe(take(1)).subscribe(hasPermission => this.selectedOrgCanPublish.set(hasPermission));
+        this.permissionService
+          .organizationHasPermission(this.profile.orgId, 'opt')
+          .pipe(take(1))
+          .subscribe((hasPermission) =>
+            this.selectedOrgCanPublish.set(hasPermission),
+          );
       }
 
       this.fieldNames = this.profile.fields.map((field) => field.name);
     });
+
+    this.skillSelection.set(
+      this.profile.skills.map((skill) => {
+        return {
+          key: `${skill.level}-${skill.concept}-${skill.verb != '' ? skill.verb : this.getUnclassifiedHash(skill.label)}`,
+          label: skill.label,
+          children: [],
+          leaf: true,
+          expanded: false,
+          type: 'leaf',
+          data: skill,
+        };
+      }),
+    );
+
+    this.showCustomSkills = this.profile.customSkills.length > 0;
 
     this.buildSkillOptions();
 
@@ -238,12 +262,15 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.firebaseService
       .getOrganizationDivisions(this.profile.orgId!)
       .subscribe((divisions) => (this.divisionSelector.values = divisions));
-    this.permissionService.organizationHasPermission(this.profile.orgId, 'opt').pipe(take(1)).subscribe(hasPermission => {
-      this.selectedOrgCanPublish.set(hasPermission);
-      if (!hasPermission) {
-        this.profile.isPublic = false;
-      }
-    });
+    this.permissionService
+      .organizationHasPermission(this.profile.orgId, 'opt')
+      .pipe(take(1))
+      .subscribe((hasPermission) => {
+        this.selectedOrgCanPublish.set(hasPermission);
+        if (!hasPermission) {
+          this.profile.isPublic = false;
+        }
+      });
   }
 
   onConceptsChange(concepts: string[]): void {
@@ -251,12 +278,19 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.buildSkillOptions();
   }
 
-  onDeletedConcept(label: string): void {
-    const matchedSkills = this.profile.skills.filter((skill) =>
-      skill.concept == label
-   );
+  onSkillsChange(newSkills: TreeNode[]): void {
+    this.profile.skills = newSkills
+      .filter((skill) => skill.data)
+      .map((skill) => skill.data);
+  }
 
-    if (matchedSkills.length > 0) this.confirmDeleteConcept(matchedSkills);
+  onDeletedConcept(label: string): void {
+    const matchedSkills = this.profile.skills.filter(
+      (skill) => skill.concept == label,
+    );
+
+    if (matchedSkills.length > 0)
+      this.confirmDeleteConcept(matchedSkills, label);
   }
 
   returnToHomepage(): void {
@@ -412,7 +446,7 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  private confirmDeleteConcept(skills: BloomSkill[]): void {
+  private confirmDeleteConcept(skills: BloomSkill[], concept: string): void {
     const isSingle = skills.length === 1;
 
     const message = isSingle
@@ -433,109 +467,152 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
         label: acceptLabel,
         severity: 'primary',
       },
-      accept: () =>
-        (this.profile.skills = this.profile.skills.filter(
-          (skill) => !skills.includes(skill),
-        )),
-      reject: () => {},
-    });
-  }
+      accept: () => {
+        this.profile.skills = this.profile.skills.filter(
+          (skill) => skill.concept != concept,
+        );
 
-  private buildSkillOptions() {
-    const tempTree: TreeNode[] = []
-    // TODO - fill with selectd skills from unselected concepts
-    this.profile.knowledge.forEach(concept => {
-      const conceptTree: TreeNode[] = [
-        {
-          label: "Level 1: Remember",
-          key: concept + '-1',
-          expanded: false,
-          leaf: false
-        },
-        {
-          label: "Level 2: Understand",
-          key: concept + '-2',
-          expanded: false,
-          leaf: false
-        },
-        {
-          label: "Level 3: Apply",
-          key: concept + '-3',
-          expanded: false,
-          leaf: false
-        },
-        {
-          label: "Level 4: Analyze",
-          key: concept + '-4',
-          expanded: false,
-          leaf: false
-        },
-        {
-          label: "Level 5: Evaluate",
-          key: concept + '-5',
-          expanded: false,
-          leaf: false
-        },
-        {
-          label: "Level 6: Create",
-          key: concept + '-6',
-          expanded: false,
-          leaf: false
-        },
-        {
-          label: "Unclassified",
-          key: concept + '-0',
-          expanded: false,
-          leaf: false
-        }
-      ]
-      this.bokInfoService.getConceptSkills(concept).pipe(
-        switchMap(skills => {
-          skills.forEach(skill => {
-            const levelNode: TreeNode | undefined = conceptTree.at(skill.bloomLevel - 1);
-            if (!levelNode) return
-            levelNode.children ??= [];
-            levelNode.children.push({
-              key: `${skill.bloomLevel}-${concept}-${skill.bloomVerb}-${levelNode.children.length}`,
-              label: skill.name,
+        this.skillSelection.set(
+          this.profile.skills.map((skill) => {
+            return {
+              key: `${skill.level}-${skill.concept}-${skill.verb != '' ? skill.verb : this.getUnclassifiedHash(skill.label)}`,
+              label: skill.label,
               children: [],
               leaf: true,
               expanded: false,
               type: 'leaf',
-              data: { 
-                level: skill.bloomLevel,
-                verb: skill.bloomVerb, 
-                label: skill.name,
-                concept: concept
-              } as BloomSkill
-            })
-          })
-          return this.bokInfoService.getConceptName(concept)
-        })
-      ).subscribe(conceptName => {
-        tempTree.push({
-          label: `[${concept}] ${conceptName}`,
-          key: concept,
-          expanded: true,
+              data: skill,
+            };
+          }),
+        );
+
+        this.buildSkillOptions();
+      },
+      reject: () => {},
+    });
+  }
+
+  buildSkillOptions(): void {
+    const tempTree: TreeNode[] = [];
+    const conceptSet: Set<string> = new Set();
+
+    this.profile.skills.forEach((skill) => conceptSet.add(skill.concept));
+    this.profile.knowledge.forEach((concept) => conceptSet.add(concept));
+
+    conceptSet.forEach((concept) => {
+      const conceptTree: TreeNode[] = [
+        {
+          label: 'Level 1: Remember',
+          key: concept + '-1',
+          expanded: false,
           leaf: false,
-          children: conceptTree,
-          selectable: false
-        })
-      });
-    })
-    tempTree.forEach(levelNode => {
+        },
+        {
+          label: 'Level 2: Understand',
+          key: concept + '-2',
+          expanded: false,
+          leaf: false,
+        },
+        {
+          label: 'Level 3: Apply',
+          key: concept + '-3',
+          expanded: false,
+          leaf: false,
+        },
+        {
+          label: 'Level 4: Analyze',
+          key: concept + '-4',
+          expanded: false,
+          leaf: false,
+        },
+        {
+          label: 'Level 5: Evaluate',
+          key: concept + '-5',
+          expanded: false,
+          leaf: false,
+        },
+        {
+          label: 'Level 6: Create',
+          key: concept + '-6',
+          expanded: false,
+          leaf: false,
+        },
+        {
+          label: 'Unclassified',
+          key: concept + '-0',
+          expanded: false,
+          leaf: false,
+        },
+      ];
+
+      this.bokInfoService
+        .getConceptSkills(concept)
+        .pipe(
+          switchMap((skills) => {
+            skills.forEach((skill) => {
+              const levelNode: TreeNode | undefined = conceptTree.at(
+                skill.bloomLevel - 1,
+              );
+
+              if (!levelNode) return;
+
+              levelNode.children ??= [];
+
+              levelNode.children.push({
+                key: `${skill.bloomLevel}-${concept}-${skill.bloomVerb != '' ? skill.bloomVerb : this.getUnclassifiedHash(skill.name)}`,
+                label: skill.name,
+                children: [],
+                leaf: true,
+                expanded: false,
+                type: 'leaf',
+                data: new BloomSkill({
+                  level: skill.bloomLevel,
+                  verb: skill.bloomVerb,
+                  label: skill.name,
+                  concept: concept,
+                }),
+              });
+            });
+
+            return this.bokInfoService.getConceptName(concept);
+          }),
+          take(1),
+        )
+        .subscribe((conceptName) => {
+          tempTree.push({
+            label: `[${concept}] ${conceptName}`,
+            key: concept,
+            expanded: true,
+            leaf: false,
+            children: conceptTree,
+            selectable: false,
+          });
+        });
+    });
+
+    tempTree.forEach((levelNode) => {
       levelNode.children = this.getSortedArray(levelNode.children ?? []);
-    })
+    });
+
     this.skillOptions.set(tempTree);
   }
-  
-  private getSortedArray(values: TreeNode[]) {
+
+  private getSortedArray(values: TreeNode[]): TreeNode[] {
     if (values.length > 0) {
       return [...values].sort((a, b) =>
-        (a.label || '').localeCompare(b.label || '')
+        (a.label || '').localeCompare(b.label || ''),
       );
     }
+
     return values;
   }
 
+  private getUnclassifiedHash(data: string): string {
+    let hash = 0;
+    for (const char of data) {
+      hash = (hash << 5) - hash + char.charCodeAt(0);
+      hash |= 0;
+    }
+    return hash.toString();
+  }
 }

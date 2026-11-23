@@ -5,7 +5,6 @@ import {
   ComponentRef,
   EventEmitter,
   Input,
-  OnInit,
   Output,
   ViewChild,
   ViewContainerRef,

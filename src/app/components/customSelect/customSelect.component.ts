@@ -1,17 +1,16 @@
+import { CommonModule } from '@angular/common';
 import {
   Component,
-  ElementRef,
   EventEmitter,
   Input,
   Output,
   ViewChild,
 } from '@angular/core';
-import { FloatLabelModule } from 'primeng/floatlabel';
 import { FormsModule } from '@angular/forms';
-import { IconFieldModule } from 'primeng/iconfield';
 import { ButtonModule } from 'primeng/button';
 import { ChipModule } from 'primeng/chip';
-import { CommonModule } from '@angular/common';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { IconFieldModule } from 'primeng/iconfield';
 import { Select, SelectModule } from 'primeng/select';
 import { CardFilterService } from '../../services/cardFilter.service';
 

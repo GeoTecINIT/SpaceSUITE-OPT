@@ -1,0 +1,38 @@
+<div *ngIf="(array && array.length > 0) || (custom && custom.length > 0)">
+  <p-tree [value]="formattedTree()" class="w-full custom-tree ml-0">
+    <ng-template let-node pTemplate="leaf">
+      @if (
+        node.data != undefined &&
+        node.data.verb != undefined &&
+        node.data.verb != ""
+      ) {
+        @if (divideSkill(node.data) | async; as parts) {
+          <div [style.display]="'list-item'" [style.list-style-type]="'disc'">
+            <b>{{ parts[0] }}</b>
+            @if (parts[1] != "") {
+              <div class="inline ml-1">{{ parts[1] }}</div>
+            }
+            <a
+              class="custom-concept-link inline border-round-xl mx-1"
+              target="_blank"
+              [href]="'https://geospacebok.eu/' + node.data.concept"
+              [style.background]="getBackgroundColor(node.data.concept) | async"
+            >
+              {{ parts[2] }}
+            </a>
+            {{ parts[3] }}
+          </div>
+        }
+      } @else {
+        <div [style.display]="'list-item'" [style.list-style-type]="'disc'">
+          {{ node.label }}
+        </div>
+      }
+    </ng-template>
+    <ng-template let-node pTemplate="default">
+      <a (click)="node.expanded = !node.expanded"
+        >{{ node.label }} ({{ countChildren(node) }})</a
+      >
+    </ng-template>
+  </p-tree>
+</div>

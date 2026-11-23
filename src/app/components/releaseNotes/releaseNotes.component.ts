@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 
 @Component({
@@ -9,6 +9,6 @@ import { DialogModule } from 'primeng/dialog';
   imports: [DialogModule],
 })
 export class ReleaseNotesComponent {
-    @Input() visible: boolean = false;
-    @Output() visibleChange: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Input() visible: boolean = false;
+  @Output() visibleChange: EventEmitter<boolean> = new EventEmitter<boolean>();
 }

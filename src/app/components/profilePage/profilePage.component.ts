@@ -37,6 +37,7 @@ import { OccupationalProfileService } from '../../services/occupationalProfile.s
 import { PdfService } from '../../services/pdf.service';
 import { RdfService } from '../../services/rdf.service';
 import { UtilsService } from '../../services/utils.service';
+import { SkillsTreeComponent } from '../skillsTree/skillsTree.component';
 
 interface AuthState {
   logged: boolean;
@@ -61,6 +62,7 @@ interface AuthState {
     PopoverModule,
     TooltipModule,
     SkillTagComponent,
+    SkillsTreeComponent,
   ],
   providers: [ConfirmationService, MessageService],
 })

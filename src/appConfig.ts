@@ -19,8 +19,8 @@ import { EditProfilePageComponent } from './app/components/editProfilePage/editP
 import { ProfileExplorerComponent } from './app/components/profileExplorer/profileExplorer.component';
 import { ProfileFormComponent } from './app/components/profileForm/profileForm.component';
 import { ProfilePageComponent } from './app/components/profilePage/profilePage.component';
-import { environment } from './environments/environment';
 import { UserOrgsGuard } from './app/guards/userOrgs.guard';
+import { environment } from './environments/environment';
 
 const routes: Routes = [
   { path: '', component: ProfileExplorerComponent },

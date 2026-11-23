@@ -1,0 +1,40 @@
+.custom-tree {
+  --p-tree-node-color: var(--primary-color);
+  --p-tree-node-icon-color: var(--primary-color);
+  --p-tree-indent: 2rem;
+  --p-tree-padding: 0rem;
+  --p-tree-gap: 0rem;
+  --p-tree-node-padding: 0rem;
+}
+
+::ng-deep .p-tree {
+  padding-bottom: 0rem;
+  padding-left: 0rem;
+}
+
+::ng-deep .p-tree-node-content {
+  margin-top: 0.25rem;
+}
+
+::ng-deep .p-tree-node-content.p-tree-node-selected .p-tree-node-label {
+  font-weight: 700;
+}
+
+a {
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--secondary-color);
+}
+
+a:hover {
+  color: var(--hover-color);
+}
+
+.custom-concept-link {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+.custom-concept-link:hover {
+  color: white;
+}
