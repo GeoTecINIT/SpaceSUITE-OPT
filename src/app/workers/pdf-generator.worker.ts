@@ -17,10 +17,12 @@ addEventListener('message', ({ data }: { data: PdfWorkerPayload }) => {
     doc.addFileToVFS('Poppins-Regular.ttf', assets.poppinsRegular);
     doc.addFont('Poppins-Regular.ttf', 'Poppins', 'normal');
   }
+
   if (assets.poppinsBold) {
     doc.addFileToVFS('Poppins-Bold.ttf', assets.poppinsBold);
     doc.addFont('Poppins-Bold.ttf', 'Poppins', 'bold');
   }
+
   if (assets.poppinsItalic) {
     doc.addFileToVFS('Poppins-Italic.ttf', assets.poppinsItalic);
     doc.addFont('Poppins-Italic.ttf', 'Poppins', 'italic');
@@ -49,7 +51,7 @@ addEventListener('message', ({ data }: { data: PdfWorkerPayload }) => {
     METADATA
 ============================ */
 
-function applyMetadata(doc: jsPDF, profile: OccupationalProfile) {
+function applyMetadata(doc: jsPDF, profile: OccupationalProfile): void {
   doc.setProperties({
     title: `${profile.title} – Profile`,
     subject: getSubjectMetadata(profile),
@@ -59,21 +61,17 @@ function applyMetadata(doc: jsPDF, profile: OccupationalProfile) {
   });
 }
 
-function getSubjectMetadata(profile: OccupationalProfile) {
-  let subject =
-    '@prefix dc: <http://purl.org/dc/terms/> . @prefix eo4geo: <http://bok.eo4geo.eu/> . ';
-  if (profile.knowledge && profile.knowledge.length > 0) {
-    subject =
-      subject + '<> dc:type "Job Offer"; <> dc:title "' + profile.title + '"';
-    profile.knowledge.forEach((know) => {
-      // const bokCode = concept.split('] ')[1];
-      const bokCode = know.split(']', 1)[0].split('[', 2)[1];
-      if (bokCode) {
-        subject = subject + '; dc:relation eo4geo:' + bokCode;
-      }
-    });
-    subject = subject + ' .';
-  }
+function getSubjectMetadata(profile: OccupationalProfile): string {
+  let subject = `@prefix dc: <http://purl.org/dc/terms/> . @prefix eo4geo: <http://bok.eo4geo.eu/> . <> dc:type "Job Offer"; <> dc:title "${profile.title}"`;
+
+  profile.knowledge.forEach((concept) => {
+    const bokCode = concept.match(/^\[([^\]]+)\]/);
+
+    if (bokCode) subject = subject + '; dc:relation eo4geo:' + bokCode[1];
+  });
+
+  subject = subject + ' .';
+
   return subject;
 }
 
@@ -100,7 +98,9 @@ function renderHeader(
   const lines = doc.splitTextToSize(p.title, 170);
   const linesSize = lines.length * 10.4 * 1.35;
   y = checkEnd(doc, y, linesSize, assets);
+
   doc.text(lines, 20, y);
+
   y += linesSize;
 
   doc.setFontSize(10).setFont('Poppins', 'normal');
@@ -119,6 +119,7 @@ function renderHeader(
     20,
     y,
   );
+
   y += 4 * 1.35;
 
   doc.text(
@@ -126,6 +127,7 @@ function renderHeader(
     20,
     y,
   );
+
   y += 4 * 1.35;
 
   return y;
@@ -154,6 +156,7 @@ function renderFooter(
   doc.rect(0, y, pageWidth, footerHeight, 'F');
 
   const page = doc.getCurrentPageInfo().pageNumber;
+
   doc.setFontSize(9).setFont('Poppins', 'normal');
   doc.setTextColor('#ffffff');
   doc.text(page.toString(), pageWidth / 2, y + footerHeight / 2 + 1); // + 1
@@ -168,6 +171,7 @@ function renderFooter(
     const ratio = imgHeightPx / imgWidthPx;
     const targetHeight = targetWidth * ratio;
     const pageWidth = doc.internal.pageSize.getWidth();
+
     doc.addImage(
       assets.euLogo,
       'PNG',
@@ -187,6 +191,7 @@ function renderFooter(
     const targetWidth = 30;
     const ratio = imgHeightPx / imgWidthPx;
     const targetHeight = targetWidth * ratio;
+
     doc.addImage(
       assets.spaceSuiteLogo,
       'PNG',
@@ -217,15 +222,15 @@ function renderSummary(
     spaceSuiteLogo?: string | undefined;
   },
 ): number {
-  if (!p.description) return y;
-
-  y = sectionTitle(doc, 'Profile Summary', y, assets);
-
+  y = sectionTitle(doc, 'Summary', y, assets);
   y += 4 * 1.35;
+
   const lines = doc.splitTextToSize(p.description, 170);
   const linesSize = lines.length * 4 * 1.35;
   y = checkEnd(doc, y, linesSize, assets);
+
   doc.text(lines, 20, y);
+
   y += linesSize;
 
   return y;
@@ -250,22 +255,26 @@ function renderDomains(
 ): number {
   if (!p.fields.length) return y;
 
+  y = sectionTitle(doc, 'Application Domains', y, assets);
+  y += 4 * 1.35;
+
   const domains: string[] = p.fields.map(
     (field) => field.name + ' (' + field.grandparent + ')',
   );
 
-  y = sectionTitle(doc, 'Application Domains', y, assets);
-
-  y += 4 * 1.35;
   domains.forEach((domain) => {
     const lines = doc.splitTextToSize(domain, 170);
+
     for (let i = 0; i < lines.length; i++) {
       if (i == 0) lines[i] = '• ' + lines[i];
       else lines[i] = '   ' + lines[i];
     }
+
     const linesSize = lines.length * 4 * 1.35;
     y = checkEnd(doc, y, linesSize, assets);
+
     doc.text(lines, 20, y);
+
     y += linesSize;
   });
 
@@ -289,28 +298,30 @@ function renderKnowledge(
     spaceSuiteLogo?: string | undefined;
   },
 ): number {
-  if (!p.knowledge.length) return y;
-
-  y = sectionTitle(doc, 'Required Knowledge', y, assets);
-
-  const knowledge = p.knowledge.map((k) =>
-    extractConceptsFromKnowledgeAndSkills(k),
-  );
-
+  y = sectionTitle(doc, 'Knowledge', y, assets);
   y += 4 * 1.35;
 
-  knowledge.forEach((knowledge) => {
-    const url =
-      'https://geospacebok.eu/' +
-      (knowledge.concept != '' ? knowledge.concept : knowledge.content);
-    const lines = doc.splitTextToSize(knowledge.content, 170);
+  p.knowledge.forEach((concept) => {
+    const lines = doc.splitTextToSize(concept, 170);
+
     for (let i = 0; i < lines.length; i++) {
       if (i == 0) lines[i] = '• ' + lines[i];
       else lines[i] = '   ' + lines[i];
     }
+
     const linesSize = lines.length * 4 * 1.35;
     y = checkEnd(doc, y, linesSize, assets);
-    doc.textWithLink(lines, 20, y, { url });
+
+    const match = concept.match(/^\[([^\]]+)\]/);
+
+    if (match) {
+      doc.setTextColor('#3fb3f8');
+      doc.textWithLink(lines, 20, y, {
+        url: 'https://geospacebok.eu/' + match[1],
+      });
+      doc.setTextColor('#0e145d');
+    } else doc.text(lines, 20, y);
+
     y += linesSize;
   });
 
@@ -334,25 +345,15 @@ function renderSkills(
     spaceSuiteLogo?: string | undefined;
   },
 ): number {
-  if (!p.skills.length && !p.customSkills.length) return y;
-
-  y = sectionTitle(doc, 'Required Skills', y, assets);
-
-  const totalSkills: AnnotatedElement[] = [
-    ...p.skills.map((skill) => ({
-      content: skill.label,
-      concept: skill.concept,
-    })),
-    ...p.customSkills.map((skill) => ({
-      content: skill,
-      concept: '',
-    })),
-  ];
-
+  y = sectionTitle(doc, 'Skills', y, assets);
   y += 4 * 1.35;
 
+  const totalSkills = p.skills
+    .map((skill) => skill.label)
+    .concat(p.customSkills);
+
   totalSkills.forEach((skill) => {
-    const lines = doc.splitTextToSize(skill.content, 170);
+    const lines = doc.splitTextToSize(skill, 170);
 
     for (let i = 0; i < lines.length; i++) {
       if (i === 0) lines[i] = '• ' + lines[i];
@@ -362,13 +363,7 @@ function renderSkills(
     const linesSize = lines.length * 4 * 1.35;
     y = checkEnd(doc, y, linesSize, assets);
 
-    if (skill.concept !== '') {
-      doc.textWithLink(lines, 20, y, {
-        url: 'https://geospacebok.eu/' + skill.concept,
-      });
-    } else {
-      doc.text(lines, 20, y);
-    }
+    doc.text(lines, 20, y);
 
     y += linesSize;
   });
@@ -393,9 +388,10 @@ function renderTransversalSkills(
     spaceSuiteLogo?: string | undefined;
   },
 ): number {
-  if (!p.competences.length && !p.customCompetences) return y;
+  if (!p.competences.length && !p.customCompetences.length) return y;
 
-  y = sectionTitle(doc, 'Required Transversal Skills', y, assets);
+  y = sectionTitle(doc, 'Transversal Skills', y, assets);
+  y += 4 * 1.35;
 
   const totalSkills: Competence[] = p.competences.concat(
     p.customCompetences.map((custom) => {
@@ -403,17 +399,22 @@ function renderTransversalSkills(
     }),
   );
 
-  y += 4 * 1.35;
   totalSkills.forEach((skill) => {
     const lines = doc.splitTextToSize(skill.preferredLabel, 170);
+
     for (let i = 0; i < lines.length; i++) {
       if (i == 0) lines[i] = '• ' + lines[i];
       else lines[i] = '   ' + lines[i];
     }
     const linesSize = lines.length * 4 * 1.35;
     y = checkEnd(doc, y, linesSize, assets);
-    if (skill.uri) doc.textWithLink(lines, 20, y, { url: skill.uri });
-    else doc.text(lines, 20, y);
+
+    if (skill.uri) {
+      doc.setTextColor('#3fb3f8');
+      doc.textWithLink(lines, 20, y, { url: skill.uri });
+      doc.setTextColor('#0e145d');
+    } else doc.text(lines, 20, y);
+
     y += linesSize;
   });
 
@@ -439,11 +440,13 @@ function sectionTitle(
 ): number {
   y += 8 * 1.35;
   y = checkEnd(doc, y, 0, assets);
+
   doc.setFontSize(14).setFont('Poppins', 'bold');
   doc.setTextColor('#0e145d');
   doc.text(title, 20, y);
   doc.setFontSize(10).setFont('Poppins', 'normal');
   doc.setTextColor('#0e145d');
+
   return y + 2 * 1.35;
 }
 
@@ -464,8 +467,10 @@ function checkEnd(
     renderFooter(doc, assets);
     doc.addPage();
     addWatermark(doc, assets.watermark || '');
+
     return 20;
   }
+
   return y;
 }
 
@@ -473,6 +478,7 @@ function addWatermark(doc: jsPDF, watermark: string): void {
   if (watermark) {
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
+
     doc.addImage(
       watermark,
       'PNG',
@@ -488,18 +494,4 @@ function addWatermark(doc: jsPDF, watermark: string): void {
 
 function buildFilename(p: OccupationalProfile): string {
   return `${p.title.replace(/\s+/g, '_')}_Profile.pdf`;
-}
-
-function extractConceptsFromKnowledgeAndSkills(
-  element: string,
-): AnnotatedElement {
-  if (!element) return { concept: '', content: '' };
-  const match = element.match(/^\[(.*?)\]\s*(.*)$/);
-  if (!match) return { concept: '', content: element };
-  return { concept: match[1], content: match[2] };
-}
-
-interface AnnotatedElement {
-  concept: string;
-  content: string;
 }
