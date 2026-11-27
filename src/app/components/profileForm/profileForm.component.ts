@@ -303,7 +303,7 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  submitProfile(): void {
+  saveProfile(): void {
     this.profile.competences = this.competences.filter((c) =>
       this.competenceLabels.includes(c.preferredLabel),
     );
@@ -326,7 +326,7 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
       const isUpdate = this.formType === FormType.Edit;
 
       this.occupationalProfileService
-        .submitOccupationalProfile(this.profile, isUpdate)
+        .saveOccupationalProfile(this.profile, isUpdate)
         .pipe(
           take(1),
           catchError((error) => {
@@ -345,7 +345,7 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
             if (this.profile._id !== '') {
               this.router.navigate(['profile/' + this.profile._id], {
                 queryParams: {
-                  submitted: true,
+                  saved: true,
                   mode: isUpdate ? 'update' : 'create',
                 },
               });
@@ -360,7 +360,7 @@ export class ProfileFormComponent implements OnInit, OnDestroy, AfterViewInit {
         severity: 'error',
         summary: 'Error',
         detail:
-          'There are incomplete mandatory fields. Please review the form and try to submit again.',
+          'There are incomplete mandatory fields. Please review the form and try to save again.',
         life: 3000,
         closable: true,
       });

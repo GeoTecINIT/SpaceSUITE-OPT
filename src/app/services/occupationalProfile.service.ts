@@ -100,7 +100,7 @@ export class OccupationalProfileService {
     return errors;
   }
 
-  submitOccupationalProfile(
+  saveOccupationalProfile(
     profile: OccupationalProfile,
     update: boolean = false,
   ): Observable<string> {

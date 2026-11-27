@@ -51,7 +51,7 @@
         [pTooltip]="
           selectedOrgCanPublish()
             ? 'Indicates whether the profile is publicly available or restricted to your organization.'
-            : 'Indicates that the selected organization does not have permission to create public profiles.'
+            : 'The selected organization does not have permission to create public profiles.'
         "
         [tooltipStyleClass]="selectedOrgCanPublish() ? '' : 'danger-tooltip'"
         allowEmpty="false"
@@ -304,5 +304,5 @@
     (onClick)="returnToHomepage()"
   />
 
-  <p-button class="custom-button" label="Submit" (onClick)="submitProfile()" />
+  <p-button class="custom-button" label="Save" (onClick)="saveProfile()" />
 </div>
